@@ -7,7 +7,7 @@ import { IconButton } from '@mui/material';
 
 const Navbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
-    const isLoggedIn = true; // Change this to true for testing the logged-in state
+    const isLoggedIn = false;
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
