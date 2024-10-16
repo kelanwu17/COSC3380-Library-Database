@@ -21,7 +21,7 @@ const Navbar = () => {
             <a href="/Music">Music</a>
           </li>
           <li>
-            <a href="/contact">Get Connected</a>
+            <a href="/Technology">Get Connected</a>
           </li>
           <li>
             <a href="/contact">Contact</a>
