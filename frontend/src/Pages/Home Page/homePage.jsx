@@ -1,9 +1,11 @@
 import React from 'react'
+import Home from './Components/Home'
 
 function homePage() {
   return (
-    <div>
-      <p>Hello</p>
+    <div className='h-screen'>
+
+      <Home/>
     </div>
   )
 }
