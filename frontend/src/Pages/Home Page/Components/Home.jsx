@@ -9,12 +9,17 @@ import Menu from '@mui/material/Menu';
 import LandingPageImage from '../../../Assets/LandingPage.png';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NavBar from '../../../Components/NavBar';
+import { useState } from 'react';
+
 
 function Home() {
  
+    
     const [openMenu, setOpenMenu] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null); 
-
+    const [category, setCategory] = useState('')
+  
+    console.log(category)
     const handleMenuToggle = (event) => {
         setAnchorEl(event.currentTarget);
         setOpenMenu((prevOpen) => !prevOpen);
@@ -23,7 +28,9 @@ function Home() {
     const handleClose = () => {
         setOpenMenu(false);
         setAnchorEl(null);
+
     };
+
 
     return (
       <div className="home-container h-screen flex flex-col">
@@ -85,9 +92,9 @@ function Home() {
                           },
                       }}
                   >
-                      <MenuItem onClick={handleClose}>Books</MenuItem>
-                      <MenuItem onClick={handleClose}>Music</MenuItem>
-                      <MenuItem onClick={handleClose}>Technology</MenuItem>
+                      <MenuItem onClick={() => {handleClose(); setCategory('Book');}}>Books</MenuItem>
+                      <MenuItem onClick={() => {handleClose(); setCategory('Music');}}>Music</MenuItem>
+                      <MenuItem onClick={() => {handleClose(); setCategory('Technology');}}>Technology</MenuItem>
                   </Menu>
               </div>
           </div>
