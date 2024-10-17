@@ -36,6 +36,7 @@ function SignUpPage() {
                 required
               />
             </div>
+              
             <div className="input-group">
               <input
                 type="text"
@@ -56,6 +57,18 @@ function SignUpPage() {
               placeholder="Email"
               required
             />
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Username"
+                required
+              />
+            <input
+                type="password"
+                className="input-field"
+                placeholder="Password"
+                required
+              />
             <div className="preferences">
               <p>Preferences</p>
               <div className="checkbox-group">
