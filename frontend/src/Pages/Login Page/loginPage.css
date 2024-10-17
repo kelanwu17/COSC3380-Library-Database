@@ -1,0 +1,133 @@
+/* CSS for Log In Page */
+
+/* Container styles */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #bb9f82a5, #3a22099b);
+}
+
+/* Wrapper styles */
+.login-wrapper {
+    display: flex;
+    width: 1218px;
+    height: 730px;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    background-color: #c1b0a0;
+}
+
+/* Image section styles */
+.image-section {
+    position: relative;
+    flex: 1;
+}
+
+.library-image {
+    width: 580px;
+    height: 731px;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+/* Image caption styles */
+.image-caption {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    color: #D9D9D9;
+    font-family: 'Akaya Kanadaka', cursive;
+    font-size: 24px;
+}
+
+.signup-link {
+    color: #ffffff;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+/* Form section styles */
+.form-section {
+    flex: 1;
+    padding: 40px;
+    background-color: #c1b0a0;
+}
+
+/* Title styles */
+.login-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 45px;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+
+/* Anchor styles for Create an account link */
+.signup-anchor {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* Input field styles */
+.input-field {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+/* Login button styles */
+.login-button {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    color: #000000;
+    background-color: #D9D9D9;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #373b54;
+}
+
+/* Toggle button styles */
+.login-toggle {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 20px; 
+}
+
+.toggle-button {
+    flex: 1;
+    padding: 12px;
+    background-color: #D9D9D9;
+    color: #000000;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+    border-radius: 8px;
+
+}
+
+.toggle-button:not(:last-child) {
+    border-right: 1px solid #ffffff;
+    
+}
+
+.toggle-button.active {
+    background-color: #D9D9D9;
+    font-weight: bold;
+
+}
+
+/* Adjusted margin for the signup link */
