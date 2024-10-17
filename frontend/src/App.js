@@ -11,6 +11,7 @@ import SignUpPage from './Pages/SignUp Page/signUpPage';
 import TechCatalog from './Pages/Technology Catalog Page/techCatalog';
 import UserProfile from './Pages/User Profile Page/userProfile';
 
+
 function App() {
   return (
     <Router>

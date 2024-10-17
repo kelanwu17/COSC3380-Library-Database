@@ -1,0 +1,71 @@
+.navbar {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    background-color: #fff;
+    padding: 0.75rem; /* Padding can stay the same */
+    height: 55px; /* Set a fixed height for the navbar */
+}
+
+.navbar-left .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #051650;
+    text-decoration: none;
+    margin-left: 1rem;
+}
+
+.navbar-center {
+    flex-grow: 1; 
+    display: flex; 
+    justify-content: center;
+}
+
+.navbar-center .nav-links {
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-center .nav-links li {
+    margin: 0 2rem; 
+}
+
+.navbar-center .nav-links a {
+    color: #051650;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    height: 100%; /* Ensure it takes full height of the navbar */
+}
+
+.navbar-right .login-button {
+    background-color: #051650; 
+    color: #fff; 
+    padding: 0.2rem 3rem; 
+    border: 1px solid #000;
+    border-radius: 20px; 
+    text-align: center; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+    margin-right: 1rem; 
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-right .login-button:hover {
+    background-color: #e0e0e0; 
+}
+
+/* Styles for the logged-in button */
+.navbar-right .loggedin-button {
+    display: flex; /* Flexbox for icon alignment */
+    align-items: center; /* Center icon vertically */
+    justify-content: center; /* Center icon horizontally */
+    margin-right:4rem;
+    margin-left:2.5rem;
+}
