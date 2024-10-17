@@ -6,7 +6,7 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: linear-gradient(to right, #bb9f82a5, #3a22099b);
+    background: linear-gradient(to right, #816950b2, #87654163);
 }
 
 /* Wrapper styles */
@@ -17,7 +17,7 @@
     border-radius: 25px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    background-color: #c1b0a0;
+    background-color: #65503c4b;
 }
 
 /* Image section styles */
@@ -43,17 +43,36 @@
     font-size: 24px;
 }
 
-.signup-link {
-    color: #ffffff;
-    margin-bottom: 20px;
-    margin-top: 10px;
-}
-
 /* Form section styles */
 .form-section {
     flex: 1;
     padding: 40px;
-    background-color: #c1b0a0;
+    background-color: #65503c34;
+}
+
+/* Toggle button styles */
+.login-toggle {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 20px; /* Increased gap between toggle buttons */
+}
+
+.toggle-button {
+    flex: 1;
+    padding: 12px;
+    background-color: #D9D9D9;
+    color: #000000;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.toggle-button.active {
+    background-color: #d6cefac4;
+    font-weight: bold;
 }
 
 /* Title styles */
@@ -62,9 +81,19 @@
     font-weight: 500;
     font-size: 45px;
     color: #ffffff;
-    margin-bottom: 20px;
+    padding-top: 50px;
+    margin-bottom: 10px;
+    text-align: center;
 }
 
+/* Signup link styles */
+.signup-link {
+    color: #ffffff;
+    margin-bottom: 40px;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 18px;
+}
 
 /* Anchor styles for Create an account link */
 .signup-anchor {
@@ -93,41 +122,10 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s;
+    font-weight: bold; /* Make text bold */
+
 }
 
 .login-button:hover {
-    background-color: #373b54;
+    background-color: #d6cefac4;
 }
-
-/* Toggle button styles */
-.login-toggle {
-    display: flex;
-    margin-bottom: 20px;
-    gap: 20px; 
-}
-
-.toggle-button {
-    flex: 1;
-    padding: 12px;
-    background-color: #D9D9D9;
-    color: #000000;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    transition: background-color 0.3s;
-    border-radius: 8px;
-
-}
-
-.toggle-button:not(:last-child) {
-    border-right: 1px solid #ffffff;
-    
-}
-
-.toggle-button.active {
-    background-color: #D9D9D9;
-    font-weight: bold;
-
-}
-
-/* Adjusted margin for the signup link */

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './loginPage.css'; // Import the CSS file
 
+
 function LoginPage() {
   const [loginType, setLoginType] = useState('member'); // State to manage login type
 
@@ -49,9 +50,7 @@ function LoginPage() {
             <input
               type="text"
               className="input-field"
-              placeholder={
-                loginType === 'member' ? 'Username' : 'Admin Username'
-              }
+              placeholder="Username"
               required
             />
             <input
@@ -60,14 +59,6 @@ function LoginPage() {
               placeholder="Password"
               required
             />
-            {loginType === 'admin' && (
-              <input
-                type="text"
-                className="input-field"
-                placeholder="Admin Code"
-                required
-              />
-            )}
             <button type="submit" className="login-button">
               Log In
             </button>
