@@ -24,38 +24,59 @@ const EventsPage = () => {
 
   return (
     <Container 
-    maxWidth="lg" 
+    maxWidth="false" 
     sx={{
       minHeight: "100vh",
       background: "linear-gradient(to right, #816950b2, #87654163)",
       justifyContent: "center",
       alignItems: "center",
       display: "flex",
-      width: "100%",
-      flexGrow: "1",
-      overflow: "hidden"
+      margin: "0",
+      padding: "0",
+      width: "100vw",
+      overflowX: "hidden"
        }}>
       
       <Box 
       sx={{
-         backgroundColor: "#65503c4b",
-         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", 
-         my: 4}}> {/* 4 time 8px = 32 px */}
+        backgroundColor: "#65503c4b",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", 
+        borderRadius: "25px",
+        width: "1200px",
+        height: "800px",
+        }}> {/* 4 time 8px = 32 px */}
       
-        <Typography variant="h3" align="center" gutterBottom>
+        <Typography 
+        variant="h3" 
+        align="center" 
+        gutterBottom
+        color={"white"}
+        paddingTop = "10px">
           Browse & Sign Up for Events
         </Typography>
         
         {/* Search bar (optional) */}
         <TextField 
           label="Search Events" 
-          variant="outlined" 
-          fullWidth 
-          sx={{ mb: 4 }}
+          variant="filled" 
+          sx={{ mb: 4 ,
+            backgroundColor: "white",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            border: "none",
+            width: "100%",
+            margin: "0px 5px"
+          }}
         />
         
         {/* Scrollable list */}
-        <Box sx={{ height: '500px', overflowY: 'scroll' }}>
+        <Box 
+        sx={{ 
+          height: '500px', 
+          overflowY: 'scroll', 
+          margin: "10px",
+          marginRight: "0px"
+        }}>
           <Grid2 container spacing={4}>
             {eventsData.map((event) => (
               <Grid2 item xs={12} sm={6} md={4} key={event.id}>
