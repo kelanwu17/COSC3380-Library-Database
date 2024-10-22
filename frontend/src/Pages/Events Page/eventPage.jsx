@@ -27,25 +27,45 @@ const EventsPage = () => {
       maxWidth="false" 
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(to right, #816950b2, #87654163)",
+        display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        display: "flex",
         margin: "0",
         padding: "0",
         width: "100vw",
-        overflowX: "hidden"
-      }}>
-      
+        overflowX: "hidden",
+        position: "relative" // Position relative to apply background on a pseudo-element
+      }}
+    >
+      {/* Blurred background */}
       <Box 
         sx={{
-          backgroundColor: "#65503c4b",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: 'url("/loginpage.png")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "blur(8px)", // Apply blur
+          zIndex: -1, // Ensure the background stays behind the content
+        }} 
+      />
+
+      <Box 
+        sx={{
+          background: "rgba(101, 80, 60, 0.7)", // Semi-transparent to make content more visible
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", 
           borderRadius: "25px",
           width: "1200px",
           height: "800px",
-        }}>
-      
+          zIndex: 1, // Bring the content on top of the blurred background
+          display: "flex",
+          flexDirection: "column",
+          padding: "20px",
+        }}
+      >
         <Typography 
           variant="h3" 
           align="center" 
@@ -63,9 +83,8 @@ const EventsPage = () => {
             backgroundColor: "white",
             borderRadius: "5px",
             fontWeight: "bold",
-            border: "none",
             width: "100%",
-            margin: "0px 5px"
+            margin: "0px 5px 10px 0px"
           }}
         />
         
@@ -87,11 +106,11 @@ const EventsPage = () => {
                     width: "550px",
                     height: "200px",
                     borderRadius: 2,
-                    display: 'flex', // Make the Paper a flex container
-                    flexDirection: 'column', // Stack items vertically
-                    justifyContent: 'space-between' // Space between items
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
                   }}>
-                  <Box sx={{ flexGrow: 1 }}> {/* Allow the content to grow */}
+                  <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h5" gutterBottom>
                       {event.title}
                     </Typography>
