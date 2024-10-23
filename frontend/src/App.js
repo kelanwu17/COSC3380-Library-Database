@@ -11,8 +11,8 @@ import SignUpPage from './Pages/SignUp Page/signUpPage';
 import TechCatalog from './Pages/Technology Catalog Page/techCatalog';
 import UserProfile from './Pages/User Profile Page/userProfile';
 import BookDetails from './Pages/Book Detail Page/BookDetails'
-
-
+import MusicDetails from './Pages/Music Detail Page/MusicDetail';
+import TechDetail from './Pages/Tech Detail Page/TechDetail';
 function App() {
   return (
     <Router>
@@ -29,6 +29,10 @@ function App() {
         <Route path='/Technology' element={<TechCatalog/>}/>
         <Route path='/Profile' element={<UserProfile/>}/>
         <Route path='/Books/:id' element={<BookDetails/>}/>
+        <Route path='/Music/:id' element={<MusicDetails/>}/>
+        <Route path='/Tech/:id' element={<TechDetail/>}/>
+        
+        
       </Routes>
     </Router>
   );
