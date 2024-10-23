@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Grid2, 
   Box, 
   Paper, 
@@ -7,19 +7,38 @@ import { Grid2,
   Container, 
   TextField 
 } from '@mui/material';
+import axios from "axios"
+import { useState } from 'react';
 
 // Sample events created
-const eventsData = [
+/*const eventsData = [
   { id: 1, title: 'Event 1', description: 'Details of Event 1' },
   { id: 2, title: 'Event 2', description: 'Details of Event 2' },
   { id: 3, title: 'Event 3', description: 'Details of Event 3' },
   // Add more events here
 ];
+*/
 
 const EventsPage = () => {
+  const [eventsData, setEventsData] = useState([]);
+
+  //Fetching Events
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get('https://library-database-backend.onrender.com/api/event'); //API endpoint
+        setEventsData(response.data); 
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents(); // Call the fetch function
+  }, []);
+
   // Handler for Sign Up button
   const handleSignUp = (eventId) => {
-    alert(`Signed up for event with id: ${eventId}`);
+    alert(`Signed up for event with id: ${eventId}`); 
   };
 
   return (
