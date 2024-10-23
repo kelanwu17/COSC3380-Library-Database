@@ -7,26 +7,18 @@ import { Grid2,
   Container, 
   TextField 
 } from '@mui/material';
-import axios from "axios"
+import axios from "axios";
 import { useState } from 'react';
-
-// Sample events created
-/*const eventsData = [
-  { id: 1, title: 'Event 1', description: 'Details of Event 1' },
-  { id: 2, title: 'Event 2', description: 'Details of Event 2' },
-  { id: 3, title: 'Event 3', description: 'Details of Event 3' },
-  // Add more events here
-];
-*/
 
 const EventsPage = () => {
   const [eventsData, setEventsData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   //Fetching Events
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('https://library-database-backend.onrender.com/api/event'); //API endpoint
+        const response = await axios.get('https://library-database-backend.onrender.com/api/event'); // API endpoint
         setEventsData(response.data); 
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -40,6 +32,11 @@ const EventsPage = () => {
   const handleSignUp = (eventId) => {
     alert(`Signed up for event with id: ${eventId}`); 
   };
+
+  const filteredEvents = eventsData.filter(event =>
+    event.title.toLowerCase().includes(searchQuery.toLowerCase()) || // Filter by title
+    event.location.toLowerCase().includes(searchQuery.toLowerCase()) // You can add more fields to search if needed
+  );
 
   return (
     <Container 
@@ -96,16 +93,20 @@ const EventsPage = () => {
         
         {/* Search bar */}
         <TextField 
-          label="Search Events" 
-          variant="filled" 
-          sx={{ mb: 4,
-            backgroundColor: "white",
-            borderRadius: "5px",
-            fontWeight: "bold",
-            width: "100%",
-            margin: "0px 5px 10px 0px"
-          }}
-        />
+  label="Search Events" 
+  variant="filled"
+  value={searchQuery} // Controlled input value
+  onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
+  sx={{ 
+    mb: 4,
+    backgroundColor: "white",
+    borderRadius: "5px",
+    fontWeight: "bold",
+    width: "100%",
+    margin: "0px 5px 10px 0px"
+  }}
+/>
+
         
         {/* Scrollable list */}
         <Box 
@@ -116,25 +117,42 @@ const EventsPage = () => {
             marginRight: "0px"
           }}>
           <Grid2 container spacing={4}>
-            {eventsData.map((event) => (
+            {filteredEvents.length > 0 ? (
+            filteredEvents.map((event) => (
               <Grid2 item xs={12} sm={6} md={4} key={event.id}>
                 <Paper 
                   elevation={3} 
                   sx={{
                     p: 2,
                     width: "550px",
-                    height: "200px",
+                    height: "auto",
                     borderRadius: 2,
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between'
                   }}>
                   <Box sx={{ flexGrow: 1 }}>
+                    {/* Displaying event details */}
                     <Typography variant="h5" gutterBottom>
                       {event.title}
                     </Typography>
-                    <Typography variant="body1" sx={{ mb: 5 }}>
-                      {event.description}
+                    <Typography variant="body1">
+                      Location: {event.location}
+                    </Typography>
+                    <Typography variant="body1">
+                      Age Group: {event.ageGroup}
+                    </Typography>
+                    <Typography variant="body1">
+                      Category: {event.category}
+                    </Typography>
+                    <Typography variant="body1">
+                      Event Creator ID: {event.eventCreator}
+                    </Typography>
+                    <Typography variant="body1">
+                      Event Holder ID: {event.eventHolder}
+                    </Typography>
+                    <Typography variant="body1">
+                      Time and Date: {new Date(event.timeDate).toLocaleString()}
                     </Typography>
                   </Box>
                   <Button 
@@ -146,7 +164,12 @@ const EventsPage = () => {
                   </Button>
                 </Paper>
               </Grid2>
-            ))}
+            )))
+          : (
+            <Typography variant="h6" color="white">
+      No events found.
+    </Typography>
+          )}
           </Grid2>
         </Box>
       </Box>
@@ -155,3 +178,4 @@ const EventsPage = () => {
 };
 
 export default EventsPage;
+
