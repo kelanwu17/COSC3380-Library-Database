@@ -14,7 +14,7 @@ function SignUpPage() {
   const [phone, setPhone] = useState('');
   const [preference, setPreference] = useState([]); // Array to store selected preferences
   const [isUserLoggedin, setIsUserLoggedIn] = useState(false);
-
+  
   const userId = sessionStorage.getItem('username');
   const navigate = useNavigate();
 
@@ -23,6 +23,7 @@ function SignUpPage() {
       setIsUserLoggedIn(true);
       navigate('/'); // Redirect if the user is already logged in
     }
+    console.log(DOB)
   }, [userId, navigate]); // Added navigate to dependency array
 
   const handleCheckboxChange = (event) => {
@@ -55,6 +56,18 @@ function SignUpPage() {
       console.log(error.response?.data || error.message);
     }
   }
+
+  const handlePhoneChange = (e) => {
+    // Remove non-digit characters
+    let value = e.target.value.replace(/[^0-9]/g, '');
+
+    // Limit to 9 characters
+    if (value.length > 9) {
+        value = value.slice(0, 9);
+    }
+
+    setPhone(value); // Set the sanitized value
+};
 
   return (
     <div className="signup-container">
@@ -96,10 +109,11 @@ function SignUpPage() {
                 className="input-field"
                 placeholder="Phone Number"
                 required
-                onChange={(e) => setPhone(e.target.value)}
+                value={phone}
+                onChange={handlePhoneChange}
               />
               <input
-                type="text"
+                type="date"
                 className="input-field"
                 placeholder="DOB MM/DD/YYYY"
                 required
