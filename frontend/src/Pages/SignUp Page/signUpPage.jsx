@@ -40,7 +40,7 @@ function SignUpPage() {
     email,
     phone,
     DOB,
-    preference: preference.join(', '),
+    preferences: preference.join(', '),
   };
   console.log("Data being sent to the server:", dataToSend);
 
@@ -49,6 +49,7 @@ function SignUpPage() {
     try {
       const response = await axios.post('https://library-database-backend.onrender.com/api/member/createMember', dataToSend);
       console.log(response);
+      navigate('/login')
       // Redirect or show success message here
     } catch (error) {
       console.log(error.response?.data || error.message);

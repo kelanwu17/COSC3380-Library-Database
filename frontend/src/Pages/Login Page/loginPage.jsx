@@ -51,7 +51,7 @@ function LoginPage() {
       sessionStorage.setItem('firstName', user.firstName);
       sessionStorage.setItem('lastName', user.lastName);
       sessionStorage.setItem('phone', user.phone);
-      sessionStorage.setItem('preferences', user.preference);
+      sessionStorage.setItem('preferences', user.preferences);
       if (loginType === 'admin') {
         sessionStorage.setItem('roles', user.roles);
       }
@@ -103,7 +103,7 @@ function LoginPage() {
               </a>
             </p>
           )}
-          <form onSubmit={handleLogin}>
+          <form >
             <input
               type="text"
               className="input-field"
@@ -120,7 +120,7 @@ function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <button type="submit" className="login-button">
+            <button type="submit" className="login-button" onClick={handleLogin}>
               Log In
             </button>
           </form>
