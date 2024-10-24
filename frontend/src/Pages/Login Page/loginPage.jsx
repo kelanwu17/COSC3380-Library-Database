@@ -49,6 +49,7 @@ function LoginPage() {
       sessionStorage.setItem('username', user.username);
       sessionStorage.setItem('email', user.email);
       sessionStorage.setItem('firstName', user.firstName);
+      sessionStorage.setItem('memberId', user.memberId);
       sessionStorage.setItem('lastName', user.lastName);
       sessionStorage.setItem('phone', user.phone);
       sessionStorage.setItem('preferences', user.preferences);

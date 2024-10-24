@@ -25,8 +25,62 @@ function BookDetails() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [allInstance, setAllInstance] = useState([])
+  const[itemInstance, setItemInstance] = useState('')
+  const[checkedOut, setCheckedOut] = useState(false)
+  const [reserve, setReserved] = useState(false)
+  const [cHistoryId, setcHistoryId] = useState('')
 
+  const userId = sessionStorage.getItem('memberId');
   useEffect(() => {
+
+    if (userId) {
+        setIsLoggedIn(true)
+    } 
+    else {
+        setIsLoggedIn(false)
+        setError('Not logged in')
+    }
+}, []);
+  const dataToSend = {
+    memberId: userId,
+    bookId: id,
+    instanceId: itemInstance
+
+  }
+  
+  //Logic for checkout
+  async function checkout(e) {
+    e.preventDefault();
+    try {
+
+      const response = await axios.post('https://library-database-backend.onrender.com/api/checkoutbook/insertCheckOutBook', dataToSend);
+      
+      if(response)
+      {
+setCheckedOut(true);
+      }
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
+  async function returnBook(e) {
+    e.preventDefault();
+    try {
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/checkoutbook/updateCheckOutBook/${cHistoryId}`);
+      console.log('works')
+      setCheckedOut(false);
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
+  useEffect(() => {
+   console.log(dataToSend)
     const fetchBookDetails = async () => {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/books/${id}`);
@@ -53,6 +107,11 @@ function BookDetails() {
           setImgUrl(imgUrl);
 
           fetchSimilarBooks(genre);
+
+          if(count <= 0)
+          {
+            setReserved(true)
+          }
         } else {
           throw new Error('Book not found');
         }
@@ -74,9 +133,61 @@ function BookDetails() {
         
       }
     };
+    const fetchInstance = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/bookInstance/${id}`);
+        const instances = response.data; 
+       
 
+        //Logic to pick first instance where checked out status is not 0
+        const availableInstance = instances.find(instance => instance.checkedOutStatus == 0);
+        console.log(availableInstance)
+    if (availableInstance) {
+      setItemInstance(availableInstance.instanceId); 
+     
+    }
+      }
+      catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
+const fetchMemberHistory = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/checkoutbook/${userId}`);
+        const memberHistory = response.data; 
+        console.log(response.data)
+        const instanceFound = memberHistory.find(instance => instance.bookId == id);
+       console.log(instanceFound)
+        if(instanceFound == undefined)
+        {
+          setCheckedOut(false);
+          
+        }
+        else
+        {
+          
+          if (instanceFound.timeStampReturn === null) {
+            // Book is still checked out
+            console.log("Book is currently checked out.");
+            const checkoutHistoryID = instanceFound.checkedOutBookHistoryId;
+            console.log(checkoutHistoryID);
+            setcHistoryId(checkoutHistoryID);
+            setCheckedOut(true);
+          } 
+        }
+    
+      }
+      catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
+    fetchInstance();
     fetchBookDetails(); 
-  }, [id]);
+    fetchMemberHistory();
+    
+  }, [id,checkedOut]);
 
   const handleToggleDetails = () => setShowMoreDetails(!showMoreDetails);
   const handleBackClick = () => navigate('/books');
@@ -90,9 +201,7 @@ function BookDetails() {
       <div className="h-8">
         <button className="ml-4 mt-4 h-6 border bg-amber-900 w-32 rounded-lg text-white text-bold border-black" onClick={handleBackClick}>Back</button>
       </div>
-      {loading ? ( 
-        <p>Loading...</p>
-      ) : (
+      
         <div className="flex flex-row ml-6 mt-6">
           <p className="w-2/12 h-80">
             <img src={imgUrl} className="w-full h-full object-cover" alt="Book cover" />
@@ -128,11 +237,12 @@ function BookDetails() {
             )}
           </div>
           <div className="ml-auto mr-12 flex flex-col">
-            <button className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black">Reserve</button>
-            <button className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Checkout</button>
+            {reserve && <button className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black">Reserve</button>}
+            {!checkedOut ? (<button onClick={checkout}className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Checkout</button>) :
+            (<button onClick={returnBook}className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Return</button>)} 
           </div>
         </div>
-      )}
+      
       
       <hr className="ml-6 mt-2 bg-black border-0" />
       <p className="ml-4">Similar Books:</p>
