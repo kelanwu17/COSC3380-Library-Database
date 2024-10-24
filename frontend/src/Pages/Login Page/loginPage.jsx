@@ -59,7 +59,10 @@ function LoginPage() {
       sessionStorage.setItem('loggedin', true);
       setIsUserLoggedIn(true);
     } catch (error) {
-      if (error.response && error.response.data) {
+      if (error.response.status === 401) {
+        setErrorMessage('Invalid username or password. Please try again.');
+      }
+      else if (error.response && error.response.data) {
         setErrorMessage(error.response.data.message);
       } else {
         setErrorMessage('An unexpected error occurred.');
@@ -67,6 +70,9 @@ function LoginPage() {
     }
   };
 
+  useEffect(() => {
+    setErrorMessage('')
+  }, [username, password]);
   return (
     <div className="login-container">
       <div className="login-wrapper">
@@ -124,6 +130,7 @@ function LoginPage() {
             <button type="submit" className="login-button" onClick={handleLogin}>
               Log In
             </button>
+            
           </form>
           {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
