@@ -40,7 +40,7 @@ function SignUpPage() {
     email,
     phone,
     DOB,
-    preference,
+    preference: preference.join(', '),
   };
   console.log("Data being sent to the server:", dataToSend);
 

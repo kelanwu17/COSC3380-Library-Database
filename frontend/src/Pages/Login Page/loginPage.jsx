@@ -1,70 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './loginPage.css'; // Import the CSS file
 import axios from 'axios';
-import {useNavigate, Link, Navigate} from "react-router-dom"
-import { useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+
 function LoginPage() {
-  // State variables for username, password, and error message
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); 
-  const [loginType, setLoginType] = useState('member'); // State to manage login type
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loginType, setLoginType] = useState('member');
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const navigate = useNavigate();
-  const [isUserLoggedin, setIsUserLoggedIn] = useState(false)
-  const userId = sessionStorage.getItem('username'); 
-  if(isUserLoggedin)
-  {
-    navigate('/')
-  }
+  const userId = sessionStorage.getItem('loggedin');
+
+  // If user is already logged in, navigate to home
   useEffect(() => {
-
     if (userId) {
-      setIsUserLoggedIn(true)
-    } 
-}, []);
-  // Function to handle member login
-  const memberLogin = async (event) => {
-    event.preventDefault(); // Prevent default form submission
-    setErrorMessage(""); // Clear previous error
-    
+      setIsUserLoggedIn(true);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      navigate('/');
+    }
+  }, [isUserLoggedIn, navigate]);
+
+  // Function to handle login
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    setErrorMessage('');
+
     // Validate inputs
-    if (!username && !password) {
-      setErrorMessage("Username and Password are required.");
-      return;
-    }
-    if (!username) {
-      setErrorMessage("Username is required.");
-      return;
-    }
-    if (!password) {
-      setErrorMessage("Password is required.");
+    if (!username || !password) {
+      setErrorMessage('Username and Password are required.');
       return;
     }
 
-    // Make API call for login
+    const loginUrl = loginType === 'member' 
+      ? 'https://library-database-backend.onrender.com/auth/login/member' 
+      : 'https://library-database-backend.onrender.com/auth/login/admin';
+
     try {
-      const response = await axios.post('https://library-database-backend.onrender.com/auth/login/member', {
-        username, 
-        password,
-      });
+      const response = await axios.post(loginUrl, { username, password });
       const userData = response.data;
-      console.log(response.data); 
       const user = userData[0];
-      sessionStorage.setItem('username', user.username); 
+
+      // Store session data
+      sessionStorage.setItem('username', user.username);
       sessionStorage.setItem('email', user.email);
-      sessionStorage.setItem('firstName', user.firstName); 
-    sessionStorage.setItem('lastName', user.lastName);
-    sessionStorage.setItem('phone', user.phone); 
-    sessionStorage.setItem('preferences', user.preference); 
-    navigate('/'); 
-    
-      
+      sessionStorage.setItem('firstName', user.firstName);
+      sessionStorage.setItem('lastName', user.lastName);
+      sessionStorage.setItem('phone', user.phone);
+      sessionStorage.setItem('preferences', user.preference);
+      if (loginType === 'admin') {
+        sessionStorage.setItem('roles', user.roles);
+      }
+      sessionStorage.setItem('loggedin', true);
+      setIsUserLoggedIn(true);
     } catch (error) {
-     
       if (error.response && error.response.data) {
-        setErrorMessage(error.response.data.message); 
+        setErrorMessage(error.response.data.message);
       } else {
-        setErrorMessage("An unexpected error occurred."); 
+        setErrorMessage('An unexpected error occurred.');
       }
     }
   };
@@ -106,28 +103,28 @@ function LoginPage() {
               </a>
             </p>
           )}
-          <form onSubmit={memberLogin}> {/* Bind the form submission to the memberLogin function */}
+          <form onSubmit={handleLogin}>
             <input
               type="text"
               className="input-field"
               placeholder="Username"
-              value={username} // Controlled component
-              onChange={(e) => setUsername(e.target.value)} // Update username state
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
             <input
               type="password"
               className="input-field"
               placeholder="Password"
-              value={password} // Controlled component
-              onChange={(e) => setPassword(e.target.value)} // Update password state
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
             <button type="submit" className="login-button">
               Log In
             </button>
           </form>
-          {errorMessage && <p className="error-message">{errorMessage}</p>} {/* Display error message if present */}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
       </div>
     </div>
