@@ -236,11 +236,13 @@ const fetchMemberHistory = async () => {
               </button>
             )}
           </div>
+          {userId &&
           <div className="ml-auto mr-12 flex flex-col">
             {reserve && <button className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black">Reserve</button>}
+           
             {!checkedOut ? (<button onClick={checkout}className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Checkout</button>) :
             (<button onClick={returnBook}className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Return</button>)} 
-          </div>
+           </div>}
         </div>
       
       
