@@ -4,10 +4,21 @@ import PersonIcon from '@mui/icons-material/Person';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu'; 
 import { IconButton } from '@mui/material';
+import { useEffect } from 'react';
 
 const Navbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
-    const isLoggedIn = false;
+    const userId = sessionStorage.getItem('username'); 
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    useEffect(() => {
+
+        if (userId) {
+            setIsLoggedIn(true)
+        } else {
+            setIsLoggedIn(false)
+        }
+    }, []);
+    
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -22,6 +33,8 @@ const Navbar = () => {
     function handleLogout()
     {
         console.log('User has logged out');
+        sessionStorage.clear(); 
+        window.location.href = '/login'; 
     };
 
     return (
@@ -34,7 +47,7 @@ const Navbar = () => {
             <div className="navbar-center">
                 <ul className="nav-links flex-row font-bold">
                     <li>
-                        <a href="/">Home</a>
+                        <a href="/Events">Events</a>
                     </li>
                     <li>
                         <a href="/Books">Browse & Borrow</a>
@@ -70,7 +83,7 @@ const Navbar = () => {
                             }}
                         >
                             <MenuItem onClick={handleClose}><a href='/Profile'>User Profile </a></MenuItem>
-                            <MenuItem onClick={()=> {handleClose(); handleLogout();}}>Logout</MenuItem>
+                            <MenuItem onClick={()=> {handleClose(); handleLogout(); }}>Logout</MenuItem>
                         </Menu>
                     </div>
                 ) : (

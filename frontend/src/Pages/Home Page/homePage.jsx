@@ -6,6 +6,7 @@ function homePage() {
     <div className='h-screen'>
 
       <Home/>
+     
     </div>
   )
 }
