@@ -1,7 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // Combined imports for better readability
 import './signUpPage.css'; // Import the CSS file
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function SignUpPage() {
+  // State variables for user inputs
+  const [username, setUser] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirst] = useState('');
+  const [lastName, setLast] = useState('');
+  const [email, setEmail] = useState('');
+  const [DOB, setDob] = useState('');
+  const [phone, setPhone] = useState('');
+  const [preference, setPreference] = useState([]); // Array to store selected preferences
+  const [isUserLoggedin, setIsUserLoggedIn] = useState(false);
+
+  const userId = sessionStorage.getItem('username');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userId) {
+      setIsUserLoggedIn(true);
+      navigate('/'); // Redirect if the user is already logged in
+    }
+  }, [userId, navigate]); // Added navigate to dependency array
+
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+    setPreference((prev) => 
+      checked ? [...prev, value] : prev.filter((pref) => pref !== value)
+    );
+  };
+
+  const dataToSend = {
+    username,
+    password,
+    firstName,
+    lastName,
+    email,
+    phone,
+    DOB,
+    preference,
+  };
+  console.log("Data being sent to the server:", dataToSend);
+
+  async function submit(e) {
+    e.preventDefault();
+    try {
+      const response = await axios.post('https://library-database-backend.onrender.com/api/member/createMember', dataToSend);
+      console.log(response);
+      // Redirect or show success message here
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+    }
+  }
+
   return (
     <div className="signup-container">
       <div className="signup-wrapper">
@@ -17,38 +70,39 @@ function SignUpPage() {
           <h2 className="signup-title">Create An Account</h2>
           <p className="login-link">
             Already have an account?{' '}
-            <a href="/login" className="login-anchor">
-              Log in
-            </a>
+            <a href="/login" className="login-anchor">Log in</a>
           </p>
-          <form>
+          <form onSubmit={submit}>
             <div className="input-group">
               <input
                 type="text"
                 className="input-field"
                 placeholder="First Name"
                 required
+                onChange={(e) => setFirst(e.target.value)}
               />
               <input
                 type="text"
                 className="input-field"
                 placeholder="Last Name"
                 required
+                onChange={(e) => setLast(e.target.value)}
               />
             </div>
-              
             <div className="input-group">
               <input
                 type="text"
                 className="input-field"
                 placeholder="Phone Number"
                 required
+                onChange={(e) => setPhone(e.target.value)}
               />
               <input
                 type="text"
                 className="input-field"
                 placeholder="DOB MM/DD/YYYY"
                 required
+                onChange={(e) => setDob(e.target.value)}
               />
             </div>
             <input
@@ -56,57 +110,44 @@ function SignUpPage() {
               className="input-field"
               placeholder="Email"
               required
+              onChange={(e) => setEmail(e.target.value)}
             />
-              <input
-                type="text"
-                className="input-field"
-                placeholder="Username"
-                required
-              />
             <input
-                type="password"
-                className="input-field"
-                placeholder="Password"
-                required
-              />
+              type="text"
+              className="input-field"
+              placeholder="Username"
+              required
+              onChange={(e) => setUser(e.target.value)}
+            />
+            <input
+              type="password"
+              className="input-field"
+              placeholder="Password"
+              required
+              onChange={(e) => setPassword(e.target.value)}
+            />
             <div className="preferences">
               <p>Preferences</p>
               <div className="checkbox-group">
-                <label>
-                  <input type="checkbox" /> Fiction
-                </label>
-                <label>
-                  <input type="checkbox" /> Romance
-                </label>
-                <label>
-                  <input type="checkbox" /> Mystery
-                </label>
-                <label>
-                  <input type="checkbox" /> Action
-                </label>
-                <label>
-                  <input type="checkbox" /> Horror
-                </label>
-                <label>
-                  <input type="checkbox" /> Science
-                </label>
-                <label>
-                  <input type="checkbox" /> Adventure
-                </label>
-                <label>
-                  <input type="checkbox" /> History
-                </label>
+                {['Fiction', 'Romance', 'Mystery', 'Action', 'Horror', 'Science', 'Adventure', 'History'].map((pref) => (
+                  <label key={pref}>
+                    <input 
+                      type="checkbox" 
+                      value={pref} 
+                      onChange={handleCheckboxChange} 
+                    />
+                    {pref}
+                  </label>
+                ))}
               </div>
             </div>
             <div className="terms">
               <label>
                 <input type="checkbox" required /> I agree to{' '}
-                <a href="/terms" className="terms-anchor">
-                  Terms & Conditions
-                </a>
+                <a href="/terms" className="terms-anchor">Terms & Conditions</a>
               </label>
             </div>
-            <button type="submit" className="signup-button">
+            <button type="submit" className="signup-button" onClick={submit}>
               Sign Up
             </button>
           </form>
