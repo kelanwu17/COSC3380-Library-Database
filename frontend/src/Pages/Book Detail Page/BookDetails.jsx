@@ -31,6 +31,9 @@ function BookDetails() {
   const[checkedOut, setCheckedOut] = useState(false)
   const [reserve, setReserved] = useState(false)
   const [cHistoryId, setcHistoryId] = useState('')
+  const [userReserved, setUserReserved] = useState(false)
+
+
 
   const userId = sessionStorage.getItem('memberId');
   useEffect(() => {
@@ -49,7 +52,27 @@ function BookDetails() {
     instanceId: itemInstance
 
   }
-  
+  const reserveData = {
+    bookId: id,
+    itemType:"book",
+    memberId: userId,
+    instanceId: itemInstance
+
+  }
+  async function reserveBook(e) {
+    e.preventDefault();
+    try {
+      setReserved(false)
+      const response = await axios.post('https://library-database-backend.onrender.com/api/reserve/createReserve', reserveData);
+      console.log(reserve)
+      alert("You have reserved this item.");
+      
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
   //Logic for checkout
   async function checkout(e) {
     e.preventDefault();
@@ -70,8 +93,10 @@ setCheckedOut(true);
   async function returnBook(e) {
     e.preventDefault();
     try {
+      
       const response = await axios.put(`https://library-database-backend.onrender.com/api/checkoutbook/updateCheckOutBook/${cHistoryId}`);
-      console.log('works')
+      console.log(cHistoryId)
+      
       setCheckedOut(false);
       
       // Redirect or show success message here
@@ -80,7 +105,7 @@ setCheckedOut(true);
     }
   }
   useEffect(() => {
-   console.log(dataToSend)
+   //console.log(dataToSend)
     const fetchBookDetails = async () => {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/books/${id}`);
@@ -141,7 +166,7 @@ setCheckedOut(true);
 
         //Logic to pick first instance where checked out status is not 0
         const availableInstance = instances.find(instance => instance.checkedOutStatus == 0);
-        console.log(availableInstance)
+       // console.log(availableInstance)
     if (availableInstance) {
       setItemInstance(availableInstance.instanceId); 
      
@@ -157,7 +182,7 @@ const fetchMemberHistory = async () => {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/checkoutbook/${userId}`);
         const memberHistory = response.data; 
         console.log(response.data)
-        const instanceFound = memberHistory.find(instance => instance.bookId == id);
+        const instanceFound = memberHistory.find(instance => instance.bookId == id && instance.timeStampReturn == null);
        console.log(instanceFound)
         if(instanceFound == undefined)
         {
@@ -169,6 +194,7 @@ const fetchMemberHistory = async () => {
           
           if (instanceFound.timeStampReturn === null) {
             // Book is still checked out
+            
             console.log("Book is currently checked out.");
             const checkoutHistoryID = instanceFound.checkedOutBookHistoryId;
             console.log(checkoutHistoryID);
@@ -236,13 +262,34 @@ const fetchMemberHistory = async () => {
               </button>
             )}
           </div>
-          {userId &&
-          <div className="ml-auto mr-12 flex flex-col">
-            {reserve && <button className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black">Reserve</button>}
-           
-            {!checkedOut ? (<button onClick={checkout}className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Checkout</button>) :
-            (<button onClick={returnBook}className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Return</button>)} 
-           </div>}
+          {userId && (
+  <div className="ml-auto mr-12 flex flex-col">
+    {reserve ? (
+      <button 
+        onClick={reserveBook} 
+        className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+      >
+        Reserve
+      </button>
+    ) : (
+      !checkedOut ? (
+        <button 
+          onClick={checkout} 
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Checkout
+        </button>
+      ) : (
+        <button 
+          onClick={returnBook} 
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Return
+        </button>
+      )
+    )}
+  </div>
+)}
         </div>
       
       
