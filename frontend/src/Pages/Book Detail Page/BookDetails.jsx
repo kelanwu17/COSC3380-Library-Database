@@ -53,10 +53,9 @@ function BookDetails() {
 
   }
   const reserveData = {
-    bookId: id,
+    itemId: id,
     itemType:"book",
     memberId: userId,
-    instanceId: itemInstance
 
   }
   async function reserveBook(e) {
