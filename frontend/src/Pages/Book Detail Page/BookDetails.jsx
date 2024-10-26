@@ -26,12 +26,11 @@ function BookDetails() {
   const [loading, setLoading] = useState(true);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [allInstance, setAllInstance] = useState([])
   const[itemInstance, setItemInstance] = useState('')
   const[checkedOut, setCheckedOut] = useState(false)
-  const [reserve, setReserved] = useState(false)
+  const [waitList, setWaitList] = useState(false)
   const [cHistoryId, setcHistoryId] = useState('')
-  const [userReserved, setUserReserved] = useState(false)
+ 
 
 
 
@@ -52,18 +51,18 @@ function BookDetails() {
     instanceId: itemInstance
 
   }
-  const reserveData = {
+  const waitListData = {
     itemId: id,
     itemType:"book",
     memberId: userId,
 
   }
-  async function reserveBook(e) {
+  async function waitListBook(e) {
     e.preventDefault();
     try {
-      setReserved(false)
-      const response = await axios.post('https://library-database-backend.onrender.com/api/reserve/createReserve', reserveData);
-      console.log(reserve)
+      setWaitList(false)
+      const response = await axios.post('https://library-database-backend.onrender.com/api/reserve/createReserve', waitListData);
+      
       alert("You have reserved this item.");
       
       
@@ -82,6 +81,7 @@ function BookDetails() {
       if(response)
       {
 setCheckedOut(true);
+alert("You have checked out this item.");
       }
       
       // Redirect or show success message here
@@ -94,8 +94,8 @@ setCheckedOut(true);
     try {
       
       const response = await axios.put(`https://library-database-backend.onrender.com/api/checkoutbook/updateCheckOutBook/${cHistoryId}`);
-      console.log(cHistoryId)
       
+      alert("You have returned this item.");
       setCheckedOut(false);
       
       // Redirect or show success message here
@@ -134,7 +134,7 @@ setCheckedOut(true);
 
           if(count <= 0)
           {
-            setReserved(true)
+            setWaitList(true)
           }
         } else {
           throw new Error('Book not found');
@@ -162,7 +162,7 @@ setCheckedOut(true);
         const response = await axios.get(`https://library-database-backend.onrender.com/api/bookInstance/${id}`);
         const instances = response.data; 
        
-
+        
         //Logic to pick first instance where checked out status is not 0
         const availableInstance = instances.find(instance => instance.checkedOutStatus == 0);
        // console.log(availableInstance)
@@ -180,9 +180,9 @@ const fetchMemberHistory = async () => {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/checkoutbook/${userId}`);
         const memberHistory = response.data; 
-        console.log(response.data)
+       
         const instanceFound = memberHistory.find(instance => instance.bookId == id && instance.timeStampReturn == null);
-       console.log(instanceFound)
+       
         if(instanceFound == undefined)
         {
           setCheckedOut(false);
@@ -196,7 +196,7 @@ const fetchMemberHistory = async () => {
             
             console.log("Book is currently checked out.");
             const checkoutHistoryID = instanceFound.checkedOutBookHistoryId;
-            console.log(checkoutHistoryID);
+            
             setcHistoryId(checkoutHistoryID);
             setCheckedOut(true);
           } 
@@ -263,12 +263,12 @@ const fetchMemberHistory = async () => {
           </div>
           {userId && (
   <div className="ml-auto mr-12 flex flex-col">
-    {reserve ? (
+    {waitList ? (
       <button 
-        onClick={reserveBook} 
+        onClick={waitListBook} 
         className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
       >
-        Reserve
+        Waitlist
       </button>
     ) : (
       !checkedOut ? (

@@ -29,8 +29,7 @@ function LoginPage() {
   const handleLogin = async (event) => {
     event.preventDefault();
     setErrorMessage('');
-    console.log('runs')
-
+    
     // Validate inputs
     if (!username || !password) {
       setErrorMessage('Username and Password are required.');
