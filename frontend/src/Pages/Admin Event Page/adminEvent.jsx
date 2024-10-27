@@ -3,73 +3,81 @@ import { Grid2, Box, Paper, Typography, Button, Container, TextField, Dialog, Di
 import axios from 'axios';
 
 function AdminEvent() {
-  const [eventsData, setEventsData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [eventsData, setEventsData] = useState([]); // Holding all events 
+  const [searchQuery, setSearchQuery] = useState(''); // Stores search input
   const [editModalOpen, setEditModalOpen] = useState(false);  // Track edit modal state
-  const [selectedEvent, setSelectedEvent] = useState(null);  // Store the selected event for editing
+  const [selectedEvent, setSelectedEvent] = useState(null);  // Store selected event for editing
   const [editFormData, setEditFormData] = useState({
     title: '',
     location: '',
     ageGroup: '',
     category: '',
     timeDate: ''
-  });
+  }); // Form data for editing
 
-  // Fetching Events
+  const [createModalOpen, setCreateModalOpen] = useState(false);  // Track create modal state
+  const [newEventData, setNewEventData] = useState({
+    title: '',
+    location: '',
+    ageGroup: '',
+    category: '',
+    eventCreator: '',  // Adjust based on actual data
+    eventHolder: '',   // Adjust based on actual data
+    timeDate: ''
+  }); // Form data for new event
+
+  // Fetch Events
+  const fetchEvents = async () => {
+    try {
+      const response = await axios.get('https://library-database-backend.onrender.com/api/event'); // API endpoint
+      setEventsData(response.data); 
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await axios.get('https://library-database-backend.onrender.com/api/event'); // API endpoint
-        setEventsData(response.data); 
-      } catch (error) {
-        console.error('Error fetching events:', error);
-      }
-    };
-
-    fetchEvents(); // Call the fetch function
+    fetchEvents(); // Call the fetch function on component load
   }, []);
- // Handle Edit Button Click
- const handleEdit = (event) => {
-  setSelectedEvent(event);  // Store the selected event data
-  setEditFormData({
-    title: event.title,
-    location: event.location,
-    ageGroup: event.ageGroup,
-    category: event.category,
-    timeDate: new Date(event.timeDate).toISOString().slice(0, 16)  // Format to datetime-local format
-  });
-  setEditModalOpen(true);  // Open the modal
-};
 
-// Handle Form Change
-const handleFormChange = (e) => {
-  setEditFormData({
-    ...editFormData,
-    [e.target.name]: e.target.value
-  });
-};
+  // Handle Edit Button Click
+  const handleEdit = (event) => {
+    setSelectedEvent(event);  // Store the selected event data
+    setEditFormData({
+      title: event.title,
+      location: event.location,
+      ageGroup: event.ageGroup,
+      category: event.category,
+      timeDate: new Date(event.timeDate).toISOString().slice(0, 16)  // Format to datetime-local format
+    });
+    setEditModalOpen(true);  // Open the modal
+  };
 
-// Handle Update
-const handleUpdate = async () => {
-  try {
-    await axios.put(`https://library-database-backend.onrender.com/api/event/updateEvent/${selectedEvent.id}`, editFormData);
-    
-    // Update the events list with the edited data
-    const updatedEvents = eventsData.map(event =>
-      event.id === selectedEvent.id ? { ...event, ...editFormData } : event
-    );
-    setEventsData(updatedEvents);
+  // Handle Edit Form Change
+  const handleFormChange = (e) => {
+    setEditFormData({
+      ...editFormData,
+      [e.target.name]: e.target.value
+    });
+  };
 
-    setEditModalOpen(false);  // Close the modal
-    alert('Event updated successfully.');
-  } catch (error) {
-    console.error('Error updating event:', error);
-    alert('Failed to update event. Please try again.');
-  }
-};
-  // Handler for Sign Up button
-  const handleSignUp = (eventId) => {
-    alert(`Signed up for event with id: ${eventId}`); 
+  // Handle Update (Edit)
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`https://library-database-backend.onrender.com/api/event/updateEvent/${selectedEvent.id}`, editFormData);
+      
+      // Update the events list with the edited data
+      const updatedEvents = eventsData.map(event =>
+        event.id === selectedEvent.id ? { ...event, ...editFormData } : event
+      );
+      setEventsData(updatedEvents);
+
+      setEditModalOpen(false);  // Close the modal
+      alert('Event updated successfully.');
+    } catch (error) {
+      console.error('Error updating event:', error);
+      alert('Failed to update event. Please try again.');
+    }
   };
 
   // Handler for Delete button
@@ -85,6 +93,32 @@ const handleUpdate = async () => {
         console.error('Error deleting event:', error);
         alert('Failed to delete event. Please try again.');
       }
+    }
+  };
+
+  // Handle Create Event button click
+  const handleCreateOpen = () => {
+    setCreateModalOpen(true);
+  };
+
+  // Handle Create Form Change
+  const handleCreateFormChange = (e) => {
+    setNewEventData({
+      ...newEventData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // Handle Create (Submit new event)
+  const handleCreateEvent = async () => {
+    try {
+      await axios.post('https://library-database-backend.onrender.com/api/event/insertEvent', newEventData);
+      setCreateModalOpen(false);  // Close the modal
+      fetchEvents();  // Refresh event list after creating a new event
+      alert('Event created successfully.');
+    } catch (error) {
+      console.error('Error creating event:', error);
+      alert('Failed to create event. Please try again.');
     }
   };
 
@@ -145,7 +179,7 @@ const handleUpdate = async () => {
           paddingTop="10px">
           Browse & Sign Up for Events
         </Typography>
-        
+
         {/* Search bar */}
         <TextField 
           label="Search Events" 
@@ -161,6 +195,16 @@ const handleUpdate = async () => {
             margin: "0px 5px 10px 0px"
           }}
         />
+
+        {/* Create Event button */}
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleCreateOpen}
+          sx={{ mb: 4 }}
+        >
+          Create New Event
+        </Button>
 
         {/* Scrollable list */}
         <Box 
@@ -209,7 +253,7 @@ const handleUpdate = async () => {
                       Time and Date: {new Date(event.timeDate).toLocaleString()}
                     </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', gap: 2 }}> {/* Add flexbox with gap */}
+                  <Box sx={{ display: 'flex', gap: 2 }}>
                     <Button 
                       variant="contained" 
                       color="primary" 
@@ -223,34 +267,137 @@ const handleUpdate = async () => {
                       variant="contained" 
                       color="primary" 
                       onClick={() => handleDelete(event.id)}
-                      sx = {{width: '50%'}}
+                      sx={{width : '50%'}}
                     >
                       Delete
                     </Button>
                   </Box>
                 </Paper>
               </Grid2>
-            )))
-          : (
-            <Typography variant="h6" color="white">
-              No events found.
-            </Typography>
-          )}
+            ))
+            ) : (
+              <Typography variant="body1">No events found.</Typography>
+            )}
           </Grid2>
         </Box>
-        {/* Edit modal or pop up screen */}
+
+        {/* Edit Event Modal */}
         <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}>
           <DialogTitle>Edit Event</DialogTitle>
           <DialogContent>
-            <TextField label="Title" name="title" value={editFormData.title} onChange={handleFormChange} fullWidth margin="dense" />
-            <TextField label="Location" name="location" value={editFormData.location} onChange={handleFormChange} fullWidth margin="dense" />
-            <TextField label="Age Group" name="ageGroup" value={editFormData.ageGroup} onChange={handleFormChange} fullWidth margin="dense" />
-            <TextField label="Category" name="category" value={editFormData.category} onChange={handleFormChange} fullWidth margin="dense" />
-            <TextField label="Time and Date" name="timeDate" type="datetime-local" value={editFormData.timeDate} onChange={handleFormChange} fullWidth margin="dense" />
+            <TextField
+              label="Title"
+              name="title"
+              value={editFormData.title}
+              onChange={handleFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Location"
+              name="location"
+              value={editFormData.location}
+              onChange={handleFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Age Group"
+              name="ageGroup"
+              value={editFormData.ageGroup}
+              onChange={handleFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Category"
+              name="category"
+              value={editFormData.category}
+              onChange={handleFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Time and Date"
+              name="timeDate"
+              value={editFormData.timeDate}
+              onChange={handleFormChange}
+              fullWidth
+              type="datetime-local"
+              margin="normal"
+            />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setEditModalOpen(false)} color="secondary">Cancel</Button>
-            <Button onClick={handleUpdate} color="primary">Save Changes</Button>
+            <Button onClick={() => setEditModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleUpdate} color="primary">Update</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Create Event Modal */}
+        <Dialog open={createModalOpen} onClose={() => setCreateModalOpen(false)}>
+          <DialogTitle>Create New Event</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Title"
+              name="title"
+              value={newEventData.title}
+              onChange={handleCreateFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Location"
+              name="location"
+              value={newEventData.location}
+              onChange={handleCreateFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Age Group"
+              name="ageGroup"
+              value={newEventData.ageGroup}
+              onChange={handleCreateFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Category"
+              name="category"
+              value={newEventData.category}
+              onChange={handleCreateFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Event Creator ID"
+              name="eventCreator"
+              value={newEventData.eventCreator}
+              onChange={handleCreateFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Event Holder ID"
+              name="eventHolder"
+              value={newEventData.eventHolder}
+              onChange={handleCreateFormChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Time and Date"
+              name="timeDate"
+              value={newEventData.timeDate}
+              onChange={handleCreateFormChange}
+              fullWidth
+              type="datetime-local"
+              margin="normal"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setCreateModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleCreateEvent} color="primary">Create</Button>
           </DialogActions>
         </Dialog>
       </Box>
@@ -259,4 +406,5 @@ const handleUpdate = async () => {
 }
 
 export default AdminEvent;
+
 
