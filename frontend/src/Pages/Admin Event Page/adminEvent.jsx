@@ -33,6 +33,26 @@ function AdminEvent() {
     alert(`Signed up for event with id: ${eventId}`); 
   };
 
+  //to take care of our deletes
+  const handleDelete = async (eventId) => {
+    //check if they are sure
+    const confirmDelete = window.confirm('Are you sure you want to delete the ${eventId} event?');
+    
+    if(confirmDelete){
+      try{
+        await axios.delete('https://library-database-backend.onrender.com/api/event/deleteEvent/${eventId}')
+        //refrech events after deletion
+        setEventsData(eventsData.filter(event => event.id !== eventId))
+        alert('Event ${eventId} has been deleted.');
+
+      }catch (error){
+        console.error('Error deleting event:', error);
+        alert('Failed to delete event. Please try again');
+      }
+    }
+  };
+  
+
   const filteredEvents = eventsData.filter(event =>
     event.title.toLowerCase().includes(searchQuery.toLowerCase()) || // Filter by title
     event.location.toLowerCase().includes(searchQuery.toLowerCase()) // You can add more fields to search if needed
@@ -168,7 +188,7 @@ function AdminEvent() {
                     <Button 
                       variant="contained" 
                       color="primary" 
-                      onClick={() => handleSignUp(event.id)}
+                      onClick={() => handleDelete(event.id)}
                       sx = {{width: '50%'}}
                     >
                       Delete
