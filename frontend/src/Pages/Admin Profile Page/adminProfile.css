@@ -1,166 +1,187 @@
-/* Container styles */
+/* Container and Sidebar */
 .profile-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: linear-gradient(to right, #e0ddd9, #b09f8f);
-    padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  min-height: 100vh;
+  background: linear-gradient(to right, #e0ddd9, #b09f8f);
+  padding: 20px;
+}
+
+.sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background-color: #d9d9d9;
+  border-radius: 25px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+}
+
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-menu li {
+  padding: 12px 0;
+  font-weight: bold;
+  cursor: pointer;
+  color: black;
+  transition: color 0.2s ease;
+}
+
+.sidebar-menu li:hover,
+.sidebar-menu li.active {
+  color: #7a5e45;
+}
+
+/* Profile Content */
+.profile-content {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: hidden; /* Prevents overflow of large tables or forms */
+}
+
+/* Search Bar */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  flex: 1; /* Allows search input to fill available space */
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+.search-bar button {
+  background-color: #7a5e45;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background-color: #5c3e32;
+}
+
+/* Table Styles */
+.table-container {
+  overflow-x: auto;
+  max-height: 400px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px; /* Adds spacing below the table */
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Ensures columns have fixed widths */
+}
+
+.user-table th,
+.user-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  word-wrap: break-word; /* Ensures long text wraps within cells */
+}
+
+.user-table th {
+  background-color: #7a5e45;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.user-table td {
+  font-size: 14px;
+}
+
+.user-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.user-table .actions {
+  display: flex;
+  gap: 5px;
+  justify-content: center; /* Centers buttons in action column */
+}
+
+/* Form Section */
+.form-section {
+  padding: 15px;
+  background-color: #463524;
+  border-radius: 10px;
+  color: white;
+}
+
+.form-table td {
+  padding: 8px;
+}
+
+.form-table input,
+.form-table select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  color: #333;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.checkbox-group label {
+  font-weight: 500;
+}
+
+/* Buttons */
+button {
+  background-color: #7a5e45;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #5c3e32;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-container {
+    flex-direction: column;
+    align-items: stretch;
   }
-  
-  /* Profile details (inner rectangle) */
-  .profile-details {
-    display: flex;
-    width: 1218px;
-    height: 730px;
-    background-color: #9b8d7e;
-    border-radius: 25px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-    color: white;
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  /* Sidebar styles */
+
   .sidebar {
-    width: 280px;
-    height: 100%;
-    background-color: #D9D9D9;
-    border-radius: 25px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    width: 100%;
+    height: auto;
   }
-  
-  .sidebar-menu {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sidebar-menu li {
-    padding: 10px 0;
-    font-weight: bold;
-    cursor: pointer;
-    color: black;
-  }
-  
-  .sidebar-menu li:hover {
-    color: #7a5e45;
-  }
-  
-  /* Notification styles */
-  .notification-sidebar {
-    margin-top: 20px;
-  }
-  
-  .notification-title {
-    font-size: 16px;
-    margin-bottom: 15px;
-    color: #000000;
-    font-weight: bold;
-  }
-  
-  .notification-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .notification-item {
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #fff;
-    color: #333;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .notification-item p {
-    margin: 0;
-    font-size: 16px;
-  }
-  
-  .notification-item span {
-    display: block;
-    font-size: 14px;
-    color: #666;
-    text-align: right;
-    margin-top: 5px;
-  }
-  
-  /* Profile content styles */
+
   .profile-content {
-    flex-grow: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-  
-  /* Admin Info Rectangle */
-  .member-info-rectangle {
-    background-color: #D9D9D9;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-  }
-  
-  /* Profile Picture (Square) */
-  .profile-image {
-    width: 190px;
-    height: 190px;
-    border-radius: 10px;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-    margin-right: 20px;
-  }
-  
-  /* Admin Info on new lines */
-  .profile-info {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .profile-info h2 {
-    font-size: 28px;
-    margin-bottom: 5px;
-    color: #7a5e45;
-  }
-  
-  .profile-info p {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: rgb(0, 0, 0);
-  }
-  
-  /* Admin Footer for Total Users and Events */
-  .profile-footer {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    gap: 30px;
-    font-size: 18px;
-    font-weight: bold;
-    color: black;
-  }
-  
-  .fines, .holds {
-    text-align: center;
-    font-size: 18px;
-    color: #333;
-  }
-  
-  /* Section content for dynamic rendering */
-  .section-content {
     margin-top: 20px;
-    background-color: #463524;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-  
+}
