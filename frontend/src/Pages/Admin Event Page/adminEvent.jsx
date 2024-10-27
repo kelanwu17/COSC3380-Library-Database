@@ -1,20 +1,21 @@
-import React, { useEffect } from 'react';
-import { Grid2, 
-  Box, 
-  Paper, 
-  Typography, 
-  Button, 
-  Container, 
-  TextField 
-} from '@mui/material';
-import axios from "axios";
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Grid2, Box, Paper, Typography, Button, Container, TextField, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import axios from 'axios';
 
 function AdminEvent() {
   const [eventsData, setEventsData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [editModalOpen, setEditModalOpen] = useState(false);  // Track edit modal state
+  const [selectedEvent, setSelectedEvent] = useState(null);  // Store the selected event for editing
+  const [editFormData, setEditFormData] = useState({
+    title: '',
+    location: '',
+    ageGroup: '',
+    category: '',
+    timeDate: ''
+  });
 
-  //Fetching Events
+  // Fetching Events
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -27,35 +28,69 @@ function AdminEvent() {
 
     fetchEvents(); // Call the fetch function
   }, []);
+ // Handle Edit Button Click
+ const handleEdit = (event) => {
+  setSelectedEvent(event);  // Store the selected event data
+  setEditFormData({
+    title: event.title,
+    location: event.location,
+    ageGroup: event.ageGroup,
+    category: event.category,
+    timeDate: new Date(event.timeDate).toISOString().slice(0, 16)  // Format to datetime-local format
+  });
+  setEditModalOpen(true);  // Open the modal
+};
 
+// Handle Form Change
+const handleFormChange = (e) => {
+  setEditFormData({
+    ...editFormData,
+    [e.target.name]: e.target.value
+  });
+};
+
+// Handle Update
+const handleUpdate = async () => {
+  try {
+    await axios.put(`https://library-database-backend.onrender.com/api/event/updateEvent/${selectedEvent.id}`, editFormData);
+    
+    // Update the events list with the edited data
+    const updatedEvents = eventsData.map(event =>
+      event.id === selectedEvent.id ? { ...event, ...editFormData } : event
+    );
+    setEventsData(updatedEvents);
+
+    setEditModalOpen(false);  // Close the modal
+    alert('Event updated successfully.');
+  } catch (error) {
+    console.error('Error updating event:', error);
+    alert('Failed to update event. Please try again.');
+  }
+};
   // Handler for Sign Up button
   const handleSignUp = (eventId) => {
     alert(`Signed up for event with id: ${eventId}`); 
   };
 
-  //to take care of our deletes
+  // Handler for Delete button
   const handleDelete = async (eventId) => {
-    //check if they are sure
-    const confirmDelete = window.confirm('Are you sure you want to delete the ${eventId} event?');
-    
-    if(confirmDelete){
-      try{
-        await axios.delete('https://library-database-backend.onrender.com/api/event/deleteEvent/${eventId}')
-        //refrech events after deletion
-        setEventsData(eventsData.filter(event => event.id !== eventId))
-        alert('Event ${eventId} has been deleted.');
-
-      }catch (error){
+    const confirmDelete = window.confirm(`Are you sure you want to delete the event with id: ${eventId}?`);
+    if (confirmDelete) {
+      try {
+        await axios.delete(`https://library-database-backend.onrender.com/api/event/deleteEvent/${eventId}`);
+        // Refresh the events list after deletion
+        setEventsData(eventsData.filter(event => event.id !== eventId));
+        alert(`Event with id: ${eventId} has been deleted.`);
+      } catch (error) {
         console.error('Error deleting event:', error);
-        alert('Failed to delete event. Please try again');
+        alert('Failed to delete event. Please try again.');
       }
     }
   };
-  
 
   const filteredEvents = eventsData.filter(event =>
-    event.title.toLowerCase().includes(searchQuery.toLowerCase()) || // Filter by title
-    event.location.toLowerCase().includes(searchQuery.toLowerCase()) // You can add more fields to search if needed
+    event.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    event.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -70,7 +105,7 @@ function AdminEvent() {
         padding: "0",
         width: "100vw",
         overflowX: "hidden",
-        position: "relative" // Position relative to apply background on a pseudo-element
+        position: "relative"
       }}
     >
       {/* Blurred background */}
@@ -84,19 +119,19 @@ function AdminEvent() {
           backgroundImage: 'url("/loginpage.png")',
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "blur(8px)", // Apply blur
-          zIndex: -1, // Ensure the background stays behind the content
+          filter: "blur(8px)",
+          zIndex: -1,
         }} 
       />
 
       <Box 
         sx={{
-          background: "rgba(101, 80, 60, 0.7)", // Semi-transparent to make content more visible
+          background: "rgba(101, 80, 60, 0.7)",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", 
           borderRadius: "25px",
           width: "1200px",
           height: "800px",
-          zIndex: 1, // Bring the content on top of the blurred background
+          zIndex: 1,
           display: "flex",
           flexDirection: "column",
           padding: "20px",
@@ -113,21 +148,20 @@ function AdminEvent() {
         
         {/* Search bar */}
         <TextField 
-        label="Search Events" 
-        variant="filled"
-        value={searchQuery} // Controlled input value
-        onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
-        sx={{ 
-          mb: 4,
-          backgroundColor: "white",
-          borderRadius: "5px",
-          fontWeight: "bold",
-          width: "100%",
-          margin: "0px 5px 10px 0px"
-        }}
-      />
+          label="Search Events" 
+          variant="filled"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{ 
+            mb: 4,
+            backgroundColor: "white",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            width: "100%",
+            margin: "0px 5px 10px 0px"
+          }}
+        />
 
-        
         {/* Scrollable list */}
         <Box 
           sx={{ 
@@ -179,7 +213,7 @@ function AdminEvent() {
                     <Button 
                       variant="contained" 
                       color="primary" 
-                      onClick={() => handleSignUp(event.id)}
+                      onClick={() => handleEdit(event)}
                       sx={{width : '50%'}}
                     >
                       Edit
@@ -204,10 +238,25 @@ function AdminEvent() {
           )}
           </Grid2>
         </Box>
+        {/* Edit modal or pop up screen */}
+        <Dialog open={editModalOpen} onClose={() => setEditModalOpen(false)}>
+          <DialogTitle>Edit Event</DialogTitle>
+          <DialogContent>
+            <TextField label="Title" name="title" value={editFormData.title} onChange={handleFormChange} fullWidth margin="dense" />
+            <TextField label="Location" name="location" value={editFormData.location} onChange={handleFormChange} fullWidth margin="dense" />
+            <TextField label="Age Group" name="ageGroup" value={editFormData.ageGroup} onChange={handleFormChange} fullWidth margin="dense" />
+            <TextField label="Category" name="category" value={editFormData.category} onChange={handleFormChange} fullWidth margin="dense" />
+            <TextField label="Time and Date" name="timeDate" type="datetime-local" value={editFormData.timeDate} onChange={handleFormChange} fullWidth margin="dense" />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditModalOpen(false)} color="secondary">Cancel</Button>
+            <Button onClick={handleUpdate} color="primary">Save Changes</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Container>
   );
-
 }
 
 export default AdminEvent;
+
