@@ -302,22 +302,22 @@ function AdminEvent() {
               margin="normal"
             />
             <Select
-      label="Age Group"
-      name="ageGroup"
-      value={editFormData.ageGroup}
-      onChange={handleFormChange}
-      fullWidth
-      margin="normal"
-      displayEmpty
-    >
-      <MenuItem value="" disabled>
-        Select Age Group
-      </MenuItem>
-      <MenuItem value="kid">Kid</MenuItem>
-      <MenuItem value="teen">Teen</MenuItem>
-      <MenuItem value="adult">Adult</MenuItem>
-      <MenuItem value="elder">Elder</MenuItem>
-    </Select>
+              label="Age Group"
+              name="ageGroup"
+              value={editFormData.ageGroup}
+              onChange={handleFormChange}
+              fullWidth
+              margin="normal"
+              displayEmpty
+            >
+              <MenuItem value="" disabled>
+                Select Age Group
+              </MenuItem>
+              <MenuItem value="kid">Kid</MenuItem>
+              <MenuItem value="teen">Teen</MenuItem>
+              <MenuItem value="adult">Adult</MenuItem>
+              <MenuItem value="elder">Elder</MenuItem>
+            </Select>
             <TextField
               label="Category"
               name="category"
@@ -363,19 +363,19 @@ function AdminEvent() {
               margin="normal"
             />
             <FormControl fullWidth margin="normal">
-      <InputLabel>Age Group</InputLabel>
-      <Select
-        label="Age Group"
-        name="ageGroup"
-        value={newEventData.ageGroup}
-        onChange={handleCreateFormChange}
-      >
-        <MenuItem value="kid">Kid</MenuItem>
-        <MenuItem value="teen">Teen</MenuItem>
-        <MenuItem value="adult">Adult</MenuItem>
-        <MenuItem value="elder">Elder</MenuItem>
-      </Select>
-    </FormControl>
+              <InputLabel>Age Group</InputLabel>
+              <Select
+                label="Age Group"
+                name="ageGroup"
+                value={newEventData.ageGroup}
+                onChange={handleCreateFormChange}
+              >
+                <MenuItem value="kid">Kid</MenuItem>
+                <MenuItem value="teen">Teen</MenuItem>
+                <MenuItem value="adult">Adult</MenuItem>
+                <MenuItem value="elder">Elder</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label="Category"
               name="category"
