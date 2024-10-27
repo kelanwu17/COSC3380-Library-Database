@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Grid2, Box, Paper, Typography, Button, Container, TextField, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import { Grid2, Box, Paper, Typography, Button, Container, TextField, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Select, FormControl, InputLabel} from '@mui/material';
 import axios from 'axios';
 
 function AdminEvent() {
@@ -301,14 +301,23 @@ function AdminEvent() {
               fullWidth
               margin="normal"
             />
-            <TextField
-              label="Age Group"
-              name="ageGroup"
-              value={editFormData.ageGroup}
-              onChange={handleFormChange}
-              fullWidth
-              margin="normal"
-            />
+            <Select
+      label="Age Group"
+      name="ageGroup"
+      value={editFormData.ageGroup}
+      onChange={handleFormChange}
+      fullWidth
+      margin="normal"
+      displayEmpty
+    >
+      <MenuItem value="" disabled>
+        Select Age Group
+      </MenuItem>
+      <MenuItem value="kid">Kid</MenuItem>
+      <MenuItem value="teen">Teen</MenuItem>
+      <MenuItem value="adult">Adult</MenuItem>
+      <MenuItem value="elder">Elder</MenuItem>
+    </Select>
             <TextField
               label="Category"
               name="category"
@@ -353,14 +362,20 @@ function AdminEvent() {
               fullWidth
               margin="normal"
             />
-            <TextField
-              label="Age Group"
-              name="ageGroup"
-              value={newEventData.ageGroup}
-              onChange={handleCreateFormChange}
-              fullWidth
-              margin="normal"
-            />
+            <FormControl fullWidth margin="normal">
+      <InputLabel>Age Group</InputLabel>
+      <Select
+        label="Age Group"
+        name="ageGroup"
+        value={newEventData.ageGroup}
+        onChange={handleCreateFormChange}
+      >
+        <MenuItem value="kid">Kid</MenuItem>
+        <MenuItem value="teen">Teen</MenuItem>
+        <MenuItem value="adult">Adult</MenuItem>
+        <MenuItem value="elder">Elder</MenuItem>
+      </Select>
+    </FormControl>
             <TextField
               label="Category"
               name="category"
@@ -386,7 +401,7 @@ function AdminEvent() {
               margin="normal"
             />
             <TextField
-              label="Time and Date"
+              label=""
               name="timeDate"
               value={newEventData.timeDate}
               onChange={handleCreateFormChange}
