@@ -13,13 +13,17 @@ import UserProfile from './Pages/User Profile Page/userProfile';
 import BookDetails from './Pages/Book Detail Page/BookDetails'
 import MusicDetails from './Pages/Music Detail Page/MusicDetail';
 import TechDetail from './Pages/Tech Detail Page/TechDetail';
+import ProtectedRoutes from './utils/ProtectedRoutes';
 function App() {
   return (
     <Router>
       <Routes>
+        <Route element={<ProtectedRoutes/>}>
         <Route path='/AdminEvent' element={<AdminEvent/>}/>
         <Route path='/AdminItem' element={<AdminItem/>}/>
         <Route path='/AdminProfile' element={<AdminProfile/>}/>
+        </Route>
+        
         <Route path='/Books' element={<BookCatalog/>}/>
         <Route path='/Events' element={<EventPage/>}/>
         <Route path='/' element={<HomePage/>}/>

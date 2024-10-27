@@ -21,6 +21,49 @@ function MusicDetails() {
   const [loading, setLoading] = useState(true);
   const [similarMusic, setSimilarMusic] = useState([]);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
+  const[checkedOut, setCheckedOut] = useState(false)
+  const [cHistoryId, setcHistoryId] = useState('')
+
+  const userId = sessionStorage.getItem('memberId');
+  //Checkout Logic
+  const[itemInstance, setItemInstance] = useState('')
+  const dataToSend = {
+    memberId: userId,
+    musicId: id,
+    instanceId: itemInstance,
+  };
+  
+  async function checkout(e) {
+    e.preventDefault();
+    
+    try {
+      const response = await axios.post('https://library-database-backend.onrender.com/api/checkoutmusic/insertCheckOutMusic', dataToSend);
+      
+      if (response.status === 201) { // Check if the response status is 201 (Created)
+        setCheckedOut(true);
+        alert("You have checked out this item.");
+      }
+      
+      // Redirect or show success message here
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      alert("Failed to check out item. Please try again.");
+    }
+  }
+  async function returnMusic(e) {
+    e.preventDefault();
+    try {
+      console.log('chistory',cHistoryId)
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/checkoutmusic/updateCheckoutMusic/${cHistoryId}`);
+      alert("You have returned this item.");
+      
+      setCheckedOut(false);
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
 
   useEffect(() => {
     const fetchMusicDetails = async () => {
@@ -68,9 +111,63 @@ function MusicDetails() {
         console.error('Error fetching similar music:', error);
       }
     };
-
+    const fetchInstance = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/musicInstance/${id}`);
+        const instances = response.data; 
+       
+        console.log(instances);
+        //Logic to pick first instance where checked out status is not 0
+        const availableInstance = instances.find(instance => instance.checkedOutStatus == 0);
+       // console.log(availableInstance)
+    if (availableInstance) {
+      setItemInstance(availableInstance.instanceId); 
+     
+    }
+      }
+      catch (error) {
+        console.error('Error fetching similar music:', error);
+        
+      }
+    };
+    const fetchMemberHistory = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/checkoutmusic/${userId}`);
+        const memberHistory = response.data; 
+      
+        const instanceFound = memberHistory.find(instance => instance.musicId == id && instance.timeStampReturn == null);
+       
+        if(instanceFound == undefined)
+        {
+          setCheckedOut(false);
+          
+        }
+        else
+        {
+          
+          if (instanceFound.timeStampReturn === null) {
+            // Book is still checked out
+            
+            console.log("Book is currently checked out.");
+            const checkoutHistoryID = instanceFound.checkedOutMusicHistoryId;
+            
+            setcHistoryId(checkoutHistoryID);
+            
+            setCheckedOut(true);
+          } 
+        }
+    
+      }
+      catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
     fetchMusicDetails();
-  }, [id]);
+    fetchInstance();
+    fetchMemberHistory();
+    
+  }, [id,checkedOut]);
 
   const filteredSimilarMusic = similarMusic.filter((music) => music.albumName !== albumName);
   const handleToggleDetails = () => setShowMoreDetails(!showMoreDetails);
@@ -100,9 +197,25 @@ function MusicDetails() {
             <p className="text-sm mt-1">Date Released: {dateReleased}</p>
           </div>
           <div className="ml-auto mr-12 flex flex-col">
-            <button className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black">Reserve</button>
-            <button className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Checkout</button>
-          </div>
+  <button className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black">
+    Reserve
+  </button>
+  {!checkedOut ? (
+    <button
+      onClick={checkout}
+      className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+    >
+      Checkout
+    </button>
+  ) : (
+    <button
+      onClick={returnMusic}
+      className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+    >
+      Return
+    </button>
+  )}
+</div>
         </div>
       )}
 
