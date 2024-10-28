@@ -1,13 +1,52 @@
 import React, { useState } from 'react';
 import './userProfile.css'; 
 import Navbar from '../../Components/NavBar';
-
+import axios from "axios"
+import { useEffect } from 'react';
 
 function UserProfile() {
   // State to manage which section is active
   const [activeSection, setActiveSection] = useState('events'); // Default to "events"
   const [userSection, setSection] = useState('Profile')
 
+  const [userProfile, setUserProfile] = useState({
+    username:'',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    DOB: '',
+    preferences: 0,
+    accountStatus: 1
+  });
+
+  useEffect(() =>
+    {
+      const fetchUserDetails = async () => {
+        try {
+          const response = await axios.get(`https://library-database-backend.onrender.com//api/member/${id}`);
+          const tech = response.data[0];
+  
+          if (userFound) {
+            setUserProfile({
+              username: userFound.username,
+              firstName: userFound.firstName,
+              lastName: userFound.lastName,
+              email: userFound.email,
+              phone: userFound.phone,
+              DOB: userFound.DOB,
+              preferences: 0,
+              accountStatus: 1
+            });
+          } else {
+            throw new Error('User not found');
+          }
+        } catch (error) {
+          console.error('Error fetching Tech details:', error);
+        } 
+      };
+  
+    },[]);
   // Function to render content based on active section
   const renderContent = () => {
     switch (activeSection) {
