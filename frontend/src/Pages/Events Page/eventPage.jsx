@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Grid2, Box, Paper, Typography, Button, Container, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 const EventsPage = () => {
   const [eventsData, setEventsData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [registeredEvents, setRegisteredEvents] = useState(new Set()); // Track registered events
+  const navigate = useNavigate();
 
   // Fetching Events
   useEffect(() => {
@@ -208,6 +210,19 @@ const EventsPage = () => {
           </Grid2>
         </Box>
       </Box>
+      <Button 
+        variant="contained" 
+        color="secondary" 
+        onClick={() => navigate('/')} // Go back to the previous page
+        sx={{
+          position: "absolute",
+          bottom: 20, 
+          left: 20, 
+          zIndex: 2 // Ensure the button appears above the blurred background
+        }}
+      >
+        Back
+      </Button>
     </Container>
   );
 };
