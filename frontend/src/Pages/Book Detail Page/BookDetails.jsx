@@ -26,11 +26,13 @@ function BookDetails() {
   const [loading, setLoading] = useState(true);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [allInstance, setAllInstance] = useState([])
   const[itemInstance, setItemInstance] = useState('')
   const[checkedOut, setCheckedOut] = useState(false)
-  const [reserve, setReserved] = useState(false)
+  const [waitList, setWaitList] = useState(false)
   const [cHistoryId, setcHistoryId] = useState('')
+  const [waitListID, setWaitListID] = useState('')
+
+
 
   const userId = sessionStorage.getItem('memberId');
   useEffect(() => {
@@ -49,7 +51,44 @@ function BookDetails() {
     instanceId: itemInstance
 
   }
-  
+  let waitListData = {
+    itemId: id,
+    itemType:"book",
+    memberId: userId,
+
+  }
+ 
+  async function waitListBook(e) {
+    e.preventDefault();
+    try {
+      
+      console.log(waitListData)
+      const response = await axios.post('https://library-database-backend.onrender.com/api/waitlist/createWaitlist', waitListData);
+      console.log(response)
+      alert("You have waitlisted this item.");
+      setWaitList(true);
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
+  async function cancelwaitListBook(e) {
+    e.preventDefault();
+    try {
+      
+      
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/waitlist/cancelWaitlist/${waitListID}`);
+      console.log(response)
+      alert("You have been removed from the waitlist this item.");
+      setWaitListID(undefined);
+      setWaitList(false);
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
   //Logic for checkout
   async function checkout(e) {
     e.preventDefault();
@@ -60,6 +99,7 @@ function BookDetails() {
       if(response)
       {
 setCheckedOut(true);
+alert("You have checked out this item.");
       }
       
       // Redirect or show success message here
@@ -70,8 +110,10 @@ setCheckedOut(true);
   async function returnBook(e) {
     e.preventDefault();
     try {
+      
       const response = await axios.put(`https://library-database-backend.onrender.com/api/checkoutbook/updateCheckOutBook/${cHistoryId}`);
-      console.log('works')
+      
+      alert("You have returned this item.");
       setCheckedOut(false);
       
       // Redirect or show success message here
@@ -79,8 +121,35 @@ setCheckedOut(true);
       
     }
   }
+
+  //Logic for reserve item 
+  async function reserveItem(e) {
+    e.preventDefault();
+    try {
+      let reserveData = {
+        itemId: id,
+        itemType: 'book',
+        memberId: userId,
+        instanceId: itemInstance
+
+      }
+      console.log(reserveData)
+      const response = await axios.post('https://library-database-backend.onrender.com/api/reserve/createReserve', reserveData);
+      
+      alert("You have reserved this item.");
+      
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
+
+
+
+
   useEffect(() => {
-   console.log(dataToSend)
+   //console.log(dataToSend)
     const fetchBookDetails = async () => {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/books/${id}`);
@@ -108,10 +177,7 @@ setCheckedOut(true);
 
           fetchSimilarBooks(genre);
 
-          if(count <= 0)
-          {
-            setReserved(true)
-          }
+         
         } else {
           throw new Error('Book not found');
         }
@@ -138,10 +204,10 @@ setCheckedOut(true);
         const response = await axios.get(`https://library-database-backend.onrender.com/api/bookInstance/${id}`);
         const instances = response.data; 
        
-
+        
         //Logic to pick first instance where checked out status is not 0
         const availableInstance = instances.find(instance => instance.checkedOutStatus == 0);
-        console.log(availableInstance)
+       // console.log(availableInstance)
     if (availableInstance) {
       setItemInstance(availableInstance.instanceId); 
      
@@ -156,9 +222,9 @@ const fetchMemberHistory = async () => {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/checkoutbook/${userId}`);
         const memberHistory = response.data; 
-        console.log(response.data)
-        const instanceFound = memberHistory.find(instance => instance.bookId == id);
-       console.log(instanceFound)
+       
+        const instanceFound = memberHistory.find(instance => instance.bookId == id && instance.timeStampReturn == null);
+       
         if(instanceFound == undefined)
         {
           setCheckedOut(false);
@@ -169,9 +235,10 @@ const fetchMemberHistory = async () => {
           
           if (instanceFound.timeStampReturn === null) {
             // Book is still checked out
+            
             console.log("Book is currently checked out.");
             const checkoutHistoryID = instanceFound.checkedOutBookHistoryId;
-            console.log(checkoutHistoryID);
+            
             setcHistoryId(checkoutHistoryID);
             setCheckedOut(true);
           } 
@@ -183,11 +250,48 @@ const fetchMemberHistory = async () => {
         
       }
     };
+    const fetchWaitList = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/waitlist/${userId}`);
+        const memberHistory = response.data; 
+       
+        waitListData = {
+          itemId: id,
+          itemType:"book",
+          memberId: userId,
+      
+        }
+        const instanceFound = memberHistory.find(instance => instance.itemId == id && instance.active == 1 && instance.itemType == 'book');
+      console.log(memberHistory)
+        if(instanceFound != undefined)
+        {
+       
+          
+          setWaitListID(instanceFound.waitlistId)
+          setWaitList(true)
+        
+        }
+        else
+        {
+          setWaitList(false)
+          setWaitListID(undefined)
+        }
+        
+        console.log(response.data)
+
+    
+      }
+      catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
     fetchInstance();
     fetchBookDetails(); 
     fetchMemberHistory();
+    fetchWaitList();
     
-  }, [id,checkedOut]);
+  }, [id,checkedOut, waitList]);
 
   const handleToggleDetails = () => setShowMoreDetails(!showMoreDetails);
   const handleBackClick = () => navigate('/books');
@@ -236,13 +340,53 @@ const fetchMemberHistory = async () => {
               </button>
             )}
           </div>
-          {userId &&
-          <div className="ml-auto mr-12 flex flex-col">
-            {reserve && <button className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black">Reserve</button>}
-           
-            {!checkedOut ? (<button onClick={checkout}className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Checkout</button>) :
-            (<button onClick={returnBook}className="border bg-amber-900 w-36 rounded-lg text-white text-bold border-black mt-2">Return</button>)} 
-           </div>}
+          {userId && (
+  <div className="ml-auto mr-12 flex flex-col">
+    {waitList || count <= 0 ? (
+      waitList ? (
+        <button 
+          onClick={cancelwaitListBook}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+        >
+          Cancel Waitlist
+        </button>
+      ) : (
+        <button 
+          onClick={waitListBook} 
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+        >
+          Waitlist
+        </button>
+      )
+    ) : (
+      !checkedOut ? (
+        <button 
+          onClick={checkout} 
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Checkout
+        </button>
+      ) : (
+        <button 
+          onClick={returnBook} 
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Return
+        </button>
+      )
+    )}
+    {/* Render Reserve button only if not in waitlist and count > 0 */}
+    {count > 0 && !waitList && (
+      <button 
+        onClick={reserveItem} 
+        className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+      >
+        Reserve
+      </button>
+    )}
+  </div>
+)}
+
         </div>
       
       

@@ -1,159 +1,140 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Grid2, Box, Paper, Typography, Button, Container, TextField, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Select, FormControl, InputLabel} from '@mui/material';
 import axios from 'axios';
-// import Navbar from '../../Components/NavBar';  // Adjust the path as needed
-import './adminEvent.css';
+import { useNavigate } from 'react-router-dom';
 
 function AdminEvent() {
-  const [events, setEvents] = useState([]);
-  const [searchText, setSearchText] = useState('');
-  const [filteredEvents, setFilteredEvents] = useState([]);
-  const [newEvent, setNewEvent] = useState({
+  const navigate = useNavigate();
+  const [eventsData, setEventsData] = useState([]); // Holding all events 
+  const [searchQuery, setSearchQuery] = useState(''); // Stores search input
+  const [editModalOpen, setEditModalOpen] = useState(false);  // Track edit modal state
+  const [selectedEvent, setSelectedEvent] = useState(null);  // Store selected event for editing
+  const [editFormData, setEditFormData] = useState({
     title: '',
-    date: '',
     location: '',
-    description: '',
-  });
+    ageGroup: '',
+    category: '',
+    timeDate: ''
+  }); // Form data for editing
+
+  const [createModalOpen, setCreateModalOpen] = useState(false);  // Track create modal state
+  const [newEventData, setNewEventData] = useState({
+    title: '',
+    location: '',
+    ageGroup: '',
+    category: '',
+    eventCreator: '',  // Adjust based on actual data
+    eventHolder: '',   // Adjust based on actual data
+    timeDate: ''
+  }); // Form data for new event
+
+
+  // Fetch Events
+  const fetchEvents = async () => {
+    try {
+      const response = await axios.get('https://library-database-backend.onrender.com/api/event'); // API endpoint
+      setEventsData(response.data); 
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
 
   useEffect(() => {
-    fetchAllEvents();
+    fetchEvents(); // Call the fetch function on component load
   }, []);
 
-  const fetchAllEvents = async () => {
+  // Handle Edit Button Click
+  const handleEdit = (event) => {
+    setSelectedEvent(event);  // Store the selected event data
+    setEditFormData({
+      title: event.title,
+      location: event.location,
+      ageGroup: event.ageGroup,
+      category: event.category,
+      timeDate: new Date(event.timeDate).toISOString().slice(0, 16)  // Format to datetime-local format
+    });
+    setEditModalOpen(true);  // Open the modal
+  };
+
+  // Handle Edit Form Change
+  const handleFormChange = (e) => {
+    setEditFormData({
+      ...editFormData, //spread data to preserve existing values
+      [e.target.name]: e.target.value //dynamically update field
+    });
+  };
+
+  // Handle Update (Edit)
+  const handleUpdate = async () => {
     try {
-      const response = await axios.get('https://library-database-backend.onrender.com/api/eventSignUp/');
-      setEvents(response.data);
-      setFilteredEvents(response.data);
+      await axios.put(`https://library-database-backend.onrender.com/api/event/updateEvent/${selectedEvent.eventId}`, editFormData);
+      
+      // Update the events list with the edited data
+      const updatedEvents = eventsData.map(event =>
+        event.eventId === selectedEvent.eventId ? { ...event, ...editFormData } : event
+      );
+      setEventsData(updatedEvents);
+
+      setEditModalOpen(false);  // Close the modal
+      alert('Event updated successfully.');
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error('Error updating event:', error);
+      alert('Failed to update event. Please try again.');
     }
   };
 
-  const handleSearch = () => {
-    const filtered = events.filter(event =>
-      event.title.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setFilteredEvents(filtered);
+  // Handler for Delete button
+  const handleDelete = async (eventId) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete the event with id: ${eventId}?`);
+    if (confirmDelete) {
+      try {
+        await axios.put(`https://library-database-backend.onrender.com/api/event/disableEvent/${eventId}`);
+        // Refresh the events list after deletion
+        setEventsData(eventsData.filter(event => event.eventId !== eventId));
+        alert(`Event with id: ${eventId} has been deleted.`);
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        alert('Failed to delete event. Please try again.');
+      }
+    }
   };
 
+  // Handle Create Event button click
+  const handleCreateOpen = () => {
+    setCreateModalOpen(true);
+  };
+
+  // Handle Create Form Change
+  const handleCreateFormChange = (e) => {
+    setNewEventData({
+      ...newEventData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // Handle Create (Submit new event)
   const handleCreateEvent = async () => {
     try {
-      const response = await axios.post('https://library-database-backend.onrender.com/api/event/insertEventSignUp', newEvent);
-      alert('Event created successfully');
-      fetchAllEvents();
-      setNewEvent({
-        title: '',
-        date: '',
-        location: '',
-        description: '',
-      });
+      await axios.post('https://library-database-backend.onrender.com/api/event/createEvent', newEventData);
+      setCreateModalOpen(false);  // Close the modal
+      fetchEvents();  // Refresh event list after creating a new event
+      alert('Event created successfully.');
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error('Error creating event:', error);
+      alert('Failed to create event. Please try again.');
     }
   };
 
-  const handleDeleteEvent = async (id) => {
-    try {
-      await axios.delete(`https://library-database-backend.onrender.com/api/event/deleteEvent/${id}`);
-      alert('Event deleted successfully');
-      fetchAllEvents();
-    } catch (error) {
-      console.error("Error deleting event:", error);
-    }
-  };
+  const filteredEvents = eventsData.filter(event =>
+    event.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    event.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="admin-event-page">
-      {/* <Navbar />  Navbar added here */}
-      <div className="admin-event">
-        {/* <h2>Admin - Manage Events</h2> */}
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search by Event Title"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <button onClick={handleSearch}>Search</button>
-          <button onClick={fetchAllEvents}>Get All Events</button>
-        </div>
-
-        <div className="table-container">
-          <table className="event-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Location</th>
-                <th>Description</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEvents.map((event) => (
-                <tr key={event.id}>
-                  <td>{event.title}</td>
-                  <td>{new Date(event.date).toLocaleDateString()}</td>
-                  <td>{event.location}</td>
-                  <td>{event.description}</td>
-                  <td>
-                    <button onClick={() => handleDeleteEvent(event.id)}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Create Event</h3>
-        <div className="form-section">
-          <table className="form-table">
-            <tbody>
-              <tr>
-                <td>Title</td>
-                <td>
-                  <input
-                    type="text"
-                    value={newEvent.title}
-                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Date</td>
-                <td>
-                  <input
-                    type="date"
-                    value={newEvent.date}
-                    onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Location</td>
-                <td>
-                  <input
-                    type="text"
-                    value={newEvent.location}
-                    onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Description</td>
-                <td>
-                  <textarea
-                    value={newEvent.description}
-                    onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <button onClick={handleCreateEvent}>Add Event</button>
-        </div>
-      </div>
+    <div>
+      <p>Admin</p>
     </div>
-  );
+  )
 }
 
-export default AdminEvent;
+export default adminEvent

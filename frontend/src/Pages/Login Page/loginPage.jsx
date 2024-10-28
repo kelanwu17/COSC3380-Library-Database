@@ -30,7 +30,7 @@ function LoginPage() {
   const handleLogin = async (event) => {
     event.preventDefault();
     setErrorMessage('');
-
+    
     // Validate inputs
     if (!username || !password) {
       setErrorMessage('Username and Password are required.');
@@ -53,9 +53,13 @@ function LoginPage() {
       sessionStorage.setItem('memberId', user.memberId);
       sessionStorage.setItem('lastName', user.lastName);
       sessionStorage.setItem('phone', user.phone);
-      sessionStorage.setItem('preferences', user.preferences);
+      
       if (loginType === 'admin') {
         sessionStorage.setItem('roles', user.roles);
+      }
+      if (loginType === 'member') {
+        sessionStorage.setItem('roles', 'member');
+        sessionStorage.setItem('preferences', user.preferences);
       }
       sessionStorage.setItem('loggedin', true);
       setIsUserLoggedIn(true);
