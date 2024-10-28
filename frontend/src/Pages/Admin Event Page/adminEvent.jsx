@@ -137,4 +137,4 @@ function AdminEvent() {
   )
 }
 
-export default adminEvent
+export default AdminEvent

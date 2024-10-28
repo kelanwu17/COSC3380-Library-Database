@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './adminItem.css'; // CSS for styling the admin item page
 import ManageBooks from '../Admin Profile Page/Components/manageBooks';
 import ManageTech from '../Admin Profile Page/Components/manageTech';
-import ManageMusic from './Admin Profile Page/Components/manageMusic';
+import ManageMusic from '../Admin Profile Page/Components/manageMusic';
 
 function AdminItem() {
   const [activeSection, setActiveSection] = useState('books');

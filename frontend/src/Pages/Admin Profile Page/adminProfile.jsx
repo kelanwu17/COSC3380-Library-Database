@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import './adminProfile.css';
 import Navbar from '../../Components/NavBar';
-import ManageMembers from '../Components/manageMembers';
+import ManageMembers from './Components/manageMembers';
 import ManageBooks from '../Admin Item Page/adminItem';
 import AdminEvent from '../Admin Event Page/adminEvent';
-import ManageMusic from '../Components/manageMusic';
+import ManageMusic from './Components/manageMusic';
 import ManageTech from './Components/manageTech';
 import ManageAdmin from './Components/manageAdmin';
 import AdminInfo from './Components/adminInfo';
-
+import axios from 'axios';
 
 function AdminProfile() {
   const [activeSection, setActiveSection] = useState(''); // Show profile by default
 
   const renderActiveSection = () => {
+    console.log("Rendering section:", activeSection); // Log the active section
     switch (activeSection) {
       case 'manageMembers':
         return <ManageMembers />;
@@ -31,6 +32,7 @@ function AdminProfile() {
         return <AdminInfo />; // Default view is AdminInfo
     }
   };
+  
 
   const getSectionTitle = () => {
     switch (activeSection) {

@@ -85,7 +85,9 @@ function ManageMembers() {
         `https://library-database-backend.onrender.com/api/member/updateMember/${editMemberId}`,
         updatedData
       );
-  
+      console.log(updatedData)
+
+
       alert(`${response.data.message || 'Member updated successfully!'}`);
       setEditMemberId(null);
       fetchAllMembers(); // Refresh the list to reflect changes

@@ -6,7 +6,7 @@ function ManageAdmin() {
   const [adminsData, setAdminsData] = useState([]);
   const [filteredAdmins, setFilteredAdmins] = useState([]);
   const [searchAdminText, setSearchAdminText] = useState('');
-  const [statusMessage, setStatusMessage] = useState(''); // State for success/error message
+  const [statusMessage, setStatusMessage] = useState('');
   const [newAdmin, setNewAdmin] = useState({
     username: '',
     password: '',
@@ -25,7 +25,6 @@ function ManageAdmin() {
     fetchAllAdmins();
   }, []);
 
-  // Fetch all admins
   const fetchAllAdmins = async () => {
     try {
       const response = await axios.get('https://library-database-backend.onrender.com/api/admin/');
@@ -36,7 +35,6 @@ function ManageAdmin() {
     }
   };
 
-  // Search admins
   const handleSearchAdmin = () => {
     const filtered = adminsData.filter(
       (admin) =>
@@ -47,18 +45,13 @@ function ManageAdmin() {
     setFilteredAdmins(filtered);
   };
 
-  // Create a new admin
   const handleCreateAdmin = async () => {
     try {
       const response = await axios.post(
         'https://library-database-backend.onrender.com/api/admin/createAdmin',
         newAdmin
       );
-      if (response.data.success) {
-        setStatusMessage('Admin successfully created!');
-      } else {
-        setStatusMessage(response.data.message || 'Failed to create admin.');
-      }
+      setStatusMessage(response.data.success ? 'Admin successfully created!' : 'Failed to create admin.');
       fetchAllAdmins();
       setNewAdmin({
         username: '',
@@ -75,48 +68,29 @@ function ManageAdmin() {
       setStatusMessage('Error creating admin. Please try again.');
       console.error('Error creating admin:', err);
     }
-    setTimeout(() => setStatusMessage(''), 3000); // Clear the message after 3 seconds
+    setTimeout(() => setStatusMessage(''), 3000);
   };
 
-  // Set admin data to edit
   const handleEditAdmin = (admin) => {
     setEditAdminId(admin.adminId);
     setEditableAdminData({ ...admin });
   };
 
-  // Update an existing admin
   const handleUpdateAdmin = async () => {
     try {
-      // Parse DOB to correct format
-      let updatedData = { ...editableAdminData };
-      if (updatedData.DOB) {
-        updatedData.DOB = updatedData.DOB.replace('T', ' ').replace('Z', '');
-      }
-
       const response = await axios.put(
         `https://library-database-backend.onrender.com/api/admin/updateAdmin/${editAdminId}`,
-        updatedData
+        editableAdminData
       );
-
       alert(response.data.message || 'Admin updated successfully!');
       setEditAdminId(null);
-      fetchAllAdmins(); // Refresh the list to reflect changes
+      fetchAllAdmins();
     } catch (error) {
-      console.error('Failed to update admin:', error);
-
-      if (error.response) {
-        const errorMessage = error.response.data.message || 'Unexpected error occurred';
-        const errorStatus = error.response.status;
-        alert(`Failed to update admin: ${errorMessage} (Status: ${errorStatus})`);
-      } else if (error.request) {
-        alert('Failed to update admin: No response from server. Please check your connection.');
-      } else {
-        alert(`Failed to update admin: ${error.message}`);
-      }
+      alert('Failed to update admin.');
+      console.error('Error:', error);
     }
   };
 
-  // Delete an admin
   const handleDeleteAdmin = async (adminId) => {
     try {
       await axios.delete(`https://library-database-backend.onrender.com/api/admin/deleteAdmin/${adminId}`);
@@ -141,20 +115,19 @@ function ManageAdmin() {
         <button onClick={fetchAllAdmins}>Get All Admins</button>
       </div>
 
-      {/* Display status message */}
       {statusMessage && <p className="status-message">{statusMessage}</p>}
 
       <div className="table-container">
         <table className="admin-table">
           <thead>
             <tr>
-              <th className="name-column">Name</th>
-              <th className="email-column">Email</th>
-              <th className="username-column">Username</th>
-              <th className="phone-column">Phone</th>
-              <th className="dob-column">DOB</th>
-              <th className="preferences-column">Preferences</th>
-              <th className="status-column">Account Status</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Username</th>
+              <th>Phone</th>
+              <th>DOB</th>
+              <th>Roles</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -180,51 +153,10 @@ function ManageAdmin() {
         </table>
       </div>
 
+      <h3>Create Admin</h3>
       {/* Create Admin Form */}
       <div className="form-section">
-        <h3>Create Admin</h3>
-        <table className="form-table">
-          <tbody>
-            <tr>
-              <td>First Name</td>
-              <td><input type="text" value={newAdmin.firstName} onChange={(e) => setNewAdmin({ ...newAdmin, firstName: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Last Name</td>
-              <td><input type="text" value={newAdmin.lastName} onChange={(e) => setNewAdmin({ ...newAdmin, lastName: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Email</td>
-              <td><input type="email" value={newAdmin.email} onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Username</td>
-              <td><input type="text" value={newAdmin.username} onChange={(e) => setNewAdmin({ ...newAdmin, username: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Phone</td>
-              <td><input type="text" value={newAdmin.phone} onChange={(e) => setNewAdmin({ ...newAdmin, phone: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Date of Birth</td>
-              <td><input type="date" value={newAdmin.DOB} onChange={(e) => setNewAdmin({ ...newAdmin, DOB: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Roles</td>
-              <td><input type="text" value={newAdmin.roles} onChange={(e) => setNewAdmin({ ...newAdmin, roles: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Status</td>
-              <td>
-                <select value={newAdmin.active} onChange={(e) => setNewAdmin({ ...newAdmin, active: Number(e.target.value) })}>
-                  <option value={1}>Active</option>
-                  <option value={0}>Inactive</option>
-                </select>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <button onClick={handleCreateAdmin}>Add Admin</button>
+        {/* Fields for new admin */}
       </div>
 
       {/* Edit Admin Form */}
@@ -235,9 +167,86 @@ function ManageAdmin() {
             <tbody>
               <tr>
                 <td>First Name</td>
-                <td><input type="text" value={editableAdminData.firstName || ''} onChange={(e) => setEditableAdminData({ ...editableAdminData, firstName: e.target.value })} /></td>
+                <td>
+                  <input
+                    type="text"
+                    value={editableAdminData.firstName || ''}
+                    onChange={(e) => setEditableAdminData({ ...editableAdminData, firstName: e.target.value })}
+                  />
+                </td>
               </tr>
-              {/* Add other form fields for editing as needed */}
+              <tr>
+                <td>Last Name</td>
+                <td>
+                  <input
+                    type="text"
+                    value={editableAdminData.lastName || ''}
+                    onChange={(e) => setEditableAdminData({ ...editableAdminData, lastName: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Email</td>
+                <td>
+                  <input
+                    type="email"
+                    value={editableAdminData.email || ''}
+                    onChange={(e) => setEditableAdminData({ ...editableAdminData, email: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Username</td>
+                <td>
+                  <input
+                    type="text"
+                    value={editableAdminData.username || ''}
+                    onChange={(e) => setEditableAdminData({ ...editableAdminData, username: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Phone</td>
+                <td>
+                  <input
+                    type="text"
+                    value={editableAdminData.phone || ''}
+                    onChange={(e) => setEditableAdminData({ ...editableAdminData, phone: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Date of Birth</td>
+                <td>
+                  <input
+                    type="date"
+                    value={editableAdminData.DOB || ''}
+                    onChange={(e) => setEditableAdminData({ ...editableAdminData, DOB: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Roles</td>
+                <td>
+                  <input
+                    type="text"
+                    value={editableAdminData.roles || ''}
+                    onChange={(e) => setEditableAdminData({ ...editableAdminData, roles: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Status</td>
+                <td>
+                  <select
+                    value={editableAdminData.active || 0}
+                    onChange={(e) => setEditableAdminData({ ...editableAdminData, active: Number(e.target.value) })}
+                  >
+                    <option value={1}>Active</option>
+                    <option value={0}>Inactive</option>
+                  </select>
+                </td>
+              </tr>
             </tbody>
           </table>
           <button onClick={handleUpdateAdmin}>Update Admin</button>
