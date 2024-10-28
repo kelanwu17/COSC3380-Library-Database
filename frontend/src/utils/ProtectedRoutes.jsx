@@ -7,6 +7,7 @@ const ProtectedRoutes=() => {
   if (role === "member") {
     return <Navigate to="/" />;
   }
+  return <Outlet/>
 }
 
 export default ProtectedRoutes;
