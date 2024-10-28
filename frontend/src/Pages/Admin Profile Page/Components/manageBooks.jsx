@@ -147,61 +147,52 @@ function ManageBooks() {
         </table>
       </div>
 
-      <h3>Create Book</h3>
-      <div className="form-section">
-        <table className="form-table">
-          <tbody>
-            <tr>
-              <td>Title</td>
-              <td><input type="text" value={newBook.title} onChange={(e) => setNewBook({ ...newBook, title: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Author</td>
-              <td><input type="text" value={newBook.author} onChange={(e) => setNewBook({ ...newBook, author: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Genre</td>
-              <td><input type="text" value={newBook.genre} onChange={(e) => setNewBook({ ...newBook, genre: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Age Category</td>
-              <td><input type="text" value={newBook.ageCategory} onChange={(e) => setNewBook({ ...newBook, ageCategory: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Count</td>
-              <td><input type="number" value={newBook.count} onChange={(e) => setNewBook({ ...newBook, count: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Aisle</td>
-              <td><input type="number" value={newBook.aisle} onChange={(e) => setNewBook({ ...newBook, aisle: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Description</td>
-              <td><textarea value={newBook.description} onChange={(e) => setNewBook({ ...newBook, description: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>ISBN</td>
-              <td><input type="text" value={newBook.isbn} onChange={(e) => setNewBook({ ...newBook, isbn: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Publisher</td>
-              <td><input type="text" value={newBook.publisher} onChange={(e) => setNewBook({ ...newBook, publisher: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Edition</td>
-              <td><input type="text" value={newBook.edition} onChange={(e) => setNewBook({ ...newBook, edition: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Monetary Value</td>
-              <td><input type="number" value={newBook.monetaryValue} onChange={(e) => setNewBook({ ...newBook, monetaryValue: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Image URL</td>
-              <td><input type="text" value={newBook.imgUrl} onChange={(e) => setNewBook({ ...newBook, imgUrl: e.target.value })} /></td>
-            </tr>
-          </tbody>
-        </table>
-        <button onClick={handleCreateBook}>Add Book</button>
+      <div className="form-section-wrapper">
+        {/* Create Book Form */}
+        <div className="form-section">
+          <h3>Create Book</h3>
+          <table className="form-table">
+            <tbody>
+              {Object.keys(newBook).map((field) => (
+                <tr key={field}>
+                  <td>{field.charAt(0).toUpperCase() + field.slice(1)}</td>
+                  <td>
+                    <input
+                      type="text"
+                      value={newBook[field]}
+                      onChange={(e) => setNewBook({ ...newBook, [field]: e.target.value })}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button onClick={handleCreateBook}>Add Book</button>
+        </div>
+
+        {/* Edit Book Form */}
+        {editBookId && (
+          <div className="form-section">
+            <h3>Edit Book</h3>
+            <table className="form-table">
+              <tbody>
+                {Object.keys(editableData).map((field) => (
+                  <tr key={field}>
+                    <td>{field.charAt(0).toUpperCase() + field.slice(1)}</td>
+                    <td>
+                      <input
+                        type="text"
+                        value={editableData[field]}
+                        onChange={(e) => handleInputChange(e, field)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button onClick={handleUpdateBook}>Update Book</button>
+          </div>
+        )}
       </div>
     </div>
   );

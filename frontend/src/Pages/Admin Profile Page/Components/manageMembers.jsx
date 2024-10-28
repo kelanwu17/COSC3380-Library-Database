@@ -30,7 +30,7 @@ function ManageMembers() {
       setMembersData(response.data);
       setFilteredMembers(response.data);
     } catch (err) {
-      console.error('Error fetching users.');
+      console.error('Error fetching users.', err);
     }
   };
 
@@ -42,16 +42,6 @@ function ManageMembers() {
         member.username.toLowerCase().includes(searchText.toLowerCase())
     );
     setFilteredMembers(filtered);
-  };
-
-  const handleCheckboxChange = (e) => {
-    const value = e.target.value;
-    setNewMember((prevState) => ({
-      ...prevState,
-      preferences: prevState.preferences.includes(value)
-        ? prevState.preferences.filter((pref) => pref !== value)
-        : [...prevState.preferences, value],
-    }));
   };
 
   const handleCreateMember = async () => {
@@ -74,8 +64,67 @@ function ManageMembers() {
         accountStatus: 1,
       });
     } catch (err) {
-      console.error('Error creating member.');
+      console.error('Error creating member.', err);
     }
+  };
+
+  const handleEditMember = (member) => {
+    setEditMemberId(member.memberId);
+    setEditableData({ ...member });
+  };
+
+  const handleUpdateMember = async () => {
+    try {
+      // Send the updated member details to the API
+      const response = await axios.put(
+        `https://library-database-backend.onrender.com/api/member/updateMember/${editMemberId}`,
+        {
+          firstName: editableData.firstName,
+          lastName: editableData.lastName,
+          email: editableData.email,
+          phone: editableData.phone,
+          DOB: editableData.DOB,
+          preference: editableData.preferences.join(','),
+        }
+      );
+  
+      // Check for a successful response and display a message
+      if (response.status === 200) {
+        alert(response.data.message); // Show success message
+        setEditMemberId(null); // Clear the edit member ID
+        fetchAllMembers(); // Refresh the member list
+      }
+    } catch (error) {
+      console.error('Failed to update member:', error);
+      alert('Failed to update member. Please try again.');
+    }
+  };
+  
+
+  const handleDeleteMember = async (memberId) => {
+    try {
+      const response = await axios.delete(
+        `https://library-database-backend.onrender.com/api/member/deleteMember/${memberId}`
+      );
+      alert(response.data.message);
+      fetchAllMembers(); // Refresh the members list after deletion
+    } catch (err) {
+      console.error('Error deleting member.', err);
+    }
+  };
+
+  const handleInputChange = (e, field) => {
+    setEditableData({ ...editableData, [field]: e.target.value });
+  };
+
+  const handleCheckboxChange = (e) => {
+    const value = e.target.value;
+    setNewMember((prevState) => ({
+      ...prevState,
+      preferences: prevState.preferences.includes(value)
+        ? prevState.preferences.filter((pref) => pref !== value)
+        : [...prevState.preferences, value],
+    }));
   };
 
   return (
@@ -117,7 +166,8 @@ function ManageMembers() {
                 <td>{member.preferences}</td>
                 <td>{member.accountStatus === 1 ? "Active" : "Not Active"}</td>
                 <td>
-                  {/* Modify and Delete buttons would go here */}
+                  <button onClick={() => handleEditMember(member)}>Modify</button>
+                  <button onClick={() => handleDeleteMember(member.memberId)}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -190,6 +240,61 @@ function ManageMembers() {
         </table>
         <button onClick={handleCreateMember}>Add Member</button>
       </div>
+
+      {/* Edit Member Section */}
+      {editMemberId && (
+        <div className="form-section">
+          <h3>Edit Member</h3>
+          <table className="form-table">
+            <tbody>
+              <tr>
+                <td>First Name</td>
+                <td><input type="text" value={editableData.firstName} onChange={(e) => handleInputChange(e, 'firstName')} /></td>
+              </tr>
+              <tr>
+                <td>Last Name</td>
+                <td><input type="text" value={editableData.lastName} onChange={(e) => handleInputChange(e, 'lastName')} /></td>
+              </tr>
+              <tr>
+                <td>Username</td>
+                <td><input type="text" value={editableData.username} onChange={(e) => handleInputChange(e, 'username')} /></td>
+              </tr>
+              <tr>
+                <td>Email</td>
+                <td><input type="text" value={editableData.email} onChange={(e) => handleInputChange(e, 'email')} /></td>
+              </tr>
+              <tr>
+                <td>Phone</td>
+                <td><input type="text" value={editableData.phone} onChange={(e) => handleInputChange(e, 'phone')} /></td>
+              </tr>
+              <tr>
+                <td>Date of Birth</td>
+                <td><input type="date" value={editableData.DOB} onChange={(e) => handleInputChange(e, 'DOB')} /></td>
+              </tr>
+              <tr>
+                <td>Preferences</td>
+                <td>
+                  <input
+                    type="text"
+                    value={editableData.preferences}
+                    onChange={(e) => handleInputChange(e, 'preferences')}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Account Status</td>
+                <td>
+                  <select value={editableData.accountStatus} onChange={(e) => handleInputChange(e, 'accountStatus')}>
+                    <option value={1}>Active</option>
+                    <option value={0}>Not Active</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button onClick={handleUpdateMember}>Update Member</button>
+        </div>
+      )}
     </div>
   );
 }
