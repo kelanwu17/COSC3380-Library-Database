@@ -8,7 +8,6 @@ import ManageMusic from './Components/manageMusic';
 import ManageTech from './Components/manageTech';
 import ManageAdmin from './Components/manageAdmin';
 import AdminInfo from './Components/adminInfo';
-import axios from 'axios';
 
 function AdminProfile() {
   const [activeSection, setActiveSection] = useState(''); // Show profile by default

@@ -4,6 +4,7 @@ import '../adminProfile.css';
 
 function ManageTech() {
   const [techData, setTechData] = useState([]);
+  const [statusMessage, setStatusMessage] = useState('');
   const [newTech, setNewTech] = useState({
     deviceName: '',
     modelNumber: '',
@@ -25,7 +26,7 @@ function ManageTech() {
       const response = await axios.get('https://library-database-backend.onrender.com/api/technology/');
       setTechData(response.data);
     } catch (error) {
-      console.error('Error fetching technology data:', error);
+      setStatusMessage(`Error fetching technology data: ${error.message}`);
     }
   };
 
@@ -35,7 +36,7 @@ function ManageTech() {
         'https://library-database-backend.onrender.com/api/technology/createTechnology',
         newTech
       );
-      alert(response.data.message);
+      setStatusMessage(response.data.success ? 'Technology created successfully!' : `Failed to create technology: ${response.data.message || 'Unknown error'}`);
       fetchAllTech();
       setNewTech({
         deviceName: '',
@@ -47,7 +48,7 @@ function ManageTech() {
         imgUrl: '',
       });
     } catch (error) {
-      console.error('Error creating technology:', error);
+      setStatusMessage(`Error creating technology: ${error.message}`);
     }
   };
 
@@ -62,11 +63,11 @@ function ManageTech() {
         `https://library-database-backend.onrender.com/api/technology/updateTechnology/${editTechId}`,
         editableTech
       );
-      alert(response.data.message);
+      setStatusMessage(response.data.success ? 'Technology updated successfully!' : `Failed to update technology: ${response.data.message || 'Unknown error'}`);
       setEditTechId(null);
       fetchAllTech();
     } catch (error) {
-      console.error('Error updating technology:', error);
+      setStatusMessage(`Error updating technology: ${error.message}`);
     }
   };
 
@@ -75,17 +76,19 @@ function ManageTech() {
       const response = await axios.delete(
         `https://library-database-backend.onrender.com/api/technology/deleteTechnology/${techId}`
       );
-      alert(response.data.message);
+      setStatusMessage(response.data.success ? 'Technology deleted successfully!' : `Failed to delete technology: ${response.data.message || 'Unknown error'}`);
       fetchAllTech();
     } catch (error) {
-      console.error('Error deleting technology:', error);
+      setStatusMessage(`Error deleting technology: ${error.message}`);
     }
   };
 
   return (
     <div className="manage-tech">
-      <h2>Manage Technology</h2>
-      
+      <h2> </h2>
+
+      {statusMessage && <p className="status-message">{statusMessage}</p>}
+
       <div className="table-container">
         <table className="user-table">
           <thead>
@@ -118,78 +121,50 @@ function ManageTech() {
         </table>
       </div>
 
-      <h3>{editTechId ? "Edit Technology" : "Create Technology"}</h3>
-      <div className="form-section">
-        <input
-          type="text"
-          placeholder="Device Name"
-          value={editTechId ? editableTech.deviceName : newTech.deviceName}
-          onChange={(e) => {
-            const value = e.target.value;
-            editTechId
-              ? setEditableTech((prev) => ({ ...prev, deviceName: value }))
-              : setNewTech((prev) => ({ ...prev, deviceName: value }));
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Model Number"
-          value={editTechId ? editableTech.modelNumber : newTech.modelNumber}
-          onChange={(e) => {
-            const value = e.target.value;
-            editTechId
-              ? setEditableTech((prev) => ({ ...prev, modelNumber: value }))
-              : setNewTech((prev) => ({ ...prev, modelNumber: value }));
-          }}
-        />
-        <input
-          type="number"
-          placeholder="Count"
-          value={editTechId ? editableTech.count : newTech.count}
-          onChange={(e) => {
-            const value = e.target.value;
-            editTechId
-              ? setEditableTech((prev) => ({ ...prev, count: value }))
-              : setNewTech((prev) => ({ ...prev, count: value }));
-          }}
-        />
-        <input
-          type="number"
-          placeholder="Monetary Value"
-          value={editTechId ? editableTech.monetaryValue : newTech.monetaryValue}
-          onChange={(e) => {
-            const value = e.target.value;
-            editTechId
-              ? setEditableTech((prev) => ({ ...prev, monetaryValue: value }))
-              : setNewTech((prev) => ({ ...prev, monetaryValue: value }));
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Image URL"
-          value={editTechId ? editableTech.imgUrl : newTech.imgUrl}
-          onChange={(e) => {
-            const value = e.target.value;
-            editTechId
-              ? setEditableTech((prev) => ({ ...prev, imgUrl: value }))
-              : setNewTech((prev) => ({ ...prev, imgUrl: value }));
-          }}
-        />
-        <select
-          value={editTechId ? editableTech.availabilityStatus : newTech.availabilityStatus}
-          onChange={(e) => {
-            const value = parseInt(e.target.value, 10);
-            editTechId
-              ? setEditableTech((prev) => ({ ...prev, availabilityStatus: value }))
-              : setNewTech((prev) => ({ ...prev, availabilityStatus: value }));
-          }}
-        >
-          <option value={1}>Available</option>
-          <option value={0}>Not Available</option>
-        </select>
-        <button onClick={editTechId ? handleUpdateTech : handleCreateTech}>
-          {editTechId ? "Update Technology" : "Add Technology"}
-        </button>
+      <div className="form-section-wrapper">
+        {/* Create Technology Form */}
+        <div className="form-section">
+          <h3>Create Technology</h3>
+          <table className="form-table">
+            <tbody>
+              <tr><td>Device Name</td><td><input type="text" value={newTech.deviceName} onChange={(e) => setNewTech({ ...newTech, deviceName: e.target.value })} /></td></tr>
+              <tr><td>Model Number</td><td><input type="text" value={newTech.modelNumber} onChange={(e) => setNewTech({ ...newTech, modelNumber: e.target.value })} /></td></tr>
+              <tr><td>Count</td><td><input type="number" value={newTech.count} onChange={(e) => setNewTech({ ...newTech, count: e.target.value })} /></td></tr>
+              <tr><td>Monetary Value</td><td><input type="number" value={newTech.monetaryValue} onChange={(e) => setNewTech({ ...newTech, monetaryValue: e.target.value })} /></td></tr>
+              <tr><td>Image URL</td><td><input type="text" value={newTech.imgUrl} onChange={(e) => setNewTech({ ...newTech, imgUrl: e.target.value })} /></td></tr>
+              <tr><td>Status</td><td>
+                <select value={newTech.availabilityStatus} onChange={(e) => setNewTech({ ...newTech, availabilityStatus: parseInt(e.target.value, 10) })}>
+                  <option value={1}>Available</option>
+                  <option value={0}>Not Available</option>
+                </select>
+              </td></tr>
+            </tbody>
+          </table>
+          <button onClick={handleCreateTech}>Add Technology</button>
+        </div>
+
+        {/* Edit Technology Form */}
+        {editTechId && (
+          <div className="form-section">
+            <h3>Edit Technology</h3>
+            <table className="form-table">
+              <tbody>
+                <tr><td>Device Name</td><td><input type="text" value={editableTech.deviceName || ''} onChange={(e) => setEditableTech({ ...editableTech, deviceName: e.target.value })} /></td></tr>
+                <tr><td>Model Number</td><td><input type="text" value={editableTech.modelNumber || ''} onChange={(e) => setEditableTech({ ...editableTech, modelNumber: e.target.value })} /></td></tr>
+                <tr><td>Count</td><td><input type="number" value={editableTech.count || ''} onChange={(e) => setEditableTech({ ...editableTech, count: e.target.value })} /></td></tr>
+                <tr><td>Monetary Value</td><td><input type="number" value={editableTech.monetaryValue || ''} onChange={(e) => setEditableTech({ ...editableTech, monetaryValue: e.target.value })} /></td></tr>
+                <tr><td>Image URL</td><td><input type="text" value={editableTech.imgUrl || ''} onChange={(e) => setEditableTech({ ...editableTech, imgUrl: e.target.value })} /></td></tr>
+                <tr><td>Status</td><td>
+                  <select value={editableTech.availabilityStatus || 0} onChange={(e) => setEditableTech({ ...editableTech, availabilityStatus: parseInt(e.target.value, 10) })}>
+                    <option value={1}>Available</option>
+                    <option value={0}>Not Available</option>
+                  </select>
+                </td></tr>
+              </tbody>
+            </table>
+            <button onClick={handleUpdateTech}>Update Technology</button>
+          </div>
+        )}
       </div>
     </div>
   );
