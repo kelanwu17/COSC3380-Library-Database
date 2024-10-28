@@ -153,95 +153,48 @@ function ManageAdmin() {
         </table>
       </div>
 
-      <h3>Create Admin</h3>
-      {/* Create Admin Form */}
-      <div className="form-section">
-        {/* Fields for new admin */}
-      </div>
-
-      {/* Edit Admin Form */}
-      {editAdminId && (
+      <div className="form-container">
+        {/* Create Admin Form */}
         <div className="form-section">
-          <h3>Edit Admin</h3>
+          <h3>Create Admin</h3>
           <table className="form-table">
             <tbody>
               <tr>
                 <td>First Name</td>
-                <td>
-                  <input
-                    type="text"
-                    value={editableAdminData.firstName || ''}
-                    onChange={(e) => setEditableAdminData({ ...editableAdminData, firstName: e.target.value })}
-                  />
-                </td>
+                <td><input type="text" value={newAdmin.firstName} onChange={(e) => setNewAdmin({ ...newAdmin, firstName: e.target.value })} /></td>
               </tr>
               <tr>
                 <td>Last Name</td>
-                <td>
-                  <input
-                    type="text"
-                    value={editableAdminData.lastName || ''}
-                    onChange={(e) => setEditableAdminData({ ...editableAdminData, lastName: e.target.value })}
-                  />
-                </td>
+                <td><input type="text" value={newAdmin.lastName} onChange={(e) => setNewAdmin({ ...newAdmin, lastName: e.target.value })} /></td>
               </tr>
               <tr>
                 <td>Email</td>
-                <td>
-                  <input
-                    type="email"
-                    value={editableAdminData.email || ''}
-                    onChange={(e) => setEditableAdminData({ ...editableAdminData, email: e.target.value })}
-                  />
-                </td>
+                <td><input type="email" value={newAdmin.email} onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })} /></td>
               </tr>
               <tr>
                 <td>Username</td>
-                <td>
-                  <input
-                    type="text"
-                    value={editableAdminData.username || ''}
-                    onChange={(e) => setEditableAdminData({ ...editableAdminData, username: e.target.value })}
-                  />
-                </td>
+                <td><input type="text" value={newAdmin.username} onChange={(e) => setNewAdmin({ ...newAdmin, username: e.target.value })} /></td>
+              </tr>
+              <tr>
+                <td>Password</td>
+                <td><input type="password" value={newAdmin.password} onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })} /></td>
               </tr>
               <tr>
                 <td>Phone</td>
-                <td>
-                  <input
-                    type="text"
-                    value={editableAdminData.phone || ''}
-                    onChange={(e) => setEditableAdminData({ ...editableAdminData, phone: e.target.value })}
-                  />
-                </td>
+                <td><input type="text" value={newAdmin.phone} onChange={(e) => setNewAdmin({ ...newAdmin, phone: e.target.value })} /></td>
               </tr>
               <tr>
                 <td>Date of Birth</td>
-                <td>
-                  <input
-                    type="date"
-                    value={editableAdminData.DOB || ''}
-                    onChange={(e) => setEditableAdminData({ ...editableAdminData, DOB: e.target.value })}
-                  />
-                </td>
+                <td><input type="date" value={newAdmin.DOB} onChange={(e) => setNewAdmin({ ...newAdmin, DOB: e.target.value })} /></td>
               </tr>
               <tr>
                 <td>Roles</td>
-                <td>
-                  <input
-                    type="text"
-                    value={editableAdminData.roles || ''}
-                    onChange={(e) => setEditableAdminData({ ...editableAdminData, roles: e.target.value })}
-                  />
-                </td>
+                <td><input type="text" value={newAdmin.roles} onChange={(e) => setNewAdmin({ ...newAdmin, roles: e.target.value })} /></td>
               </tr>
               <tr>
                 <td>Status</td>
                 <td>
-                  <select
-                    value={editableAdminData.active || 0}
-                    onChange={(e) => setEditableAdminData({ ...editableAdminData, active: Number(e.target.value) })}
-                  >
+                  <select value={newAdmin.active} onChange={(e) => setNewAdmin({ ...newAdmin, active: Number(e.target.value) })}>
                     <option value={1}>Active</option>
                     <option value={0}>Inactive</option>
                   </select>
@@ -249,9 +202,58 @@ function ManageAdmin() {
               </tr>
             </tbody>
           </table>
-          <button onClick={handleUpdateAdmin}>Update Admin</button>
+          <button onClick={handleCreateAdmin}>Add Admin</button>
         </div>
-      )}
+
+        {/* Edit Admin Form */}
+        {editAdminId && (
+          <div className="form-section">
+            <h3>Edit Admin</h3>
+            <table className="form-table">
+              <tbody>
+                <tr>
+                  <td>First Name</td>
+                  <td><input type="text" value={editableAdminData.firstName || ''} onChange={(e) => setEditableAdminData({ ...editableAdminData, firstName: e.target.value })} /></td>
+                </tr>
+                <tr>
+                  <td>Last Name</td>
+                  <td><input type="text" value={editableAdminData.lastName || ''} onChange={(e) => setEditableAdminData({ ...editableAdminData, lastName: e.target.value })} /></td>
+                </tr>
+                <tr>
+                  <td>Email</td>
+                  <td><input type="email" value={editableAdminData.email || ''} onChange={(e) => setEditableAdminData({ ...editableAdminData, email: e.target.value })} /></td>
+                </tr>
+                <tr>
+                  <td>Username</td>
+                  <td><input type="text" value={editableAdminData.username || ''} onChange={(e) => setEditableAdminData({ ...editableAdminData, username: e.target.value })} /></td>
+                </tr>
+                <tr>
+                  <td>Phone</td>
+                  <td><input type="text" value={editableAdminData.phone || ''} onChange={(e) => setEditableAdminData({ ...editableAdminData, phone: e.target.value })} /></td>
+                </tr>
+                <tr>
+                  <td>Date of Birth</td>
+                  <td><input type="date" value={editableAdminData.DOB || ''} onChange={(e) => setEditableAdminData({ ...editableAdminData, DOB: e.target.value })} /></td>
+                </tr>
+                <tr>
+                  <td>Roles</td>
+                  <td><input type="text" value={editableAdminData.roles || ''} onChange={(e) => setEditableAdminData({ ...editableAdminData, roles: e.target.value })} /></td>
+                </tr>
+                <tr>
+                  <td>Status</td>
+                  <td>
+                    <select value={editableAdminData.active || 0} onChange={(e) => setEditableAdminData({ ...editableAdminData, active: Number(e.target.value) })}>
+                      <option value={1}>Active</option>
+                      <option value={0}>Inactive</option>
+                    </select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button onClick={handleUpdateAdmin}>Update Admin</button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
