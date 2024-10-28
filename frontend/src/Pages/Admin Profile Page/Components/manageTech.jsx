@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../adminProfile.css';
 
 function ManageTech() {
+   
   const [techData, setTechData] = useState([]);
   const [statusMessage, setStatusMessage] = useState('');
   const [newTech, setNewTech] = useState({
@@ -11,7 +12,7 @@ function ManageTech() {
     count: 0,
     availabilityStatus: 1,
     monetaryValue: 0,
-    lastUpdatedBy: 1,  // Assuming this would be set dynamically
+    lastUpdatedBy: 2,  // Assuming this would be set dynamically
     imgUrl: '',
   });
   const [editTechId, setEditTechId] = useState(null);
@@ -31,6 +32,7 @@ function ManageTech() {
   };
 
   const handleCreateTech = async () => {
+    console.log("Attempting to create technology with data:", newTech); // Log request data
     try {
       const response = await axios.post(
         'https://library-database-backend.onrender.com/api/technology/createTechnology',
@@ -47,10 +49,27 @@ function ManageTech() {
         lastUpdatedBy: 1,
         imgUrl: '',
       });
+    
+      //console.log(newTech)
+
     } catch (error) {
-      setStatusMessage(`Error creating technology: ${error.message}`);
-    }
+        console.error(error)
+        if (error.response) {
+          console.error("Response data:", error.response.data);
+          console.error("Response status:", error.response.status);
+          console.error("Response headers:", error.response.headers);
+          setStatusMessage(`Error creating technology: ${error.response.data.message || 'Server error'}`);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+          setStatusMessage('No response from server. Check your network.');
+        } else {
+          console.error("Error", error.message);
+          setStatusMessage(`Error: ${error.message}`);
+        }
+      }
+      
   };
+  
 
   const handleEditTech = (tech) => {
     setEditTechId(tech.techId);
@@ -85,7 +104,7 @@ function ManageTech() {
 
   return (
     <div className="manage-tech">
-      <h2> </h2>
+      <h2>Manage Technology</h2>
 
       {statusMessage && <p className="status-message">{statusMessage}</p>}
 
@@ -129,8 +148,9 @@ function ManageTech() {
             <tbody>
               <tr><td>Device Name</td><td><input type="text" value={newTech.deviceName} onChange={(e) => setNewTech({ ...newTech, deviceName: e.target.value })} /></td></tr>
               <tr><td>Model Number</td><td><input type="text" value={newTech.modelNumber} onChange={(e) => setNewTech({ ...newTech, modelNumber: e.target.value })} /></td></tr>
-              <tr><td>Count</td><td><input type="number" value={newTech.count} onChange={(e) => setNewTech({ ...newTech, count: e.target.value })} /></td></tr>
-              <tr><td>Monetary Value</td><td><input type="number" value={newTech.monetaryValue} onChange={(e) => setNewTech({ ...newTech, monetaryValue: e.target.value })} /></td></tr>
+              <tr><td>Count</td><td><input type="number" value={newTech.count} onChange={(e) => setNewTech({ ...newTech, count: parseInt(e.target.value)
+               })} /></td></tr>
+              <tr><td>Monetary Value</td><td><input type="number" value={newTech.monetaryValue} onChange={(e) => setNewTech({ ...newTech, monetaryValue: parseInt(e.target.value) })} /></td></tr>
               <tr><td>Image URL</td><td><input type="text" value={newTech.imgUrl} onChange={(e) => setNewTech({ ...newTech, imgUrl: e.target.value })} /></td></tr>
               <tr><td>Status</td><td>
                 <select value={newTech.availabilityStatus} onChange={(e) => setNewTech({ ...newTech, availabilityStatus: parseInt(e.target.value, 10) })}>
