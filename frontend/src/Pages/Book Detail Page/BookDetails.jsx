@@ -31,6 +31,9 @@ function BookDetails() {
   const [waitList, setWaitList] = useState(false)
   const [cHistoryId, setcHistoryId] = useState('')
   const [waitListID, setWaitListID] = useState('')
+  const [reserve, setReserve] = useState('')
+  const [reserveID, setReserveID] = useState('')
+  const [lastDate, setLastDate] = useState('')
 
 
 
@@ -45,12 +48,7 @@ function BookDetails() {
         setError('Not logged in')
     }
 }, []);
-  const dataToSend = {
-    memberId: userId,
-    bookId: id,
-    instanceId: itemInstance
-
-  }
+  
   let waitListData = {
     itemId: id,
     itemType:"book",
@@ -86,14 +84,20 @@ function BookDetails() {
       
       // Redirect or show success message here
     } catch (error) {
-      
+      console.log('cant add')
     }
   }
   //Logic for checkout
   async function checkout(e) {
     e.preventDefault();
     try {
-
+      let dataToSend = {
+        memberId: userId,
+        bookId: id,
+        instanceId: itemInstance
+    
+      }
+console.log(dataToSend)
       const response = await axios.post('https://library-database-backend.onrender.com/api/checkoutbook/insertCheckOutBook', dataToSend);
       
       if(response)
@@ -101,6 +105,13 @@ function BookDetails() {
 setCheckedOut(true);
 alert("You have checked out this item.");
       }
+      if (reserve) {
+        // Call cancelReserveItem and pass an event to prevent any errors
+        const cancelEvent = { preventDefault: () => {} }; // Create a mock event object
+        await cancelReserveItem(cancelEvent); // Await the cancellation to ensure it completes
+    }
+    
+     
       
       // Redirect or show success message here
     } catch (error) {
@@ -115,6 +126,7 @@ alert("You have checked out this item.");
       
       alert("You have returned this item.");
       setCheckedOut(false);
+      
       
       // Redirect or show success message here
     } catch (error) {
@@ -135,7 +147,7 @@ alert("You have checked out this item.");
       }
       console.log(reserveData)
       const response = await axios.post('https://library-database-backend.onrender.com/api/reserve/createReserve', reserveData);
-      
+      setReserve(true)
       alert("You have reserved this item.");
       
       
@@ -144,6 +156,19 @@ alert("You have checked out this item.");
       
     }
   }
+  async function cancelReserveItem(e) {
+    e.preventDefault();
+   try{
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/reserve/cancelReserve/${reserveID}`);
+      setReserve(false)
+      
+      
+      
+      // Redirect or show success message here
+   } catch (error) {
+      
+    }
+}
 
 
 
@@ -206,12 +231,16 @@ alert("You have checked out this item.");
        
         
         //Logic to pick first instance where checked out status is not 0
-        const availableInstance = instances.find(instance => instance.checkedOutStatus == 0);
-       // console.log(availableInstance)
-    if (availableInstance) {
-      setItemInstance(availableInstance.instanceId); 
-     
-    }
+        if(!reserve)
+        {
+          const availableInstance = instances.find(instance => instance.checkedOutStatus == 0);
+          // console.log(availableInstance)
+       if (availableInstance) {
+         setItemInstance(availableInstance.instanceId); 
+        
+       }
+        }
+        
       }
       catch (error) {
         console.error('Error fetching similar books:', error);
@@ -236,7 +265,7 @@ const fetchMemberHistory = async () => {
           if (instanceFound.timeStampReturn === null) {
             // Book is still checked out
             
-            console.log("Book is currently checked out.");
+           
             const checkoutHistoryID = instanceFound.checkedOutBookHistoryId;
             
             setcHistoryId(checkoutHistoryID);
@@ -262,7 +291,7 @@ const fetchMemberHistory = async () => {
       
         }
         const instanceFound = memberHistory.find(instance => instance.itemId == id && instance.active == 1 && instance.itemType == 'book');
-      console.log(memberHistory)
+        
         if(instanceFound != undefined)
         {
        
@@ -277,7 +306,7 @@ const fetchMemberHistory = async () => {
           setWaitListID(undefined)
         }
         
-        console.log(response.data)
+        
 
     
       }
@@ -286,12 +315,56 @@ const fetchMemberHistory = async () => {
         
       }
     };
+    const fetchReserveList = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/reserve/${userId}`);
+        const memberHistory = response.data; 
+        const instanceFound = memberHistory.find(instance => instance.itemId == id && instance.active == 1 && instance.itemType == 'book');
+        console.log(instanceFound)
+
+        if(instanceFound !=null )
+        {
+          setItemInstance(instanceFound.instanceId)
+          setReserve(true)
+          setReserveID(instanceFound.reserveId)
+          const reserveDate = instanceFound.reserveDate; // Get the reserve date
+
+          // Create a new Date object
+          let date = new Date(reserveDate);
+          
+          // Extract month, day, and year
+          let month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+          let day = String(date.getDate()).padStart(2, '0');
+          let year = date.getFullYear();
+          
+          // Format to "month-day-year"
+          let formattedDate = `${month}-${day}-${year}`;
+          
+          // Set the last date with the formatted string
+          setLastDate(formattedDate);
+          
+        }
+        else
+        {
+          setReserveID(undefined)
+          setReserve(false)
+        }
+
+    
+      }
+      catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
+    
     fetchInstance();
     fetchBookDetails(); 
     fetchMemberHistory();
     fetchWaitList();
+    fetchReserveList();
     
-  }, [id,checkedOut, waitList]);
+  }, [id,checkedOut, waitList, reserve]);
 
   const handleToggleDetails = () => setShowMoreDetails(!showMoreDetails);
   const handleBackClick = () => navigate('/books');
@@ -375,18 +448,26 @@ const fetchMemberHistory = async () => {
         </button>
       )
     )}
-    {/* Render Reserve button only if not in waitlist and count > 0 */}
-    {count > 0 && !waitList && (
-      <button 
-        onClick={reserveItem} 
-        className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-      >
-        Reserve
-      </button>
-    )}
+    {/* Render Reserve or Cancel Reserve button based on the reserve variable */}
+    {count > 0 && !waitList && !checkedOut ? ( // Add checkedOut check here
+      !reserve ? ( // Check if reserve is false
+        <button 
+          onClick={reserveItem} 
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Reserve
+        </button>
+      ) : ( // If reserve is true
+        <button 
+          onClick={cancelReserveItem} 
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Cancel Reserve <span className="block text-xs">{lastDate}</span>
+        </button>
+      )
+    ) : null}
   </div>
 )}
-
         </div>
       
       
