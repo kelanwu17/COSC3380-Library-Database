@@ -10,6 +10,7 @@ import LandingPageImage from '../../../Assets/LandingPage.png';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NavBar from '../../../Components/NavBar';
 import { useState } from 'react';
+import Footer from '../../../Components/Footer'
 
 
 function Home() {
@@ -33,6 +34,7 @@ function Home() {
 
 
     return (
+        <div>
       <div className="home-container h-screen flex flex-col">
           <NavBar />
           <div
@@ -99,6 +101,8 @@ function Home() {
               </div>
           </div>
           
+      </div>
+      
       </div>
   );
 }  

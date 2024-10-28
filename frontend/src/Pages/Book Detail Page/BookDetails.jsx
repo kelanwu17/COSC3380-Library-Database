@@ -22,7 +22,7 @@ function BookDetails() {
   const [publisher, setPublisher] = useState('');
   const [imgUrl, setImgUrl] = useState('');
   const [similarBooks, setSimilarBooks] = useState([]); 
-  const [error, setError] = useState(null);
+  
   const [loading, setLoading] = useState(true);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -45,7 +45,7 @@ function BookDetails() {
     } 
     else {
         setIsLoggedIn(false)
-        setError('Not logged in')
+        
     }
 }, []);
   
@@ -489,7 +489,7 @@ const fetchMemberHistory = async () => {
           ))
         )}
       </div>
-      <footer>Footer</footer>
+      
     </div>
   );
 }

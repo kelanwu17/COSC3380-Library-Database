@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../../Components/NavBar';
 import { useNavigate } from 'react-router-dom';
-import Footer from '../../Components/Footer';
 
 function MusicDetails() {
   const { id } = useParams();
@@ -448,7 +447,7 @@ function MusicDetails() {
           ))}
       </div>
   
-      <Footer />
+      
     </div>
   );
   }

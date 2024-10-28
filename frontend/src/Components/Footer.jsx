@@ -1,9 +1,10 @@
 import React from 'react'
 import { useParams, Link } from 'react-router-dom';
 function Footer() {
+
   return (
     <div>
-       <footer className="bg-amber-900 text-white py-4">
+       <footer className="text-black py-4 bg-color-white" >
   <div className="container mx-auto flex justify-between items-center">
     <div className="ml-6">
       <p>&copy; {new Date().getFullYear()} Lumina Library. All rights reserved.</p>

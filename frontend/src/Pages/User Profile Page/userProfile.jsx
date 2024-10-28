@@ -6,6 +6,7 @@ import Navbar from '../../Components/NavBar';
 function UserProfile() {
   // State to manage which section is active
   const [activeSection, setActiveSection] = useState('events'); // Default to "events"
+  const [userSection, setSection] = useState('Profile')
 
   // Function to render content based on active section
   const renderContent = () => {
@@ -34,6 +35,8 @@ function UserProfile() {
               <li onClick={() => setActiveSection('checkedOutHistory')}>CHECKED OUT HISTORY</li>
               <li onClick={() => setActiveSection('recommendedBooks')}>RECOMMENDED BOOKS</li>
               <li onClick={() => setActiveSection('recommendedMusic')}>RECOMMENDED MUSIC</li>
+              <li onClick={() => setActiveSection('reservedItems')}>RESERVED ITEMS</li>
+              <li onClick={() => setActiveSection('waitListedItems')}>WAITLISTED ITEMS</li>
             </ul>
 
             {/* Notification Inbox in Sidebar */}
