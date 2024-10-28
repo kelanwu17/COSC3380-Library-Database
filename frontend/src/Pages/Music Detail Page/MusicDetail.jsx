@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../../Components/NavBar';
 import { useNavigate } from 'react-router-dom';
-import Footer from '../../Components/Footer';
 
 function MusicDetails() {
   const { id } = useParams();
@@ -24,6 +23,10 @@ function MusicDetails() {
   const[checkedOut, setCheckedOut] = useState(false)
   const [cHistoryId, setcHistoryId] = useState('')
   const [waitListID, setWaitListID] = useState('')
+  const [reserve, setReserve] = useState('')
+  const [reserveID, setReserveID] = useState('')
+  const [lastDate, setLastDate] = useState('')
+
   
   const userId = sessionStorage.getItem('memberId');
   //Checkout Logic
@@ -67,7 +70,11 @@ function MusicDetails() {
         setCheckedOut(true);
         alert("You have checked out this item.");
       }
-      
+      if (reserve) {
+        // Call cancelReserveItem and pass an event to prevent any errors
+        const cancelEvent = { preventDefault: () => {} }; // Create a mock event object
+        await cancelReserveItem(cancelEvent); // Await the cancellation to ensure it completes
+    }
       // Redirect or show success message here
     } catch (error) {
       console.error("Error during checkout:", error);
@@ -105,6 +112,44 @@ function MusicDetails() {
       
     }
   }
+
+
+   //Logic for reserve item 
+   async function reserveItem(e) {
+    e.preventDefault();
+    try {
+      let reserveData = {
+        itemId: id,
+        itemType: 'music',
+        memberId: userId,
+        instanceId: itemInstance
+
+      }
+      console.log(reserveData)
+      
+      const response = await axios.post('https://library-database-backend.onrender.com/api/reserve/createReserve', reserveData);
+      setReserve(true)
+      alert("You have reserved this item.");
+      
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
+  async function cancelReserveItem(e) {
+    e.preventDefault();
+   try{
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/reserve/cancelReserve/${reserveID}`);
+      setReserve(false)
+      
+      
+      
+      // Redirect or show success message here
+   } catch (error) {
+      
+    }
+}
   useEffect(() => {
     const fetchMusicDetails = async () => {
       try {
@@ -156,14 +201,18 @@ function MusicDetails() {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/musicInstance/${id}`);
         const instances = response.data; 
        
-        console.log(instances);
-        //Logic to pick first instance where checked out status is not 0
-        const availableInstance = instances.find(instance => instance.checkedOutStatus == 0);
+       
+        if(!reserve)
+        {
+          const availableInstance = instances.find(instance => instance.checkedOutStatus == 0);
+          if (availableInstance) {
+            setItemInstance(availableInstance.instanceId); 
+           
+          }
+        }
+       
        // console.log(availableInstance)
-    if (availableInstance) {
-      setItemInstance(availableInstance.instanceId); 
-     
-    }
+  
       }
       catch (error) {
         console.error('Error fetching similar music:', error);
@@ -231,13 +280,55 @@ function MusicDetails() {
         
       }
     };
+    const fetchReserveList = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/reserve/${userId}`);
+        const memberHistory = response.data; 
+        const instanceFound = memberHistory.find(instance => instance.itemId == id && instance.active == 1 && instance.itemType == 'music');
+        console.log("i",instanceFound)
+
+        if(instanceFound !=null )
+          {
+            setItemInstance(instanceFound.instanceId)
+            setReserve(true)
+            setReserveID(instanceFound.reserveId)
+            const reserveDate = instanceFound.reserveDate; // Get the reserve date
+  
+            // Create a new Date object
+            let date = new Date(reserveDate);
+            
+            // Extract month, day, and year
+            let month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            let day = String(date.getDate()).padStart(2, '0');
+            let year = date.getFullYear();
+            
+            // Format to "month-day-year"
+            let formattedDate = `${month}-${day}-${year}`;
+            
+            // Set the last date with the formatted string
+            setLastDate(formattedDate);
+            
+          }
+          else
+          {
+            setReserveID(undefined)
+            setReserve(false)
+          }
+  
+        }  
+      catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
 
     fetchWaitList();
     fetchMusicDetails();
     fetchInstance();
     fetchMemberHistory();
+    fetchReserveList();
     
-  }, [id,checkedOut,waitList]);
+  }, [id,checkedOut,waitList, reserve]);
 
   const filteredSimilarMusic = similarMusic.filter((music) => music.albumName !== albumName);
   const handleToggleDetails = () => setShowMoreDetails(!showMoreDetails);
@@ -246,7 +337,7 @@ function MusicDetails() {
     <div>
       <Navbar />
       <hr className="ml-2 mr-2 border-t-2 border-black" />
-      
+  
       <div className="h-8">
         <button
           className="ml-4 mt-4 h-6 border bg-amber-900 w-32 rounded-lg text-white font-bold border-black"
@@ -255,23 +346,22 @@ function MusicDetails() {
           Back
         </button>
       </div>
-      
+  
       {loading ? (
         <p>Loading...</p>
       ) : (
         <div className="flex flex-row ml-6 mt-6">
-          
           <div className="w-2/12 h-80">
             <img src={imgURL} className="w-full h-full object-cover" alt="Music cover" />
           </div>
-          
+  
           <div className="ml-2 mt-2 flex flex-col">
             <p className="text-sm mt-1">Album: {albumName}</p>
             <p className="text-sm mt-1">Artist: {artist}</p>
             <p className="text-sm mt-1">
               Genres:{" "}
-              <button 
-                className="text-blue-600 hover:text-purple-800" 
+              <button
+                className="text-blue-600 hover:text-purple-800"
                 onClick={() => navigate(`/music/${musicGenre}`)}
               >
                 {musicGenre}
@@ -280,42 +370,61 @@ function MusicDetails() {
             <p className="text-sm mt-1">Count: {count}</p>
             <p className="text-sm mt-1">Date Released: {dateReleased}</p>
           </div>
-          
+  
           {userId && (
-            <div className="ml-auto mr-12 flex flex-col">
-              {waitList || count <= 0 ? (
-                waitList ? (
-                  <button 
-                    onClick={cancelwaitListMusic}
-                    className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
-                  >
-                    Cancel Waitlist
-                  </button>
-                ) : (
-                  <button 
-                    onClick={waitListBook} 
-                    className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
-                  >
-                    Waitlist
-                  </button>
-                )
-              ) : !checkedOut ? (
-                <button 
-                  onClick={checkout} 
-                  className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-                >
-                  Checkout
-                </button>
-              ) : (
-                <button 
-                  onClick={returnMusic} 
-                  className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-                >
-                  Return
-                </button>
-              )}
-            </div>
-          )}
+  <div className="ml-auto mr-12 flex flex-col">
+    {waitList || count <= 0 ? (
+      waitList ? (
+        <button
+          onClick={cancelwaitListMusic}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+        >
+          Cancel Waitlist
+        </button>
+      ) : (
+        <button
+          onClick={waitListBook}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+        >
+          Waitlist
+        </button>
+      )
+    ) : !checkedOut ? (
+      <button
+        onClick={checkout}
+        className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+      >
+        Checkout
+      </button>
+    ) : (
+      <button
+        onClick={returnMusic}
+        className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+      >
+        Return
+      </button>
+    )}
+
+    {/* Render Reserve or Cancel Reserve button based on the reserve variable and checkedOut status */}
+    {count > 0 && !waitList && !checkedOut && ( // Add !checkedOut condition here
+      !reserve ? ( // Check if reserve is false
+        <button
+          onClick={reserveItem}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Reserve
+        </button>
+      ) : ( // If reserve is true
+        <button
+          onClick={cancelReserveItem}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Cancel Reserve <span className="block text-xs">{lastDate}</span>
+        </button>
+      )
+    )}
+  </div>
+)}
         </div>
       )}
   
@@ -337,9 +446,11 @@ function MusicDetails() {
             </Link>
           ))}
       </div>
+  
       
-      <Footer />
     </div>
   );
-}  
-export default MusicDetails;
+  }
+  
+  export default MusicDetails;
+  

@@ -1,12 +1,54 @@
 import React, { useState } from 'react';
 import './userProfile.css'; 
 import Navbar from '../../Components/NavBar';
-
+import axios from "axios"
+import { useEffect } from 'react';
 
 function UserProfile() {
   // State to manage which section is active
   const [activeSection, setActiveSection] = useState('events'); // Default to "events"
+  const [userSection, setSection] = useState('Profile')
+  const userId = sessionStorage.getItem('memberId');
+  const [userProfile, setUserProfile] = useState({
+    username:'',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    DOB: '',
+    preferences: 0,
+    accountStatus: 1
+  });
 
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/member/${userId}`);
+        const userFound = response.data[0];
+        console.log(userFound);
+        if (userFound) {
+          setUserProfile({
+            username: userFound.username,
+            firstName: userFound.firstName,
+            lastName: userFound.lastName,
+            email: userFound.email,
+            phone: userFound.phone,
+            DOB: userFound.DOB,
+            preferences: 0,
+            accountStatus: 1
+          });
+        } else {
+          throw new Error('User not found');
+        }
+      } catch (error) {
+        console.error('Error fetching User details:', error);
+      }
+    };
+    
+    // Invoke the function
+    fetchUserDetails();
+  }, [activeSection]); // Place `activeSection` as a dependency here
+  
   // Function to render content based on active section
   const renderContent = () => {
     switch (activeSection) {
@@ -34,6 +76,8 @@ function UserProfile() {
               <li onClick={() => setActiveSection('checkedOutHistory')}>CHECKED OUT HISTORY</li>
               <li onClick={() => setActiveSection('recommendedBooks')}>RECOMMENDED BOOKS</li>
               <li onClick={() => setActiveSection('recommendedMusic')}>RECOMMENDED MUSIC</li>
+              <li onClick={() => setActiveSection('reservedItems')}>RESERVED ITEMS</li>
+              <li onClick={() => setActiveSection('waitListedItems')}>WAITLISTED ITEMS</li>
             </ul>
 
             {/* Notification Inbox in Sidebar */}
