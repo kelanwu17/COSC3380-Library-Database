@@ -56,19 +56,19 @@ function AdminEvent() {
   // Handle Edit Form Change
   const handleFormChange = (e) => {
     setEditFormData({
-      ...editFormData,
-      [e.target.name]: e.target.value
+      ...editFormData, //spread data to preserve existing values
+      [e.target.name]: e.target.value //dynamically update field
     });
   };
 
   // Handle Update (Edit)
   const handleUpdate = async () => {
     try {
-      await axios.put(`https://library-database-backend.onrender.com/api/event/updateEvent/${selectedEvent.id}`, editFormData);
+      await axios.put(`https://library-database-backend.onrender.com/api/event/updateEvent/${selectedEvent.eventId}`, editFormData);
       
       // Update the events list with the edited data
       const updatedEvents = eventsData.map(event =>
-        event.id === selectedEvent.id ? { ...event, ...editFormData } : event
+        event.eventId === selectedEvent.eventId ? { ...event, ...editFormData } : event
       );
       setEventsData(updatedEvents);
 
@@ -87,7 +87,7 @@ function AdminEvent() {
       try {
         await axios.delete(`https://library-database-backend.onrender.com/api/event/deleteEvent/${eventId}`);
         // Refresh the events list after deletion
-        setEventsData(eventsData.filter(event => event.id !== eventId));
+        setEventsData(eventsData.filter(event => event.eventId !== eventId));
         alert(`Event with id: ${eventId} has been deleted.`);
       } catch (error) {
         console.error('Error deleting event:', error);
@@ -217,7 +217,7 @@ function AdminEvent() {
           <Grid2 container spacing={4}>
             {filteredEvents.length > 0 ? (
             filteredEvents.map((event) => (
-              <Grid2 item xs={12} sm={6} md={4} key={event.id}>
+              <Grid2 item xs={12} sm={6} md={4} key={event.eventId}>
                 <Paper 
                   elevation={3} 
                   sx={{
@@ -266,7 +266,7 @@ function AdminEvent() {
                     <Button 
                       variant="contained" 
                       color="primary" 
-                      onClick={() => handleDelete(event.id)}
+                      onClick={() => handleDelete(event.eventId)}
                       sx={{width : '50%'}}
                     >
                       Delete

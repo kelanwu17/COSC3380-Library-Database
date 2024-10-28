@@ -93,19 +93,19 @@ const EventsPage = () => {
         
         {/* Search bar */}
         <TextField 
-  label="Search Events" 
-  variant="filled"
-  value={searchQuery} // Controlled input value
-  onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
-  sx={{ 
-    mb: 4,
-    backgroundColor: "white",
-    borderRadius: "5px",
-    fontWeight: "bold",
-    width: "100%",
-    margin: "0px 5px 10px 0px"
-  }}
-/>
+          label="Search Events" 
+          variant="filled"
+          value={searchQuery} // Controlled input value
+          onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
+          sx={{ 
+            mb: 4,
+            backgroundColor: "white",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            width: "100%",
+            margin: "0px 5px 10px 0px"
+          }}
+        />
 
         
         {/* Scrollable list */}
@@ -119,7 +119,7 @@ const EventsPage = () => {
           <Grid2 container spacing={4}>
             {filteredEvents.length > 0 ? (
             filteredEvents.map((event) => (
-              <Grid2 item xs={12} sm={6} md={4} key={event.id}>
+              <Grid2 xs={12} sm={6} md={4} key={event.eventId} item>
                 <Paper 
                   elevation={3} 
                   sx={{
@@ -158,7 +158,7 @@ const EventsPage = () => {
                   <Button 
                     variant="contained" 
                     color="primary" 
-                    onClick={() => handleSignUp(event.id)}
+                    onClick={() => handleSignUp(event.eventId)}
                   >
                     Sign Up
                   </Button>
