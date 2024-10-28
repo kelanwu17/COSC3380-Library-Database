@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Grid2, Box, Paper, Typography, Button, Container, TextField, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Select, FormControl, InputLabel} from '@mui/material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function AdminEvent() {
+  const navigate = useNavigate();
   const [eventsData, setEventsData] = useState([]); // Holding all events 
   const [searchQuery, setSearchQuery] = useState(''); // Stores search input
   const [editModalOpen, setEditModalOpen] = useState(false);  // Track edit modal state
@@ -25,6 +27,7 @@ function AdminEvent() {
     eventHolder: '',   // Adjust based on actual data
     timeDate: ''
   }); // Form data for new event
+
 
   // Fetch Events
   const fetchEvents = async () => {
@@ -416,6 +419,19 @@ function AdminEvent() {
           </DialogActions>
         </Dialog>
       </Box>
+      <Button 
+        variant="contained" 
+        color="secondary" 
+        onClick={() => navigate('/')} // Go back to the previous page
+        sx={{
+          position: "absolute",
+          bottom: 20, 
+          left: 20, 
+          zIndex: 2 // Ensure the button appears above the blurred background
+        }}
+      >
+        Back
+      </Button>
     </Container>
   );
 }
