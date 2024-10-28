@@ -130,9 +130,11 @@ alert("You have checked out this item.");
         itemId: id,
         itemType: 'book',
         memberId: userId,
+        instanceId: itemInstance
 
       }
-      const response = await axios.post(`https://library-database-backend.onrender.com/api/reserve/createReserve`);
+      console.log(reserveData)
+      const response = await axios.post('https://library-database-backend.onrender.com/api/reserve/createReserve', reserveData);
       
       alert("You have reserved this item.");
       

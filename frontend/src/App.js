@@ -13,6 +13,7 @@ import UserProfile from './Pages/User Profile Page/userProfile';
 import BookDetails from './Pages/Book Detail Page/BookDetails'
 import MusicDetails from './Pages/Music Detail Page/MusicDetail';
 import TechDetail from './Pages/Tech Detail Page/TechDetail';
+import ContactPage from './Pages/Contact Page/ContactPage';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 function App() {
   return (
@@ -22,8 +23,9 @@ function App() {
         
         <Route path='/AdminItem' element={<AdminItem/>}/>
         <Route path='/AdminProfile' element={<AdminProfile/>}/>
-        </Route>
         <Route path='/AdminEvent' element={<AdminEvent/>}/>
+        </Route>
+        <Route path='/Contact' element={<ContactPage/>}/>
         <Route path='/Books' element={<BookCatalog/>}/>
         <Route path='/Events' element={<EventPage/>}/>
         <Route path='/' element={<HomePage/>}/>

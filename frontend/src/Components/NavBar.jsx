@@ -10,12 +10,23 @@ const Navbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const userId = sessionStorage.getItem('username'); 
     const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const role = sessionStorage.getItem("roles");
+    const[userRole, setRole] = useState('')
+    
     useEffect(() => {
 
         if (userId) {
             setIsLoggedIn(true)
         } else {
             setIsLoggedIn(false)
+        }
+        if(role == 'member')
+        {
+            setRole('member')
+        }
+        else
+        {
+            setRole('admin')
         }
     }, []);
     
@@ -47,7 +58,8 @@ const Navbar = () => {
             <div className="navbar-center">
                 <ul className="nav-links flex-row font-bold">
                     <li>
-                        <a href="/Events">Events</a>
+                    {!userRole ? ( <a href="/Events">Events</a> ) : 
+                    (<a href="/AdminEvent">Events</a>)}
                     </li>
                     <li>
                         <a href="/Books">Browse & Borrow</a>
