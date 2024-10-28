@@ -85,7 +85,7 @@ function AdminEvent() {
     const confirmDelete = window.confirm(`Are you sure you want to delete the event with id: ${eventId}?`);
     if (confirmDelete) {
       try {
-        await axios.delete(`https://library-database-backend.onrender.com/api/event/deleteEvent/${eventId}`);
+        await axios.put(`https://library-database-backend.onrender.com/api/event/disableEvent/${eventId}`);
         // Refresh the events list after deletion
         setEventsData(eventsData.filter(event => event.eventId !== eventId));
         alert(`Event with id: ${eventId} has been deleted.`);

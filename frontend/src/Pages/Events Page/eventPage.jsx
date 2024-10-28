@@ -1,20 +1,13 @@
-import React, { useEffect } from 'react';
-import { Grid2, 
-  Box, 
-  Paper, 
-  Typography, 
-  Button, 
-  Container, 
-  TextField 
-} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Grid2, Box, Paper, Typography, Button, Container, TextField } from '@mui/material';
 import axios from "axios";
-import { useState } from 'react';
 
 const EventsPage = () => {
   const [eventsData, setEventsData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [registeredEvents, setRegisteredEvents] = useState(new Set()); // Track registered events
 
-  //Fetching Events
+  // Fetching Events
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -28,14 +21,49 @@ const EventsPage = () => {
     fetchEvents(); // Call the fetch function
   }, []);
 
-  // Handler for Sign Up button
-  const handleSignUp = (eventId) => {
-    alert(`Signed up for event with id: ${eventId}`); 
+  // Fetch Registered Events
+  useEffect(() => {
+    const fetchRegisteredEvents = async () => {
+      const userId = sessionStorage.getItem('memberId'); // Get the user ID
+      if (userId) {
+        try {
+          const response = await axios.get(`https://library-database-backend.onrender.com/api/eventSignUp/${userId}`);
+          const registeredEventIds = new Set(response.data.map(event => event.eventId)); // Assuming response data contains eventId
+          setRegisteredEvents(registeredEventIds); // Store registered events in state
+        } catch (error) {
+          console.error('Error fetching registered events:', error);
+        }
+      }
+    };
+
+    fetchRegisteredEvents(); // Call the fetch function
+  }, []);
+
+  // Handle Sign Up button
+  const handleSignUp = async (eventId) => {
+    const userId = sessionStorage.getItem('memberId'); // Get the user ID
+    if (!userId) {
+      alert("You need to be logged in to sign up for an event.");
+      return;
+    }
+
+    try {
+      // Call the sign-up API
+      await axios.post('https://library-database-backend.onrender.com/api/eventSignUp/insertEventSignUp', {
+        eventId: eventId,
+        memberId: userId
+      });
+      setRegisteredEvents((prev) => new Set(prev).add(eventId)); // Update registered events
+      alert(`Successfully signed up for event with id: ${eventId}`);
+    } catch (error) {
+      console.error('Error signing up for event:', error);
+      alert('Failed to sign up for the event. Please try again.');
+    }
   };
 
   const filteredEvents = eventsData.filter(event =>
-    event.title.toLowerCase().includes(searchQuery.toLowerCase()) || // Filter by title
-    event.location.toLowerCase().includes(searchQuery.toLowerCase()) // You can add more fields to search if needed
+    event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    event.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -95,8 +123,8 @@ const EventsPage = () => {
         <TextField 
           label="Search Events" 
           variant="filled"
-          value={searchQuery} // Controlled input value
-          onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)} 
           sx={{ 
             mb: 4,
             backgroundColor: "white",
@@ -107,7 +135,6 @@ const EventsPage = () => {
           }}
         />
 
-        
         {/* Scrollable list */}
         <Box 
           sx={{ 
@@ -118,58 +145,66 @@ const EventsPage = () => {
           }}>
           <Grid2 container spacing={4}>
             {filteredEvents.length > 0 ? (
-            filteredEvents.map((event) => (
-              <Grid2 xs={12} sm={6} md={4} key={event.eventId} item>
-                <Paper 
-                  elevation={3} 
-                  sx={{
-                    p: 2,
-                    width: "550px",
-                    height: "auto",
-                    borderRadius: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between'
-                  }}>
-                  <Box sx={{ flexGrow: 1 }}>
-                    {/* Displaying event details */}
-                    <Typography variant="h5" gutterBottom>
-                      {event.title}
-                    </Typography>
-                    <Typography variant="body1">
-                      Location: {event.location}
-                    </Typography>
-                    <Typography variant="body1">
-                      Age Group: {event.ageGroup}
-                    </Typography>
-                    <Typography variant="body1">
-                      Category: {event.category}
-                    </Typography>
-                    <Typography variant="body1">
-                      Event Creator ID: {event.eventCreator}
-                    </Typography>
-                    <Typography variant="body1">
-                      Event Holder ID: {event.eventHolder}
-                    </Typography>
-                    <Typography variant="body1">
-                      Time and Date: {new Date(event.timeDate).toLocaleString()}
-                    </Typography>
-                  </Box>
-                  <Button 
+              filteredEvents.map((event) => (
+                <Grid2 xs={12} sm={6} md={4} key={event.eventId} item>
+                  <Paper 
+                    elevation={3} 
+                    sx={{
+                      p: 2,
+                      width: "550px",
+                      height: "auto",
+                      borderRadius: 2,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between'
+                    }}>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="h5" gutterBottom>
+                        {event.title}
+                      </Typography>
+                      <Typography variant="body1">
+                        Location: {event.location}
+                      </Typography>
+                      <Typography variant="body1">
+                        Age Group: {event.ageGroup}
+                      </Typography>
+                      <Typography variant="body1">
+                        Category: {event.category}
+                      </Typography>
+                      <Typography variant="body1">
+                        Event Creator ID: {event.eventCreator}
+                      </Typography>
+                      <Typography variant="body1">
+                        Event Holder ID: {event.eventHolder}
+                      </Typography>
+                      <Typography variant="body1">
+                        Time and Date: {new Date(event.timeDate).toLocaleString()}
+                      </Typography>
+                    </Box>
+                    {registeredEvents.has(event.eventId) ? ( // Check if registered
+                    <Button 
                     variant="contained" 
-                    color="primary" 
-                    onClick={() => handleSignUp(event.eventId)}
+                    disabled
                   >
-                    Sign Up
+                    Signed up
                   </Button>
-                </Paper>
-              </Grid2>
-            )))
-          : (
-            <Typography variant="h6" color="white">
-      No events found.
-    </Typography>
-          )}
+                    ) : (
+                      <Button 
+                        variant="contained" 
+                        color="primary" 
+                        onClick={() => handleSignUp(event.eventId)}
+                      >
+                        Sign Up
+                      </Button>
+                    )}
+                  </Paper>
+                </Grid2>
+              ))
+            ) : (
+              <Typography variant="h6" color="white">
+                No events found.
+              </Typography>
+            )}
           </Grid2>
         </Box>
       </Box>
@@ -178,4 +213,5 @@ const EventsPage = () => {
 };
 
 export default EventsPage;
+
 
