@@ -9,6 +9,7 @@ import ManageTech from './Components/manageTech';
 import ManageAdmin from './Components/manageAdmin';
 import AdminInfo from './Components/adminInfo';
 
+
 function AdminProfile() {
   const [activeSection, setActiveSection] = useState(''); // Show profile by default
 
