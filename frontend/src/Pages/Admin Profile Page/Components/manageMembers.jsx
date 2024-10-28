@@ -75,31 +75,33 @@ function ManageMembers() {
 
   const handleUpdateMember = async () => {
     try {
-      // Send the updated member details to the API
       const response = await axios.put(
         `https://library-database-backend.onrender.com/api/member/updateMember/${editMemberId}`,
-        {
-          firstName: editableData.firstName,
-          lastName: editableData.lastName,
-          email: editableData.email,
-          phone: editableData.phone,
-          DOB: editableData.DOB,
-          preference: editableData.preferences.join(','),
-        }
+        editableData
       );
-  
-      // Check for a successful response and display a message
-      if (response.status === 200) {
-        alert(response.data.message); // Show success message
-        setEditMemberId(null); // Clear the edit member ID
-        fetchAllMembers(); // Refresh the member list
-      }
+      alert(response.data.message || 'Member updated successfully!');
+      setEditMemberId(null);
+      fetchAllMembers(); // Refresh the list to reflect changes
     } catch (error) {
       console.error('Failed to update member:', error);
-      alert('Failed to update member. Please try again.');
+  
+      if (error.response) {
+        // Server responded with a status code other than 200 range
+        const errorMessage = error.response.data.message || 'Unexpected error occurred';
+        const errorStatus = error.response.status;
+        alert(`Failed to update member: ${errorMessage} (Status: ${errorStatus})`);
+      } else if (error.request) {
+        // Request was made but no response received
+        alert('Failed to update member: No response from server. Please check your connection.');
+      } else {
+        // Other errors (e.g., setup issues)
+        alert(`Failed to update member: ${error.message}`);
+      }
     }
   };
+  ;
   
+
 
   const handleDeleteMember = async (memberId) => {
     try {
