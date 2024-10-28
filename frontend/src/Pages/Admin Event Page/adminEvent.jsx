@@ -112,7 +112,7 @@ function AdminEvent() {
   // Handle Create (Submit new event)
   const handleCreateEvent = async () => {
     try {
-      await axios.post('https://library-database-backend.onrender.com/api/event/insertEvent', newEventData);
+      await axios.post('https://library-database-backend.onrender.com/api/event/createEvent', newEventData);
       setCreateModalOpen(false);  // Close the modal
       fetchEvents();  // Refresh event list after creating a new event
       alert('Event created successfully.');
