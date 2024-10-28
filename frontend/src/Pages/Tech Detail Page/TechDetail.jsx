@@ -22,12 +22,52 @@ function TechDetail() {
   const userId = sessionStorage.getItem('memberId');
   //checkout logic
   const[itemInstance, setItemInstance] = useState('')
-  
+  const [waitListID, setWaitListID] = useState('')
   const dataToSend = {
     memberId: userId,
     techId: id,
     instanceId: itemInstance,
   };
+ //Waitlist logic
+ let waitListData = {
+  itemId: id,
+  itemType:"tech",
+  memberId: userId,
+
+}
+  //Waitlist Logic  }
+  const [waitList, setWaitList] = useState(false)
+  async function waitListBook(e) {
+    e.preventDefault();
+    try {
+      setWaitList(false)
+      console.log(waitListData)
+      const response = await axios.post('https://library-database-backend.onrender.com/api/waitlist/createWaitlist', waitListData);
+      console.log(response)
+      alert("You have waitlisted this item.")
+      setWaitList(true);
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
+  async function cancelwaitListTech(e) {
+    e.preventDefault();
+    try {
+      setWaitList(false)
+      
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/waitlist/cancelWaitlist/${waitListID}`);
+      console.log(response)
+      alert("You have been removed from the waitlist this item.");
+      setWaitListID(undefined);
+      setWaitList(false);
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
   
   async function checkout(e) {
     e.preventDefault();
@@ -150,54 +190,106 @@ function TechDetail() {
         
       }
     };
+    const fetchWaitList = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/waitlist/${userId}`);
+        const memberHistory = response.data; 
+       console.log(memberHistory)
+       const instanceFound = memberHistory.find(instance => instance.itemId == id && instance.active == 1 && instance.itemType == 'tech');
+      console.log(memberHistory)
+        if(instanceFound != undefined)
+        {
+       
+          
+          setWaitListID(instanceFound.waitlistId)
+          setWaitList(true)
+        
+        }
+        else
+        {
+          setWaitList(false)
+          setWaitListID(undefined)
+        }
+      }
+      catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
+    fetchWaitList();
     fetchInstance();
     fetchTechDetails();
     fetchOtherTechs();
     fetchMemberHistory();
-  }, [id]);
+  }, [id,waitList]);
 
   const handleBackClick = () => navigate('/book');
   
   // Fix: Filter otherTechs excluding the current tech by deviceName
   const fetchSimilarTech = otherTechs.filter(tech => tech.deviceName !== techDetails.deviceName);
-
   return (
     <div>
       <Navbar />
       <hr className="ml-2 mr-2 border-t-2 border-black" />
       <div className="h-8">
-        <button className="ml-4 mt-4 h-6 border bg-amber-900 w-32 rounded-lg text-white font-bold border-black" onClick={handleBackClick}>Back</button>
+        <button 
+          className="ml-4 mt-4 h-6 border bg-amber-900 w-32 rounded-lg text-white font-bold border-black" 
+          onClick={handleBackClick}
+        >
+          Back
+        </button>
       </div>
       
       <div className="flex flex-row ml-6 mt-6">
         <div className="w-2/12 h-80">
-          <img src={techDetails.imgUrl} className="w-full h-full object-cover" alt="Tech cover" />
+          <img 
+            src={techDetails.imgUrl} 
+            className="w-full h-full object-cover" 
+            alt="Tech cover" 
+          />
         </div>
         <div className="ml-2 mt-2 flex flex-col">
           <p className="text-sm mt-1">Device: {techDetails.deviceName}</p>
           <p className="text-sm mt-1">Model Number: {techDetails.modelNumber}</p>
           <p className="text-sm mt-1">Count: {techDetails.count}</p>
         </div>
-        <div className="ml-auto mr-12 flex flex-col">
-          <button className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black">Reserve</button>
-          {!checkedOut ? (
-    <button
-      onClick={checkout}
-      className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-    >
-      Checkout
-    </button>
-  ) : (
-    <button
-      onClick={returnTech}
-      className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-    >
-      Return
-    </button>
-  )}
-        </div>
+        {userId && (
+          <div className="ml-auto mr-12 flex flex-col">
+            {waitList || techDetails.count <= 0 ? (
+              waitList ? (
+                <button 
+                  onClick={cancelwaitListTech}
+                  className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+                >
+                  Cancel Waitlist
+                </button>
+              ) : (
+                <button 
+                  onClick={waitListBook} 
+                  className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+                >
+                  Waitlist
+                </button>
+              )
+            ) : !checkedOut ? (
+              <button 
+                onClick={checkout} 
+                className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+              >
+                Checkout
+              </button>
+            ) : (
+              <button 
+                onClick={returnTech} 
+                className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+              >
+                Return
+              </button>
+            )}
+          </div>
+        )}
       </div>
-
+  
       <hr className="ml-6 mt-2 bg-black border-0" />
       <p className="ml-4">Other Tech:</p>
       <hr className="mt-2 ml-2 mr-2 border-t-2 border-black" />
@@ -206,7 +298,11 @@ function TechDetail() {
           <Link to={`/tech/${tech.techId}`} key={tech.techId}> 
             <div className="flex flex-col ml-32 mt-4 hover:scale-105 transform transition-transform duration-300">
               <div className="border-black border h-60 w-48">
-                <img src={tech.imgUrl} alt={tech.deviceName} className="w-full h-full object-cover" />
+                <img 
+                  src={tech.imgUrl} 
+                  alt={tech.deviceName} 
+                  className="w-full h-full object-cover" 
+                />
               </div>
               <p className="text-sm text-center mt-1">{tech.deviceName}</p>
               <p className="text-xs text-center mb-4">{tech.count}</p>
@@ -216,6 +312,7 @@ function TechDetail() {
       </div>
     </div>
   );
+  
 }
 
 export default TechDetail;

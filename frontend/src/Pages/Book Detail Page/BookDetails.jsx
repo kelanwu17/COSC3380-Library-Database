@@ -30,7 +30,7 @@ function BookDetails() {
   const[checkedOut, setCheckedOut] = useState(false)
   const [waitList, setWaitList] = useState(false)
   const [cHistoryId, setcHistoryId] = useState('')
- 
+  const [waitListID, setWaitListID] = useState('')
 
 
 
@@ -51,20 +51,38 @@ function BookDetails() {
     instanceId: itemInstance
 
   }
-  const waitListData = {
+  let waitListData = {
     itemId: id,
     itemType:"book",
     memberId: userId,
 
   }
+ 
   async function waitListBook(e) {
     e.preventDefault();
     try {
-      setWaitList(false)
-      const response = await axios.post('https://library-database-backend.onrender.com/api/reserve/createReserve', waitListData);
       
-      alert("You have reserved this item.");
+      console.log(waitListData)
+      const response = await axios.post('https://library-database-backend.onrender.com/api/waitlist/createWaitlist', waitListData);
+      console.log(response)
+      alert("You have waitlisted this item.");
+      setWaitList(true);
       
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
+  async function cancelwaitListBook(e) {
+    e.preventDefault();
+    try {
+      
+      
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/waitlist/cancelWaitlist/${waitListID}`);
+      console.log(response)
+      alert("You have been removed from the waitlist this item.");
+      setWaitListID(undefined);
+      setWaitList(false);
       
       // Redirect or show success message here
     } catch (error) {
@@ -132,10 +150,7 @@ alert("You have checked out this item.");
 
           fetchSimilarBooks(genre);
 
-          if(count <= 0)
-          {
-            setWaitList(true)
-          }
+         
         } else {
           throw new Error('Book not found');
         }
@@ -208,11 +223,48 @@ const fetchMemberHistory = async () => {
         
       }
     };
+    const fetchWaitList = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/waitlist/${userId}`);
+        const memberHistory = response.data; 
+       
+        waitListData = {
+          itemId: id,
+          itemType:"book",
+          memberId: userId,
+      
+        }
+        const instanceFound = memberHistory.find(instance => instance.itemId == id && instance.active == 1 && instance.itemType == 'book');
+      console.log(memberHistory)
+        if(instanceFound != undefined)
+        {
+       
+          
+          setWaitListID(instanceFound.waitlistId)
+          setWaitList(true)
+        
+        }
+        else
+        {
+          setWaitList(false)
+          setWaitListID(undefined)
+        }
+        
+        console.log(response.data)
+
+    
+      }
+      catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
     fetchInstance();
     fetchBookDetails(); 
     fetchMemberHistory();
+    fetchWaitList();
     
-  }, [id,checkedOut]);
+  }, [id,checkedOut, waitList]);
 
   const handleToggleDetails = () => setShowMoreDetails(!showMoreDetails);
   const handleBackClick = () => navigate('/books');
@@ -263,13 +315,22 @@ const fetchMemberHistory = async () => {
           </div>
           {userId && (
   <div className="ml-auto mr-12 flex flex-col">
-    {waitList ? (
-      <button 
-        onClick={waitListBook} 
-        className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
-      >
-        Waitlist
-      </button>
+    {waitList || count <= 0 ? (
+      waitList ? (
+        <button 
+          onClick={cancelwaitListBook}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+        >
+          Cancel Waitlist
+        </button>
+      ) : (
+        <button 
+          onClick={waitListBook} 
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+        >
+          Waitlist
+        </button>
+      )
     ) : (
       !checkedOut ? (
         <button 
@@ -289,6 +350,7 @@ const fetchMemberHistory = async () => {
     )}
   </div>
 )}
+
         </div>
       
       
