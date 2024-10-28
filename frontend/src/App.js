@@ -19,11 +19,11 @@ function App() {
     <Router>
       <Routes>
         <Route element={<ProtectedRoutes/>}>
-        <Route path='/AdminEvent' element={<AdminEvent/>}/>
+        
         <Route path='/AdminItem' element={<AdminItem/>}/>
         <Route path='/AdminProfile' element={<AdminProfile/>}/>
         </Route>
-        
+        <Route path='/AdminEvent' element={<AdminEvent/>}/>
         <Route path='/Books' element={<BookCatalog/>}/>
         <Route path='/Events' element={<EventPage/>}/>
         <Route path='/' element={<HomePage/>}/>
