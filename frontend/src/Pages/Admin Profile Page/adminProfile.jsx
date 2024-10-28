@@ -6,9 +6,11 @@ import ManageBooks from '../Admin Item Page/adminItem';
 import AdminEvent from '../Admin Event Page/adminEvent';
 import ManageMusic from './Components/manageMusic';
 import ManageTech from './Components/manageTech';
+import ManageAdmin from './Components/manageAdmin';
+import AdminInfo from './Components/adminInfo';
 
 function AdminProfile() {
-  const [activeSection, setActiveSection] = useState('');
+  const [activeSection, setActiveSection] = useState(''); // Show profile by default
 
   const renderActiveSection = () => {
     switch (activeSection) {
@@ -22,13 +24,10 @@ function AdminProfile() {
         return <ManageMusic />;
       case 'manageTech':
         return <ManageTech />;
+      case 'manageAdmin':
+        return <ManageAdmin />;
       default:
-        return (
-          <div className="member-info-rectangle">
-            <h2>ADMIN PROFILE</h2>
-            {/* Profile details */}
-          </div>
-        );
+        return <AdminInfo />; // Default view is AdminInfo
     }
   };
 
@@ -44,6 +43,8 @@ function AdminProfile() {
         return "Admin - Manage Music";
       case 'manageTech':
         return "Admin - Manage Technology";
+      case 'manageAdmin':
+        return "Admin - Manage Admins";
       default:
         return "Admin Profile";
     }
@@ -57,7 +58,7 @@ function AdminProfile() {
           <ul className="sidebar-menu">
             <li
               onClick={() => setActiveSection('')}
-              className={activeSection === '' ? 'active' : ''}
+              className={!activeSection ? 'active' : ''}
             >
               Back to Profile
             </li>
@@ -91,10 +92,16 @@ function AdminProfile() {
             >
               Manage Technology
             </li>
+            <li
+              onClick={() => setActiveSection('manageAdmin')}
+              className={activeSection === 'manageAdmin' ? 'active' : ''}
+            >
+              Manage Admins
+            </li>
           </ul>
         </div>
         <div className="profile-content">
-          <h2>{getSectionTitle()}</h2> {/* Display the current section title */}
+          <h2>{getSectionTitle()}</h2>
           {renderActiveSection()}
         </div>
       </div>

@@ -4,89 +4,85 @@
   align-items: flex-start;
   min-height: 100vh;
   background: linear-gradient(to right, #e0ddd9, #b09f8f);
-  padding: 20px;
-  margin-left: 20%; /* Same width as the sidebar */
-  padding-top: 20px; /* Adjust padding for spacing */
-  padding-left: 20px;
+  padding: 0; /* Removed extra padding */
+  margin-left: 20%; /* Sidebar width */
 }
 
 .sidebar {
-  width: 20%; /* Adjust width as needed */
+  width: 20%; /* Sidebar width */
   position: fixed;
   top: 60px;
   left: 0;
   padding-top: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 1;
-  background-color: #f4f4f4; /* Sidebar background color */
-  min-height: 100vh; /* Make the sidebar span the full viewport height */
-  overflow-y: auto; 
-  height: calc(100vh - 60px); /* Adjust this based on navbar height */
-
+  background-color: #f4f4f4;
+  min-height: 100vh;
+  overflow-y: auto;
 }
-
-.sidebar-menu {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar-menu li {
-  padding: 12px 0;
-  font-weight: bold;
-  cursor: pointer;
-  color: black;
-  transition: color 0.2s ease;
-}
-
-.sidebar-menu li:hover,
-.sidebar-menu li.active {
-  color: #7a5e45;
-}
-
-
 
 /* Profile Content */
 .profile-content {
   flex-grow: 1;
-  padding: 20px;
+  padding: 10px 20px; /* Reduced padding to remove extra space */
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* Table Styling */
+/* Table Container */
 .table-container {
   overflow-x: auto;
-  max-height: 400px;
-  background-color: #fff;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
+  background-color: #fff;
+  max-height: 500px; 
 }
 
-.user-table {
+/* Table Styling */
+.user-table,
+.admin-table,
+.book-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
 
 .user-table th,
-.user-table td {
-  padding: 12px;
+.user-table td,
+.admin-table th,
+.admin-table td,
+.book-table th,
+.book-table td {
+  padding: 10px; /* Reduced padding */
   text-align: left;
   border-bottom: 1px solid #ddd;
+  white-space: normal;
+  overflow: hidden;
+  word-wrap: break-word;
 }
 
-.user-table th {
+.user-table th,
+.admin-table th,
+.book-table th {
   background-color: #7a5e45;
   color: white;
+  position: sticky;
+  top: 0; /* Make header sticky for scrolling */
+  z-index: 2;
 }
 
-.user-table td {
+.user-table td,
+.admin-table td,
+.book-table td {
   font-size: 14px;
+  color: #333;
 }
 
-.user-table tr:hover {
+.user-table tr:hover,
+.admin-table tr:hover,
+.book-table tr:hover {
   background-color: #f5f5f5;
 }
 
@@ -96,6 +92,7 @@
   background-color: #463524;
   border-radius: 10px;
   color: white;
+  margin-top: 20px;
 }
 
 .form-table td {
@@ -111,7 +108,7 @@
   color: #333;
 }
 
-/* General Button Styling */
+/* Button Styling */
 button {
   background-color: #7a5e45;
   color: white;
@@ -119,18 +116,16 @@ button {
   border-radius: 5px;
   padding: 8px 15px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 button:hover {
   background-color: #5c3e32;
 }
 
-/* Responsive */
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .profile-container {
     flex-direction: column;
-    align-items: stretch;
   }
 
   .sidebar {
@@ -145,71 +140,51 @@ button:hover {
 
 .form-section-wrapper {
   display: flex;
-  gap: 20px; /* Space between Create and Edit sections */
-  justify-content: space-between; /* Space the forms equally */
+  gap: 20px;
+  justify-content: space-between;
 }
 
 .form-section {
-  flex: 1; /* Make each form section take equal space */
-  padding: 15px;
+  flex: 1;
+  padding: 10px;
   background-color: #f5f5f5;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-/* Table Styles */
-.table-container {
-  overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  background-color: #ffffff;
+
+/* Table Column Widths */
+.user-table .name-column,
+.admin-table .name-column,
+.book-table .title-column {
+  width: 15%;
 }
 
-.book-table {
-  width: 100%;
-  border-collapse: collapse;
+.user-table .email-column,
+.admin-table .email-column,
+.book-table .author-column {
+  width: 20%;
 }
 
-.book-table th,
-.book-table td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+.user-table .phone-column,
+.admin-table .phone-column,
+.book-table .aisle-column {
+  width: 10%;
 }
 
-.book-table th {
-  background-color: #7a5e45;
-  color: white;
-  font-weight: bold;
+.user-table .dob-column,
+.admin-table .dob-column,
+.book-table .count-column {
+  width: 10%;
 }
 
-.book-table td {
-  color: #333;
+.user-table .preferences-column,
+.admin-table .roles-column,
+.book-table .genre-column {
+  width: 15%;
 }
 
-.book-table tr:hover {
-  background-color: #f9f9f9;
+.user-table .status-column,
+.admin-table .status-column {
+  width: 10%;
 }
 
-.book-table .actions {
-  display: flex;
-  gap: 8px;
-}
-
-.button {
-  padding: 5px 10px;
-  font-size: 14px;
-  border-radius: 5px;
-  cursor: pointer;
-  border: none;
-}
-
-.button.modify {
-  background-color: #a97b50;
-  color: white;
-}
-
-.button.delete {
-  background-color: #c44d58;
-  color: white;
-}

@@ -75,33 +75,35 @@ function ManageMembers() {
 
   const handleUpdateMember = async () => {
     try {
+      // Parse DOB to correct format
+      let updatedData = { ...editableData };
+      if (updatedData.DOB) {
+        updatedData.DOB = updatedData.DOB.replace('T', ' ').replace('Z', '');
+      }
+  
       const response = await axios.put(
         `https://library-database-backend.onrender.com/api/member/updateMember/${editMemberId}`,
-        editableData
+        updatedData
       );
-      alert(response.data.message || 'Member updated successfully!');
+  
+      alert(`${response.data.message || 'Member updated successfully!'}`);
       setEditMemberId(null);
       fetchAllMembers(); // Refresh the list to reflect changes
     } catch (error) {
       console.error('Failed to update member:', error);
   
       if (error.response) {
-        // Server responded with a status code other than 200 range
         const errorMessage = error.response.data.message || 'Unexpected error occurred';
         const errorStatus = error.response.status;
         alert(`Failed to update member: ${errorMessage} (Status: ${errorStatus})`);
       } else if (error.request) {
-        // Request was made but no response received
         alert('Failed to update member: No response from server. Please check your connection.');
       } else {
-        // Other errors (e.g., setup issues)
         alert(`Failed to update member: ${error.message}`);
       }
     }
   };
-  ;
   
-
 
   const handleDeleteMember = async (memberId) => {
     try {
@@ -146,17 +148,17 @@ function ManageMembers() {
       <div className="table-container">
         <table className="user-table">
           <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Username</th>
-              <th>Phone</th>
-              <th>DOB</th>
-              <th>Preferences</th>
-              <th>Account Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <tr>
+            <th className="name-column">Name</th>
+            <th className="email-column">Email</th>
+            <th className="username-column">Username</th>
+            <th className="phone-column">Phone</th>
+            <th className="dob-column">DOB</th>
+            <th className="preferences-column">Preferences</th>
+            <th className="status-column">Account Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
           <tbody>
             {filteredMembers.map((member) => (
               <tr key={member.memberId}>
