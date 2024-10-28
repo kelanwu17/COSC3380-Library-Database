@@ -121,6 +121,31 @@ alert("You have checked out this item.");
       
     }
   }
+
+  //Logic for reserve item 
+  async function reserveItem(e) {
+    e.preventDefault();
+    try {
+      let reserveData = {
+        itemId: id,
+        itemType: 'book',
+        memberId: userId,
+
+      }
+      const response = await axios.post(`https://library-database-backend.onrender.com/api/reserve/createReserve`);
+      
+      alert("You have reserved this item.");
+      
+      
+      // Redirect or show success message here
+    } catch (error) {
+      
+    }
+  }
+
+
+
+
   useEffect(() => {
    //console.log(dataToSend)
     const fetchBookDetails = async () => {
@@ -347,6 +372,15 @@ const fetchMemberHistory = async () => {
           Return
         </button>
       )
+    )}
+    {/* Render Reserve button only if not in waitlist and count > 0 */}
+    {count > 0 && !waitList && (
+      <button 
+        onClick={reserveItem} 
+        className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+      >
+        Reserve
+      </button>
     )}
   </div>
 )}
