@@ -3,7 +3,7 @@ import './userProfile.css';
 import Navbar from '../../Components/NavBar';
 import axios from "axios"
 import { useEffect } from 'react';
-
+import WaitlistComponent from './Components/WaitlistComponent';
 function UserProfile() {
   // State to manage which section is active
   const [activeSection, setActiveSection] = useState('events'); // Default to "events"
@@ -131,7 +131,7 @@ useEffect(() => {
 
             {/* Dynamic content displayed based on sidebar selection */}
             <div className="section-content">
-              {renderContent()}
+              <WaitlistComponent/>
             </div>
           </div>
         </div>

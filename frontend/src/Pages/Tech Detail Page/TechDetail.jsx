@@ -20,6 +20,7 @@ function TechDetail() {
   const[checkedOut, setCheckedOut] = useState(false)
   const [cHistoryId, setcHistoryId] = useState('')
   const userId = sessionStorage.getItem('memberId');
+  const [fines, setFines] = useState(false)
   //checkout logic
   const[itemInstance, setItemInstance] = useState('')
   const [waitListID, setWaitListID] = useState('')
@@ -172,7 +173,7 @@ function TechDetail() {
           throw new Error('Tech not found');
         }
       } catch (error) {
-        console.error('Error fetching Tech details:', error);
+        navigate('/books')
       } 
     };
 
@@ -295,12 +296,31 @@ function TechDetail() {
         
       }
     };
+    const fetchUserLibraryCard = async (genre) => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/libraryCard/${userId}`);
+        const lCard = response.data
+        
+        if(lCard.status !==1)
+        {
+          setFines(true)
+        }
+        else
+        {
+          setFines(true)
+        }
+      } catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
     fetchWaitList();
     fetchInstance();
     fetchTechDetails();
     fetchOtherTechs();
     fetchMemberHistory();
     fetchReserveList();
+    fetchUserLibraryCard();
   }, [id,waitList,reserve]);
 
   const handleBackClick = () => navigate('/book');
@@ -334,7 +354,7 @@ function TechDetail() {
           <p className="text-sm mt-1">Count: {techDetails.count}</p>
         </div>
   
-        {userId && (
+        {(userId && fines) && (
   <div className="ml-auto mr-12 flex flex-col">
     {waitList || techDetails.count <= 0 ? (
       waitList ? (

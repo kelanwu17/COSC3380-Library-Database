@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
-
-function ReserveComponent() {
+function WaitlistComponent() {
     const [reserveInfo, setReserveInfo] = useState([]);
     const userId = sessionStorage.getItem('memberId');
     const [items, setItems] = useState([]);
@@ -14,7 +12,7 @@ function ReserveComponent() {
     useEffect(() => {
         const fetchReserveList = async () => {
             try {
-                const response = await axios.get(`https://library-database-backend.onrender.com/api/reserve/${userId}`);
+                const response = await axios.get(`https://library-database-backend.onrender.com/api/waitlist/${userId}`);
                 const reserveData = response.data;
 
                 const activeReserveData = reserveData.filter(instance => instance.active === 1);
@@ -144,7 +142,7 @@ function ReserveComponent() {
                         <a href={`/${shortCat}/${item.id}`}>
                         <div key={index} className='flex flex-row mb-4 '>
                             <img className='w-40 h-40' src={item.imgUrl} alt={item.title} />
-                            <div className='flex flex-col ml-3'>
+                            <div className='flex flex-col ml-2'>
                                 <h3>{item.title}</h3>
                                 <p>{item.lead}</p>
                             </div>
@@ -157,4 +155,5 @@ function ReserveComponent() {
     );
 }
 
-export default ReserveComponent;
+
+export default WaitlistComponent
