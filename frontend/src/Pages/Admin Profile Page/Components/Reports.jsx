@@ -48,42 +48,12 @@ const Reports = () => {
       .replace(/^./, (str) => str.toUpperCase()), // Converts camelCase to Title Case
   }));
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(apiEndpoints[selectedTable]);
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const result = await response.json();
-        setData(result);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchData();
-  }, [selectedTable]);
 
   const handleChange = (event) => {
     setSelectedTable(event.target.value);
   };
 
-  // Dynamically generate columns from the first row of data
-  const columns =
-    data.length > 0
-      ? Object.keys(data[0]).map((key) => ({
-          field: key,
-          headerName: key.charAt(0).toUpperCase() + key.slice(1),
-          flex: 1,
-        }))
-      : [];
-
-  if (loading) return <CircularProgress />;
-  if (error) return <Typography color="error">Error: {error}</Typography>;
 
   return (
     <div>
@@ -102,19 +72,10 @@ const Reports = () => {
         </Select>
       </FormControl>
 
-      <Paper style={{ height: 500, width: "100%", marginTop: "16px" }}>
-        <DataGrid
-          rows={data.map((row, index) => ({ id: index, ...row }))}
-          columns={columns}
-          pageSize={10}
-          rowsPerPageOptions={[5, 10, 20]}
-          disableSelectionOnClick
-          loading={loading}
-        />
-      </Paper>
+   
       <br />
       {selectedTable === "members" ? (
-        <MemberReport data={data} />
+        <MemberReport api={apiEndpoints[selectedTable]} />
       ) : selectedTable === "admins" ? (
         <AdminReport data={data} />
       ) : null}
