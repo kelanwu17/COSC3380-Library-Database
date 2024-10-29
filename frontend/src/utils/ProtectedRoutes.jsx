@@ -1,12 +1,13 @@
 import { Outlet, Navigate } from "react-router-dom";
 
-const ProtectedRoutes=() => {
+const ProtectedRoutes=({requiredRole =[]}) => {
 
 
   const role = sessionStorage.getItem("roles");
-  if (role === "member") {
-    return <Navigate to="/" />;
+  if (!requiredRole.includes(role)) {
+    return <Navigate to="/" />; // Redirect to home if role doesn't match
   }
+  
   return <Outlet/>
 }
 
