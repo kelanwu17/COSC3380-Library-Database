@@ -3,7 +3,7 @@ import './userProfile.css';
 import Navbar from '../../Components/NavBar';
 import axios from "axios"
 import { useEffect } from 'react';
-
+import ReserveComponent from './Components/ReserveComponent';
 function UserProfile() {
   // State to manage which section is active
   const [activeSection, setActiveSection] = useState('events'); // Default to "events"
