@@ -1,4 +1,4 @@
-/* eslint-disable */
+
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AdminEvent from './Pages/Admin Event Page/adminEvent';
@@ -22,7 +22,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route element={<ProtectedRoutes requiredRoles={['admin', 'librarian', 'technician']}/>}>
+        <Route element={<ProtectedRoutes requiredRole={['admin', 'librarian', 'technician']}/>}>
         
         <Route path='/AdminItem' element={<AdminItem/>}/>
         <Route path='/AdminProfile' element={<AdminProfile/>}/>
@@ -36,7 +36,7 @@ function App() {
         <Route path='/Music' element={<MusicCatalog/>}/>
         <Route path='/Signup' element={<SignUpPage/>}/>
         <Route path='/Technology' element={<TechCatalog/>}/>
-        <Route element={<ProtectedRoutes requiredRoles={['member']}/>}>
+        <Route element={<ProtectedRoutes requiredRole={['member']}/>}>
         <Route path='/Profile' element={<UserProfile/>}/>
         </Route>
         <Route path='/Books/:id' element={<BookDetails/>}/>
