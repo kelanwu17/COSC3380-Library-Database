@@ -1,38 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './NavBar.css';
 import PersonIcon from '@mui/icons-material/Person';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu'; 
 import { IconButton } from '@mui/material';
-import { useEffect } from 'react';
 
 const Navbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu
     const userId = sessionStorage.getItem('username'); 
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const role = sessionStorage.getItem("roles");
-    const[userRole, setRole] = useState('')
-    const[isAdmin, setAdmin] = useState('')
-    
-    useEffect(() => {
+    const [userRole, setRole] = useState('');
+    const [isAdmin, setAdmin] = useState(false);
 
+    useEffect(() => {
         if (userId) {
-            setIsLoggedIn(true)
+            setIsLoggedIn(true);
         } else {
-            setIsLoggedIn(false)
+            setIsLoggedIn(false);
         }
-        if(role == 'member')
-        {
-            setRole('member')
-            setAdmin(true)
+        if (role === 'member') {
+            setRole('member');
+            setAdmin(true);
+        } else {
+            setRole('admin');
+            setAdmin(false);
         }
-        else
-        {
-            setRole('admin')
-            setAdmin(false)
-        }
-    }, []);
-    
+    }, [userId, role]);
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -40,15 +37,19 @@ const Navbar = () => {
 
     const handleClose = () => {
         setAnchorEl(null);
+        setIsMenuOpen(false); // Close mobile menu
     };
 
     const openMenu = Boolean(anchorEl);
 
-    function handleLogout()
-    {
+    const handleLogout = () => {
         console.log('User has logged out');
         sessionStorage.clear(); 
         window.location.href = '/login'; 
+    };
+
+    const toggleMenu = () => {
+        setIsMenuOpen((prev) => !prev);
     };
 
     return (
@@ -59,10 +60,9 @@ const Navbar = () => {
                 </a>
             </div>
             <div className="navbar-center">
-                <ul className="nav-links flex-row font-bold">
+                <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
                     <li>
-                    {!userRole ? ( <a href="/Events">Events</a> ) : 
-                    (<a href="/AdminEvent">Events</a>)}
+                        {isAdmin ? (<a href="/Events">Events</a>) : (<a href="/AdminEvent">Events</a>)}
                     </li>
                     <li>
                         <a href="/Books">Browse & Borrow</a>
@@ -92,19 +92,23 @@ const Navbar = () => {
                             open={openMenu}
                             onClose={handleClose}
                             PaperProps={{
-                                sx: {backgroundColor:'#ECECEC',
-                                    borderRadius: '20px', // Make the menu items rounded
-                                },
+                                sx: { backgroundColor: '#ECECEC', borderRadius: '20px' },
                             }}
                         >
-                            
-                            <MenuItem onClick={handleClose}> {isAdmin ? (<a href='/Profile'>User Profile </a>):(<a href='/AdminProfile'></a>)}</MenuItem>
-                            <MenuItem onClick={()=> {handleClose(); handleLogout(); }}>Logout</MenuItem>
+                            <MenuItem onClick={handleClose}>{isAdmin ? (<a href='/Profile'>User Profile</a>) : (<a href='/AdminProfile'>Admin Profile</a>)}</MenuItem>
+                            <MenuItem onClick={() => { handleClose(); handleLogout(); }}>Logout</MenuItem>
                         </Menu>
                     </div>
                 ) : (
                     <a className='login-button font-bold' href='/login'>Login</a>
                 )}
+                <IconButton
+                    onClick={toggleMenu}
+                    className="hamburger-button"
+                    sx={{ display: { xs: 'block', md: 'none' } }} // Show on mobile
+                >
+                    {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
+                </IconButton>
             </div>
         </nav>
     );
