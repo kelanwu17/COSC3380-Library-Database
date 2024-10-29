@@ -1,32 +1,19 @@
-import React, { useEffect } from 'react';
-import { Grid2, 
-  Box, 
-  Paper, 
-  Typography, 
-  Button, 
-  Container, 
-  TextField 
-} from '@mui/material';
-import axios from "axios"
-import { useState } from 'react';
-
-// Sample events created
-/*const eventsData = [
-  { id: 1, title: 'Event 1', description: 'Details of Event 1' },
-  { id: 2, title: 'Event 2', description: 'Details of Event 2' },
-  { id: 3, title: 'Event 3', description: 'Details of Event 3' },
-  // Add more events here
-];
-*/
+import React, { useEffect, useState } from 'react';
+import { Grid2, Box, Paper, Typography, Button, Container, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 const EventsPage = () => {
   const [eventsData, setEventsData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [registeredEvents, setRegisteredEvents] = useState(new Set()); // Track registered events
+  const navigate = useNavigate();
 
-  //Fetching Events
+  // Fetching Events
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('https://library-database-backend.onrender.com/api/event'); //API endpoint
+        const response = await axios.get('https://library-database-backend.onrender.com/api/event'); // API endpoint
         setEventsData(response.data); 
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -36,10 +23,50 @@ const EventsPage = () => {
     fetchEvents(); // Call the fetch function
   }, []);
 
-  // Handler for Sign Up button
-  const handleSignUp = (eventId) => {
-    alert(`Signed up for event with id: ${eventId}`); 
+  // Fetch Registered Events
+  useEffect(() => {
+    const fetchRegisteredEvents = async () => {
+      const userId = sessionStorage.getItem('memberId'); // Get the user ID
+      if (userId) {
+        try {
+          const response = await axios.get(`https://library-database-backend.onrender.com/api/eventSignUp/${userId}`);
+          const registeredEventIds = new Set(response.data.map(event => event.eventId)); // Assuming response data contains eventId
+          setRegisteredEvents(registeredEventIds); // Store registered events in state
+        } catch (error) {
+          console.error('Error fetching registered events:', error);
+        }
+      }
+    };
+
+    fetchRegisteredEvents(); // Call the fetch function
+  }, []);
+
+  // Handle Sign Up button
+  const handleSignUp = async (eventId) => {
+    const userId = sessionStorage.getItem('memberId'); // Get the user ID
+    if (!userId) {
+      alert("You need to be logged in to sign up for an event.");
+      return;
+    }
+
+    try {
+      // Call the sign-up API
+      await axios.post('https://library-database-backend.onrender.com/api/eventSignUp/insertEventSignUp', {
+        eventId: eventId,
+        memberId: userId
+      });
+      setRegisteredEvents((prev) => new Set(prev).add(eventId)); // Update registered events
+      alert(`Successfully signed up for event with id: ${eventId}`);
+    } catch (error) {
+      console.error('Error signing up for event:', error);
+      alert('Failed to sign up for the event. Please try again.');
+    }
   };
+
+  const filteredEvents = eventsData.filter(event =>
+    event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    event.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <Container 
@@ -97,8 +124,11 @@ const EventsPage = () => {
         {/* Search bar */}
         <TextField 
           label="Search Events" 
-          variant="filled" 
-          sx={{ mb: 4,
+          variant="filled"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)} 
+          sx={{ 
+            mb: 4,
             backgroundColor: "white",
             borderRadius: "5px",
             fontWeight: "bold",
@@ -106,7 +136,7 @@ const EventsPage = () => {
             margin: "0px 5px 10px 0px"
           }}
         />
-        
+
         {/* Scrollable list */}
         <Box 
           sx={{ 
@@ -116,42 +146,87 @@ const EventsPage = () => {
             marginRight: "0px"
           }}>
           <Grid2 container spacing={4}>
-            {eventsData.map((event) => (
-              <Grid2 item xs={12} sm={6} md={4} key={event.id}>
-                <Paper 
-                  elevation={3} 
-                  sx={{
-                    p: 2,
-                    width: "550px",
-                    height: "200px",
-                    borderRadius: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between'
-                  }}>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h5" gutterBottom>
-                      {event.title}
-                    </Typography>
-                    <Typography variant="body1" sx={{ mb: 5 }}>
-                      {event.description}
-                    </Typography>
-                  </Box>
-                  <Button 
+            {filteredEvents.length > 0 ? (
+              filteredEvents.map((event) => (
+                <Grid2 xs={12} sm={6} md={4} key={event.eventId} item>
+                  <Paper 
+                    elevation={3} 
+                    sx={{
+                      p: 2,
+                      width: "550px",
+                      height: "auto",
+                      borderRadius: 2,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between'
+                    }}>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="h5" gutterBottom>
+                        {event.title}
+                      </Typography>
+                      <Typography variant="body1">
+                        Location: {event.location}
+                      </Typography>
+                      <Typography variant="body1">
+                        Age Group: {event.ageGroup}
+                      </Typography>
+                      <Typography variant="body1">
+                        Category: {event.category}
+                      </Typography>
+                      <Typography variant="body1">
+                        Event Creator ID: {event.eventCreator}
+                      </Typography>
+                      <Typography variant="body1">
+                        Event Holder ID: {event.eventHolder}
+                      </Typography>
+                      <Typography variant="body1">
+                        Time and Date: {new Date(event.timeDate).toLocaleString()}
+                      </Typography>
+                    </Box>
+                    {registeredEvents.has(event.eventId) ? ( // Check if registered
+                    <Button 
                     variant="contained" 
-                    color="primary" 
-                    onClick={() => handleSignUp(event.id)}
+                    disabled
                   >
-                    Sign Up
+                    Signed up
                   </Button>
-                </Paper>
-              </Grid2>
-            ))}
+                    ) : (
+                      <Button 
+                        variant="contained" 
+                        color="primary" 
+                        onClick={() => handleSignUp(event.eventId)}
+                      >
+                        Sign Up
+                      </Button>
+                    )}
+                  </Paper>
+                </Grid2>
+              ))
+            ) : (
+              <Typography variant="h6" color="white">
+                No events found.
+              </Typography>
+            )}
           </Grid2>
         </Box>
       </Box>
+      <Button 
+        variant="contained" 
+        color="secondary" 
+        onClick={() => navigate('/')} // Go back to the previous page
+        sx={{
+          position: "absolute",
+          bottom: 20, 
+          left: 20, 
+          zIndex: 2 // Ensure the button appears above the blurred background
+        }}
+      >
+        Back
+      </Button>
     </Container>
   );
 };
 
 export default EventsPage;
+
+

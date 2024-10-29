@@ -10,12 +10,26 @@ const Navbar = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const userId = sessionStorage.getItem('username'); 
     const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const role = sessionStorage.getItem("roles");
+    const[userRole, setRole] = useState('')
+    const[isAdmin, setAdmin] = useState('')
+    
     useEffect(() => {
 
         if (userId) {
             setIsLoggedIn(true)
         } else {
             setIsLoggedIn(false)
+        }
+        if(role == 'member')
+        {
+            setRole('member')
+            setAdmin(true)
+        }
+        else
+        {
+            setRole('admin')
+            setAdmin(false)
         }
     }, []);
     
@@ -47,7 +61,8 @@ const Navbar = () => {
             <div className="navbar-center">
                 <ul className="nav-links flex-row font-bold">
                     <li>
-                        <a href="/Events">Events</a>
+                    {!userRole ? ( <a href="/Events">Events</a> ) : 
+                    (<a href="/AdminEvent">Events</a>)}
                     </li>
                     <li>
                         <a href="/Books">Browse & Borrow</a>
@@ -82,7 +97,8 @@ const Navbar = () => {
                                 },
                             }}
                         >
-                            <MenuItem onClick={handleClose}><a href='/Profile'>User Profile </a></MenuItem>
+                            
+                            <MenuItem onClick={handleClose}> {isAdmin ? (<a href='/Profile'>User Profile </a>):(<a href='/AdminProfile'></a>)}</MenuItem>
                             <MenuItem onClick={()=> {handleClose(); handleLogout(); }}>Logout</MenuItem>
                         </Menu>
                     </div>
