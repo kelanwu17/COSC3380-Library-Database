@@ -34,7 +34,7 @@ function BookDetails() {
   const [reserve, setReserve] = useState('')
   const [reserveID, setReserveID] = useState('')
   const [lastDate, setLastDate] = useState('')
-
+  const [fines, setFines] = useState(false)
 
 
   const userId = sessionStorage.getItem('memberId');
@@ -207,7 +207,7 @@ alert("You have checked out this item.");
           throw new Error('Book not found');
         }
       } catch (error) {
-        console.error('Error fetching book details:', error);
+        navigate('/books')
         
       } finally {
         setLoading(false); 
@@ -320,7 +320,7 @@ const fetchMemberHistory = async () => {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/reserve/${userId}`);
         const memberHistory = response.data; 
         const instanceFound = memberHistory.find(instance => instance.itemId == id && instance.active == 1 && instance.itemType == 'book');
-        console.log(instanceFound)
+       
 
         if(instanceFound !=null )
         {
@@ -357,12 +357,31 @@ const fetchMemberHistory = async () => {
         
       }
     };
+
+    const fetchUserLibraryCard = async (genre) => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/libraryCard/${userId}`);
+        const lCard = response.data
+        if(lCard.status !==1)
+        {
+          setFines(true)
+        }
+        else
+        {
+          setFines(true)
+        }
+      } catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
     
     fetchInstance();
     fetchBookDetails(); 
     fetchMemberHistory();
     fetchWaitList();
     fetchReserveList();
+    fetchUserLibraryCard();
     
   }, [id,checkedOut, waitList, reserve]);
 
@@ -413,7 +432,7 @@ const fetchMemberHistory = async () => {
               </button>
             )}
           </div>
-          {userId && (
+          {(userId  && fines) && (
   <div className="ml-auto mr-12 flex flex-col">
     {waitList || count <= 0 ? (
       waitList ? (

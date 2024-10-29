@@ -26,7 +26,7 @@ function MusicDetails() {
   const [reserve, setReserve] = useState('')
   const [reserveID, setReserveID] = useState('')
   const [lastDate, setLastDate] = useState('')
-
+  const [fines, setFines] = useState(false)
   
   const userId = sessionStorage.getItem('memberId');
   //Checkout Logic
@@ -181,7 +181,7 @@ function MusicDetails() {
           throw new Error('Music not found');
         }
       } catch (error) {
-        console.error('Error fetching music details:', error);
+        navigate('/books')
       } finally {
         setLoading(false); // Set loading to false after request finishes
       }
@@ -321,12 +321,32 @@ function MusicDetails() {
         
       }
     };
+    const fetchUserLibraryCard = async (genre) => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/libraryCard/${userId}`);
+        const lCard = response.data
+        
+        if(lCard.status !==1)
+        {
+          setFines(true)
+        }
+        else
+        {
+          setFines(true)
+        }
+      } catch (error) {
+        console.error('Error fetching similar books:', error);
+        
+      }
+    };
+    
 
     fetchWaitList();
     fetchMusicDetails();
     fetchInstance();
     fetchMemberHistory();
     fetchReserveList();
+    fetchUserLibraryCard();
     
   }, [id,checkedOut,waitList, reserve]);
 
@@ -371,7 +391,7 @@ function MusicDetails() {
             <p className="text-sm mt-1">Date Released: {dateReleased}</p>
           </div>
   
-          {userId && (
+          {(userId && fines) && (
   <div className="ml-auto mr-12 flex flex-col">
     {waitList || count <= 0 ? (
       waitList ? (
