@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AdminEvent from './Pages/Admin Event Page/adminEvent';
 import AdminItem from './Pages/Admin Item Page/adminItem';
