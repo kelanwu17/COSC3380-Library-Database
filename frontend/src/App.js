@@ -14,6 +14,7 @@ import BookDetails from './Pages/Book Detail Page/BookDetails'
 import MusicDetails from './Pages/Music Detail Page/MusicDetail';
 import TechDetail from './Pages/Tech Detail Page/TechDetail';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+
 function App() {
   return (
     <Router>
@@ -35,6 +36,7 @@ function App() {
         <Route path='/Books/:id' element={<BookDetails/>}/>
         <Route path='/Music/:id' element={<MusicDetails/>}/>
         <Route path='/Tech/:id' element={<TechDetail/>}/>
+        
         
         
       </Routes>
