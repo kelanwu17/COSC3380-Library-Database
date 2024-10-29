@@ -1,53 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './userProfile.css'; 
 import Navbar from '../../Components/NavBar';
-import axios from "axios"
-import { useEffect } from 'react';
+import axios from "axios";
 
 function UserProfile() {
+
+  // Default profile picture path
+  const defaultProfilePic = "/public/profilepic.png"; 
+
   // State to manage which section is active
   const [activeSection, setActiveSection] = useState('events'); // Default to "events"
-  const [userSection, setSection] = useState('Profile')
   const userId = sessionStorage.getItem('memberId');
+  
+  // Initialize the userProfile state with default values
   const [userProfile, setUserProfile] = useState({
-    username:'',
+    username: '',
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
     DOB: '',
     preferences: 0,
-    accountStatus: 1
+    accountStatus: 1,
+    memberSince: '',
+    memberId: userId,
+    fines: '0.00',
+    holds: '0',
+    profilePic: defaultProfilePic // Initialize with default profile picture
   });
 
-useEffect(() => {
-  const fetchUserDetails = async () => {
-    try {
-      const response = await axios.get(`https://library-database-backend.onrender.com/api/member/${userId}`);
-      const userFound = response.data[0];
-      console.log(userFound);
-      if (userFound) {
-        setUserProfile({
-          username: userFound.username,
-          firstName: userFound.firstName,
-          lastName: userFound.lastName,
-          email: userFound.email,
-          phone: userFound.phone,
-          DOB: userFound.DOB,
-          preferences: 0,
-          accountStatus: 1
-        });
-      } else {
-        throw new Error('User not found');
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/member/${userId}`);
+        const userFound = response.data[0];
+        console.log(userFound);
+        
+        // Check if user data is found
+        if (userFound) {
+          setUserProfile({
+            username: userFound.username,
+            firstName: userFound.firstName,
+            lastName: userFound.lastName,
+            email: userFound.email,
+            phone: userFound.phone,
+            DOB: userFound.DOB,
+            preferences: userFound.preferences || 0,
+            accountStatus: userFound.accountStatus || 1,
+            memberSince: userFound.memberSince || new Date().toISOString(), // Default to current date if undefined
+            memberId: userFound.memberId || userId,
+            fines: userFound.fines || '0.00',
+            holds: userFound.holds || '0',
+            profilePic: userFound.profilePic || defaultProfilePic // Use user profile pic if available, otherwise default
+          });
+        } else {
+          throw new Error('User not found');
+        }
+      } catch (error) {
+        console.error('Error fetching User details:', error);
       }
-    } catch (error) {
-      console.error('Error fetching User details:', error);
-    }
-  };
-  
-  // Invoke the function
-  fetchUserDetails();
-}, [activeSection]); // Place `activeSection` as a dependency here
+    };
+    
+    // Invoke the function
+    fetchUserDetails();
+  }, [activeSection, userId]); // `userId` ensures the correct user is fetched if the session changes
+
+  // Format date of birth to display without time
+  const formattedDOB = new Date(userProfile.DOB).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  // Extract only the year for "Member since"
+  const formattedMemberSince = userProfile.memberSince 
+    ? new Date(userProfile.memberSince).getFullYear()
+    : new Date().getFullYear(); // Default to current year if undefined
 
   // Function to render content based on active section
   const renderContent = () => {
@@ -64,7 +92,7 @@ useEffect(() => {
         return null;
     }
   };
-
+  
   return (
     <div>
       <Navbar /> {/* Add the Navbar here */}
@@ -104,27 +132,26 @@ useEffect(() => {
             {/* Member Info Rectangle with Profile Picture and Information */}
             <div className="member-info-rectangle">
               <img
-                src="/profilepic.png"
-                alt="Jane Doe"
+                src={userProfile.profilePic}
+                alt={`${userProfile.firstName} ${userProfile.lastName}`}
                 className="profile-image"
               />
               <div className="profile-info">
-                <h2>JANE DOE</h2>
-                <p><strong>Member since:</strong> '24</p>
-                <p><strong>Member ID:</strong> 123456</p>
-                <p><strong>Email:</strong> janedoe@example.com</p>
-                <p><strong>DOB:</strong> January 1, 1990</p>
-                <p><strong>Address:</strong> 123 Library Lane, Houston, TX</p>
-                <p><strong>Phone Number:</strong> (555) 555-5555</p>
+                <h2>{`${userProfile.firstName} ${userProfile.lastName}`}</h2>
+                <p><strong>Member since:</strong> {formattedMemberSince}</p>
+                <p><strong>Member ID:</strong> {userProfile.memberId}</p>
+                <p><strong>Email:</strong> {userProfile.email}</p>
+                <p><strong>DOB:</strong> {formattedDOB}</p>
+                <p><strong>Phone Number:</strong> {userProfile.phone}</p>
               </div>
 
               {/* Fines and Holds Positioned Inside Member Info Rectangle */}
               <div className="profile-footer">
                 <div className="fines">
-                  <p><strong>Fines:</strong> $0.00</p>
+                  <p><strong>Fines:</strong> ${userProfile.fines}</p>
                 </div>
                 <div className="holds">
-                  <p><strong>Holds:</strong> 2</p>
+                  <p><strong>Holds:</strong> {userProfile.holds}</p>
                 </div>
               </div>
             </div>
