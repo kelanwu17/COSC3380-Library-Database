@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu'; 
-import LandingPageImage from '../../../Assets/LandingPage.png';
+import LandingPageImage from '../../../Assets/LandingPage.webp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import NavBar from '../../../Components/NavBar';
 import { useState } from 'react';
