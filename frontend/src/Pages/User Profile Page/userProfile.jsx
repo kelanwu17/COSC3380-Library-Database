@@ -3,6 +3,7 @@ import './userProfile.css';
 import Navbar from '../../Components/NavBar';
 import axios from "axios";
 import ReserveComponent from './Components/ReserveComponent';
+import CheckOutHistory from './Components/checkedOutHistory';
 
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
@@ -111,7 +112,7 @@ function UserProfile() {
       case 'events':
         return <p>Here are your upcoming events...</p>;
       case 'checkedOutHistory':
-        return <p>Here is your checked out history...</p>;
+        return <CheckOutHistory userId={userId} />; // Show checkout history component
       case 'recommendedBooks':
         return <p>Here are your recommended books...</p>;
       case 'recommendedMusic':
