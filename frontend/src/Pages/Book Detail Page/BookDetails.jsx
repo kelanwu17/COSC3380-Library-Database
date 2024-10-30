@@ -398,7 +398,7 @@ const fetchMemberHistory = async () => {
         <button className="ml-4 mt-4 h-6 border bg-amber-900 w-32 rounded-lg text-white text-bold border-black" onClick={handleBackClick}>Back</button>
       </div>
       
-        <div className="flex flex-row ml-6 mt-6">
+        <div className="flex flex-row ml-6 mt-6"> 
           <p className="w-2/12 h-80">
             <img src={imgUrl} className="w-full h-full object-cover" alt="Book cover" />
           </p>

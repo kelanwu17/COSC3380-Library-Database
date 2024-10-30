@@ -352,7 +352,7 @@ function MusicDetails() {
 
   const filteredSimilarMusic = similarMusic.filter((music) => music.albumName !== albumName);
   const handleToggleDetails = () => setShowMoreDetails(!showMoreDetails);
-  const handleBackClick = () => navigate('s');
+  const handleBackClick = () => navigate('/Music');
   return (
     <div>
       <Navbar />
