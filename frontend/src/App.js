@@ -17,6 +17,7 @@ import MusicDetails from './Pages/Music Detail Page/MusicDetail';
 import TechDetail from './Pages/Tech Detail Page/TechDetail';
 import ContactPage from './Pages/Contact Page/ContactPage';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+import Reports from '../src/Pages/Admin Profile Page/Components/Reports'
 function App() {
   return (
     <Router>
@@ -41,6 +42,7 @@ function App() {
         <Route path='/Books/:id' element={<BookDetails/>}/>
         <Route path='/Music/:id' element={<MusicDetails/>}/>
         <Route path='/Tech/:id' element={<TechDetail/>}/>
+        <Route path='/reports/' element={<Reports/>}/>
         
         
       </Routes>

@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './userProfile.css'; 
 import Navbar from '../../Components/NavBar';
+<<<<<<< HEAD
 import axios from "axios";
 
+=======
+import axios from "axios"
+import { useEffect } from 'react';
+import ReserveComponent from './Components/ReserveComponent';
+>>>>>>> 2a63130be997485717ec9ba2e1561fd5d09ce620
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
 
