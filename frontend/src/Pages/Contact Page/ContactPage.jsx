@@ -1,5 +1,5 @@
 import React from 'react';
-import LandingPageImage from '../../Assets/LandingPage.png';
+import LandingPageImage from '../../Assets/LandingPage.webp';
 import NavBar from '../../Components/NavBar';
 
 const ContactPage = () => {
