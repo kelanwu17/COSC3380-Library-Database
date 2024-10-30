@@ -323,7 +323,7 @@ function TechDetail() {
     fetchUserLibraryCard();
   }, [id,waitList,reserve]);
 
-  const handleBackClick = () => navigate('/book');
+  const handleBackClick = () => navigate('/technology');
   
   // Fix: Filter otherTechs excluding the current tech by deviceName
   const fetchSimilarTech = otherTechs.filter(tech => tech.deviceName !== techDetails.deviceName);
