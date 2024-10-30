@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './userProfile.css'; 
 import Navbar from '../../Components/NavBar';
-<<<<<<< HEAD
 import axios from "axios";
-
-=======
-import axios from "axios"
-import { useEffect } from 'react';
 import ReserveComponent from './Components/ReserveComponent';
->>>>>>> 2a63130be997485717ec9ba2e1561fd5d09ce620
+
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
 
@@ -32,53 +27,51 @@ function UserProfile() {
   });
   const [finesId, setFinesId] = useState(null); // Initialize finesId
 
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(`https://library-database-backend.onrender.com/api/member/${userId}`);
+        const userFound = response.data[0];
 
-useEffect(() => {
-  const fetchUserDetails = async () => {
-    try {
-      const response = await axios.get(`https://library-database-backend.onrender.com/api/member/${userId}`);
-      const userFound = response.data[0];
-
-      if (userFound) {
-        setUserProfile({
-          ...userProfile,
-          username: userFound.username,
-          firstName: userFound.firstName,
-          lastName: userFound.lastName,
-          email: userFound.email,
-          phone: userFound.phone,
-          DOB: userFound.DOB,
-          preferences: userFound.preferences || 0,
-          accountStatus: userFound.accountStatus || 1,
-          memberSince: userFound.memberSince || new Date().toISOString(),
-          memberId: userFound.memberId || userId,
-          holds: userFound.holds || '0',
-          profilePic: userFound.profilePic || defaultProfilePic
-        });
-
-        // Fetch fines
-        const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
-        const memberFines = finesResponse.data;
-        if (memberFines.length > 0) {
+        if (userFound) {
           setUserProfile(prevProfile => ({
-            ...prevProfile,
-            fines: memberFines[0].fineAmount
+            ...prevProfile, // Preserve previous profile data
+            username: userFound.username,
+            firstName: userFound.firstName,
+            lastName: userFound.lastName,
+            email: userFound.email,
+            phone: userFound.phone,
+            DOB: userFound.DOB,
+            preferences: userFound.preferences || 0,
+            accountStatus: userFound.accountStatus || 1,
+            memberSince: userFound.memberSince || new Date().toISOString(),
+            memberId: userFound.memberId || userId,
+            holds: userFound.holds || '0',
+            profilePic: userFound.profilePic || defaultProfilePic
           }));
-          setFinesId(memberFines[0].finesId); // Set finesId correctly
+
+          // Fetch fines
+          const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
+          const memberFines = finesResponse.data;
+          if (memberFines.length > 0) {
+            setUserProfile(prevProfile => ({
+              ...prevProfile,
+              fines: memberFines[0].fineAmount
+            }));
+            setFinesId(memberFines[0].finesId); // Set finesId correctly
+          } else {
+            setFinesId(null); // No fines found, set finesId to null
+          }
         } else {
-          setFinesId(null); // No fines found, set finesId to null
+          throw new Error('User not found');
         }
-      } else {
-        throw new Error('User not found');
+      } catch (error) {
+        console.error('Error fetching User details or fines:', error);
       }
-    } catch (error) {
-      console.error('Error fetching User details or fines:', error);
-    }
-  };
+    };
 
-
-  fetchUserDetails();
-}, [activeSection, userId]);
+    fetchUserDetails();
+  }, [activeSection, userId]);
 
   const formattedDOB = new Date(userProfile.DOB).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -91,27 +84,26 @@ useEffect(() => {
     : new Date().getFullYear();
 
   const handlePayFines = async () => {
-  console.log("Attempting to pay fine with finesId:", finesId); // Debugging line
+    console.log("Attempting to pay fine with finesId:", finesId);
 
-  if (!finesId) {
-    console.error("Error: finesId is not defined.");
-    alert("No fine found to pay.");
-    return;
-  }
+    if (!finesId) {
+      console.error("Error: finesId is not defined.");
+      alert("No fine found to pay.");
+      return;
+    }
 
-  try {
-    const response = await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${finesId}`);
-    setUserProfile(prevProfile => ({
-      ...prevProfile,
-      fines: '0.00'
-    }));
-    alert("Payment successful! Your fines have been cleared.");
-  } catch (error) {
-    console.error("Error processing payment:", error);
-    alert("Payment failed. Please try again later.");
-  }
-};
-
+    try {
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${finesId}`);
+      setUserProfile(prevProfile => ({
+        ...prevProfile,
+        fines: '0.00'
+      }));
+      alert("Payment successful! Your fines have been cleared.");
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      alert("Payment failed. Please try again later.");
+    }
+  };
 
   // Define renderContent function
   const renderContent = () => {
@@ -124,6 +116,8 @@ useEffect(() => {
         return <p>Here are your recommended books...</p>;
       case 'recommendedMusic':
         return <p>Here is your recommended music...</p>;
+      case 'reservedItems':
+        return <ReserveComponent />; // Example usage of ReserveComponent
       default:
         return <p>Select a section from the sidebar.</p>;
     }
