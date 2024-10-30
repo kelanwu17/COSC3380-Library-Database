@@ -4,13 +4,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AdminEvent from './Pages/Admin Event Page/adminEvent';
 import AdminItem from './Pages/Admin Item Page/adminItem';
 import AdminProfile from './Pages/Admin Profile Page/adminProfile';
-import BookCatalog from './Pages/Book Catalog Page/bookCatalog';
+// import BookCatalog from './Pages/Book Catalog Page/bookCatalog';
 import EventPage from './Pages/Events Page/eventPage';
 import HomePage from './Pages/Home Page/homePage';
 import LoginPage from './Pages/Login Page/loginPage';
-import MusicCatalog from './Pages/Music Catalog Page/musicCatalog';
+// import MusicCatalog from './Pages/Music Catalog Page/musicCatalog';
 import SignUpPage from './Pages/SignUp Page/signUpPage';
-import TechCatalog from './Pages/Technology Catalog Page/techCatalog';
+// import TechCatalog from './Pages/Technology Catalog Page/techCatalog';
 import UserProfile from './Pages/User Profile Page/userProfile';
 import BookDetails from './Pages/Book Detail Page/BookDetails'
 import MusicDetails from './Pages/Music Detail Page/MusicDetail';
@@ -18,6 +18,9 @@ import TechDetail from './Pages/Tech Detail Page/TechDetail';
 import ContactPage from './Pages/Contact Page/ContactPage';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import Reports from '../src/Pages/Admin Profile Page/Components/Reports'
+import BookCatalog from './Pages/Kelan Catalog/BookCatalog';
+import MusicCatalog from './Pages/Kelan Catalog/MusicCatalog';
+import TechCatalog from './Pages/Kelan Catalog/TechCatalog';
 function App() {
   return (
     <Router>
