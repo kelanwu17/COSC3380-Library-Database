@@ -12,6 +12,7 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import MemberReport from "./Reports Components/MemberReport";
 import AdminReport from "./Reports Components/AdminReport";
+import FinesReport from "./Reports Components/FinesReport";
 
 const Reports = () => {
   const [data, setData] = useState([]);
@@ -78,6 +79,8 @@ const Reports = () => {
         <MemberReport api={apiEndpoints[selectedTable]} />
       ) : selectedTable === "admins" ? (
         <AdminReport data={data} />
+      ) : selectedTable === "fines" ? (
+        <FinesReport api={apiEndpoints[selectedTable]}/>
       ) : null}
     </div>
   );
