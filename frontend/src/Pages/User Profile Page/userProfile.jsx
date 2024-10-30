@@ -4,6 +4,11 @@ import Navbar from '../../Components/NavBar';
 import axios from "axios";
 import ReserveComponent from './Components/ReserveComponent';
 import CheckOutHistory from './Components/checkedOutHistory';
+import RecommendedBooks from './Components/recommendedBook';
+import RecommendedMusic from './Components/recommendedMusic'; 
+import UserEvents from './Components/userEvents'; // Import the component
+
+
 
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
@@ -106,23 +111,25 @@ function UserProfile() {
     }
   };
 
-  // Define renderContent function
-  const renderContent = () => {
-    switch (activeSection) {
-      case 'events':
-        return <p>Here are your upcoming events...</p>;
-      case 'checkedOutHistory':
-        return <CheckOutHistory userId={userId} />; // Show checkout history component
-      case 'recommendedBooks':
-        return <p>Here are your recommended books...</p>;
-      case 'recommendedMusic':
-        return <p>Here is your recommended music...</p>;
-      case 'reservedItems':
-        return <ReserveComponent />; // Example usage of ReserveComponent
-      default:
-        return <p>Select a section from the sidebar.</p>;
-    }
-  };
+// Define renderContent function
+const renderContent = () => {
+  switch (activeSection) {
+    case 'events':
+      return <UserEvents userId={userId} />; // Show user events component
+    case 'checkedOutHistory':
+      return <CheckOutHistory userId={userId} />; // Show checkout history component
+    case 'recommendedBooks':
+      return <RecommendedBooks preferences={userProfile.preferences} />;
+    case 'recommendedMusic':
+      return <RecommendedMusic preferences={userProfile.preferences} />;
+    case 'reservedItems':
+      return <ReserveComponent />; // Example usage of ReserveComponent
+    case 'waitListedItems':
+      return <p>Here are your waitlisted items...</p>; // Add this placeholder or the actual component
+    default:
+      return <p>Select a section from the sidebar.</p>;
+  }
+};
 
   return (
     <div>
