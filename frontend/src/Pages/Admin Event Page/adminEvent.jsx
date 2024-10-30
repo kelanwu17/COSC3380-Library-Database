@@ -438,5 +438,3 @@ function AdminEvent() {
 }
 
 export default AdminEvent;
-
-
