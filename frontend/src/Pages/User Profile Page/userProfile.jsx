@@ -4,15 +4,11 @@ import Navbar from '../../Components/NavBar';
 import axios from "axios";
 
 function UserProfile() {
+  const defaultProfilePic = "/profilepic.png"; 
 
-  // Default profile picture path
-  const defaultProfilePic = "/public/profilepic.png"; 
-
-  // State to manage which section is active
-  const [activeSection, setActiveSection] = useState('events'); // Default to "events"
+  const [activeSection, setActiveSection] = useState('events');
   const userId = sessionStorage.getItem('memberId');
   
-  // Initialize the userProfile state with default values
   const [userProfile, setUserProfile] = useState({
     username: '',
     firstName: '',
@@ -26,58 +22,92 @@ function UserProfile() {
     memberId: userId,
     fines: '0.00',
     holds: '0',
-    profilePic: defaultProfilePic // Initialize with default profile picture
+    profilePic: defaultProfilePic
   });
+  const [finesId, setFinesId] = useState(null); // Initialize finesId
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response = await axios.get(`https://library-database-backend.onrender.com/api/member/${userId}`);
-        const userFound = response.data[0];
-        console.log(userFound);
-        
-        // Check if user data is found
-        if (userFound) {
-          setUserProfile({
-            username: userFound.username,
-            firstName: userFound.firstName,
-            lastName: userFound.lastName,
-            email: userFound.email,
-            phone: userFound.phone,
-            DOB: userFound.DOB,
-            preferences: userFound.preferences || 0,
-            accountStatus: userFound.accountStatus || 1,
-            memberSince: userFound.memberSince || new Date().toISOString(), // Default to current date if undefined
-            memberId: userFound.memberId || userId,
-            fines: userFound.fines || '0.00',
-            holds: userFound.holds || '0',
-            profilePic: userFound.profilePic || defaultProfilePic // Use user profile pic if available, otherwise default
-          });
+
+useEffect(() => {
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get(`https://library-database-backend.onrender.com/api/member/${userId}`);
+      const userFound = response.data[0];
+
+      if (userFound) {
+        setUserProfile({
+          ...userProfile,
+          username: userFound.username,
+          firstName: userFound.firstName,
+          lastName: userFound.lastName,
+          email: userFound.email,
+          phone: userFound.phone,
+          DOB: userFound.DOB,
+          preferences: userFound.preferences || 0,
+          accountStatus: userFound.accountStatus || 1,
+          memberSince: userFound.memberSince || new Date().toISOString(),
+          memberId: userFound.memberId || userId,
+          holds: userFound.holds || '0',
+          profilePic: userFound.profilePic || defaultProfilePic
+        });
+
+        // Fetch fines
+        const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
+        const memberFines = finesResponse.data;
+        if (memberFines.length > 0) {
+          setUserProfile(prevProfile => ({
+            ...prevProfile,
+            fines: memberFines[0].fineAmount
+          }));
+          setFinesId(memberFines[0].finesId); // Set finesId correctly
         } else {
-          throw new Error('User not found');
+          setFinesId(null); // No fines found, set finesId to null
         }
-      } catch (error) {
-        console.error('Error fetching User details:', error);
+      } else {
+        throw new Error('User not found');
       }
-    };
-    
-    // Invoke the function
-    fetchUserDetails();
-  }, [activeSection, userId]); // `userId` ensures the correct user is fetched if the session changes
+    } catch (error) {
+      console.error('Error fetching User details or fines:', error);
+    }
+  };
 
-  // Format date of birth to display without time
+
+  fetchUserDetails();
+}, [activeSection, userId]);
+
   const formattedDOB = new Date(userProfile.DOB).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
 
-  // Extract only the year for "Member since"
   const formattedMemberSince = userProfile.memberSince 
     ? new Date(userProfile.memberSince).getFullYear()
-    : new Date().getFullYear(); // Default to current year if undefined
+    : new Date().getFullYear();
 
-  // Function to render content based on active section
+  const handlePayFines = async () => {
+  console.log("Attempting to pay fine with finesId:", finesId); // Debugging line
+
+  if (!finesId) {
+    console.error("Error: finesId is not defined.");
+    alert("No fine found to pay.");
+    return;
+  }
+
+  try {
+    const response = await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${finesId}`);
+    setUserProfile(prevProfile => ({
+      ...prevProfile,
+      fines: '0.00'
+    }));
+    alert("Payment successful! Your fines have been cleared.");
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    alert("Payment failed. Please try again later.");
+  }
+};
+
+
+  // Define renderContent function
   const renderContent = () => {
     switch (activeSection) {
       case 'events':
@@ -89,13 +119,13 @@ function UserProfile() {
       case 'recommendedMusic':
         return <p>Here is your recommended music...</p>;
       default:
-        return null;
+        return <p>Select a section from the sidebar.</p>;
     }
   };
-  
+
   return (
     <div>
-      <Navbar /> {/* Add the Navbar here */}
+      <Navbar />
       <div className="profile-container">
         <div className="profile-details">
           <div className="sidebar">
@@ -107,8 +137,6 @@ function UserProfile() {
               <li onClick={() => setActiveSection('reservedItems')}>RESERVED ITEMS</li>
               <li onClick={() => setActiveSection('waitListedItems')}>WAITLISTED ITEMS</li>
             </ul>
-
-            {/* Notification Inbox in Sidebar */}
             <div className="notification-sidebar">
               <h3 className="notification-title">Notifications</h3>
               <ul className="notification-list">
@@ -116,20 +144,11 @@ function UserProfile() {
                   <p><strong>Overdue Notice:</strong> You have 2 overdue books. Please return them by the end of this week.</p>
                   <span>Oct 21, 2024</span>
                 </li>
-                <li className="notification-item">
-                  <p><strong>Event Reminder:</strong> Library Book Club meeting this Saturday at 10 AM.</p>
-                  <span>Oct 20, 2024</span>
-                </li>
-                <li className="notification-item">
-                  <p><strong>Alert:</strong> Your account balance is $0.00. No pending payments.</p>
-                  <span>Oct 18, 2024</span>
-                </li>
               </ul>
             </div>
           </div>
 
           <div className="profile-content">
-            {/* Member Info Rectangle with Profile Picture and Information */}
             <div className="member-info-rectangle">
               <img
                 src={userProfile.profilePic}
@@ -145,10 +164,14 @@ function UserProfile() {
                 <p><strong>Phone Number:</strong> {userProfile.phone}</p>
               </div>
 
-              {/* Fines and Holds Positioned Inside Member Info Rectangle */}
               <div className="profile-footer">
                 <div className="fines">
                   <p><strong>Fines:</strong> ${userProfile.fines}</p>
+                  {parseFloat(userProfile.fines) > 0 && (
+                    <button onClick={handlePayFines} className="pay-fines-button">
+                      Pay Fines
+                    </button>
+                  )}
                 </div>
                 <div className="holds">
                   <p><strong>Holds:</strong> {userProfile.holds}</p>
@@ -156,7 +179,6 @@ function UserProfile() {
               </div>
             </div>
 
-            {/* Dynamic content displayed based on sidebar selection */}
             <div className="section-content">
               {renderContent()}
             </div>
