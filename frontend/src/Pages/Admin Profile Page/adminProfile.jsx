@@ -7,13 +7,15 @@ import ManageMusic from './Components/manageMusic';
 import ManageTech from './Components/manageTech';
 import ManageAdmin from './Components/manageAdmin';
 import AdminInfo from './Components/adminInfo';
+import Reports from './Components/Reports';
 
 function AdminProfile() {
   const [activeSection, setActiveSection] = useState('');
   const [adminId, setAdminId] = useState(null);
 
+  
   useEffect(() => {
-    // Get adminId from local storage or a global state
+    // Retrieve adminId from local storage or global state
     const storedAdminId = localStorage.getItem('adminId');
     setAdminId(storedAdminId);
   }, []);
@@ -32,6 +34,8 @@ function AdminProfile() {
         return <ManageTech />;
       case 'manageAdmin':
         return <ManageAdmin />;
+      case 'reports': // Add case for Reports
+        return <Reports />;
       default:
         return <AdminInfo adminId={adminId} />;
     }
@@ -41,6 +45,7 @@ function AdminProfile() {
     <div style={{ minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
       <Navbar />
       <div style={{ display: 'flex', paddingTop: '60px' }}>
+        {/* Sidebar */}
         <div style={{
           width: '20%',
           position: 'fixed',
@@ -59,9 +64,11 @@ function AdminProfile() {
             <li onClick={() => setActiveSection('manageMusic')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageMusic' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageMusic' ? 'bold' : 'normal' }}>Manage Music</li>
             <li onClick={() => setActiveSection('manageTech')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageTech' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageTech' ? 'bold' : 'normal' }}>Manage Technology</li>
             <li onClick={() => setActiveSection('manageAdmin')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageAdmin' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageAdmin' ? 'bold' : 'normal' }}>Manage Admins</li>
+            <li onClick={() => setActiveSection('reports')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reports' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reports' ? 'bold' : 'normal' }}>Reports</li>
           </ul>
         </div>
 
+        {/* Main Content */}
         <div style={{ flexGrow: 1, marginLeft: '20%', padding: '40px' }}>
           {renderActiveSection()}
         </div>
