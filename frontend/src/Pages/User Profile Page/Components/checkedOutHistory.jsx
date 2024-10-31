@@ -9,21 +9,27 @@ function CheckedOutHistory({ userId }) {
 
   useEffect(() => {
     axios.get(`https://library-database-backend.onrender.com/api/checkoutbook/${userId}`)
-      .then((response) => setBooks(response.data))
+      .then((response) => {
+        console.log("Books data:", response.data);
+        setBooks(response.data);
+      })
       .catch((error) => console.error("Error fetching checked-out books:", error));
-
-    axios.get(`https://library-database-backend.onrender.com/api/checkouttech/${userId}`)
-      .then((response) => setTech(response.data))
+  
+    axios.get(`https://library-database-backend.onrender.com/api/checkoutTech/${userId}`)
+      .then((response) => {
+        console.log("Tech data:", response.data);
+        setTech(response.data);
+      })
       .catch((error) => console.error("Error fetching checked-out tech items:", error));
-
+  
     axios.get(`https://library-database-backend.onrender.com/api/checkoutmusic/${userId}`)
-      .then((response) => setMusic(response.data))
+      .then((response) => {
+        console.log("Music data:", response.data);
+        setMusic(response.data);
+      })
       .catch((error) => console.error("Error fetching checked-out music items:", error));
-
-    axios.get(`https://library-database-backend.onrender.com/api/waitlist/${userId}`)
-      .then((response) => setWaitlist(response.data))
-      .catch((error) => console.error("Error fetching waitlist items:", error));
   }, [userId]);
+  
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg">

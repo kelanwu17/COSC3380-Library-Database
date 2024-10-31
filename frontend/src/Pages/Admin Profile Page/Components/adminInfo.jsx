@@ -9,48 +9,79 @@ function AdminInfo({ adminId }) {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/admin/${adminId}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Ensure token is stored and used here
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        setAdminData(response.data); // Assuming response data contains the admin profile info
+        console.log("Admin Data:", response.data); // Log the response to check the data
+        setAdminData(response.data);
       } catch (error) {
         console.error('Error fetching admin data:', error);
+        console.log("Admin ID passed to AdminInfo:", adminId);
+
       }
     };
-
+  
     fetchAdminData();
   }, [adminId]);
+  
 
   if (!adminData) {
-    return <p>Loading profile...</p>; // Loading state while data is being fetched
+    return <p></p>;
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-gray-200 to-gray-400">
-      <div className="bg-gray-100 rounded-lg shadow-lg p-8 max-w-lg w-full text-gray-800">
-        <div className="flex items-center mb-6">
-          <img
-            src={adminData.profilePicture || 'path-to-placeholder.jpg'}
-            alt="Admin Profile"
-            className="w-32 h-32 rounded-full shadow-md object-cover mr-6"
-          />
-          <div className="flex flex-col">
-            <h3 className="text-3xl font-semibold">{adminData.firstName} {adminData.lastName}</h3>
-            <p className="text-lg text-gray-500">{adminData.role}</p>
-          </div>
+    <div
+      className="admin-info-container"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '30px',
+        backgroundColor: '#fff',
+        borderRadius: '10px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        maxWidth: '800px',
+        margin: 'auto',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '30px', textAlign: 'left', width: '100%' }}>
+        <img
+          src="/profilepic.png" // Path to your image in the public folder
+          alt=""
+          style={{
+            width: '150px',
+            height: '150px',
+            borderRadius: '50%', // Circular shape
+            marginRight: '30px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          }}
+        />
+        <div>
+          <h3 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#333' }}>
+            {adminData.firstName} {adminData.lastName}
+          </h3>
+          <p style={{ margin: '5px 0', fontSize: '1.2rem', fontWeight: 'bold', color: '#666' }}>Admin ID: {adminData.adminId}</p>
+          <p style={{ margin: '5px 0', fontSize: '1.2rem', color: '#888' }}>Member since: {adminData.memberSince}</p>
+          <p style={{ margin: '5px 0', fontSize: '1.2rem', color: '#888' }}>Username: {adminData.username}</p>
         </div>
-        
-        <div className="border-t border-gray-300 pt-4 space-y-4">
-          <p className="text-lg">
-            <span className="font-semibold">Email:</span> {adminData.email}
-          </p>
-          <p className="text-lg">
-            <span className="font-semibold">Phone:</span> {adminData.phone}
-          </p>
-          <p className="text-lg">
-            <span className="font-semibold">Date of Birth:</span> {new Date(adminData.DOB).toLocaleDateString()}
-          </p>
-        </div>
+      </div>
+
+      <div style={{ width: '100%', borderTop: '1px solid #e0e0e0', paddingTop: '15px' }}>
+        <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
+          <strong>Email:</strong> {adminData.email}
+        </p>
+        <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
+          <strong>DOB:</strong> {new Date(adminData.DOB).toLocaleDateString()}
+        </p>
+        <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
+          <strong>Phone Number:</strong> {adminData.phone}
+        </p>
+        <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
+          <strong>Roles:</strong> {adminData.roles}
+        </p>
+        <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
+          <strong>Active:</strong> {adminData.active ? 'Yes' : 'No'}
+        </p>
       </div>
     </div>
   );
