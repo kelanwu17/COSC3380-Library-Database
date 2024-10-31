@@ -11,19 +11,16 @@ function CheckedOutHistory({ userId }) {
     axios.get(`https://library-database-backend.onrender.com/api/checkoutbook/${userId}`)
       .then((response) => setBooks(response.data))
       .catch((error) => console.error("Error fetching checked-out books:", error));
-
-    axios.get(`https://library-database-backend.onrender.com/api/checkouttech/${userId}`)
+  
+    axios.get(`https://library-database-backend.onrender.com/api/checkoutTech/${userId}`)
       .then((response) => setTech(response.data))
       .catch((error) => console.error("Error fetching checked-out tech items:", error));
-
+  
     axios.get(`https://library-database-backend.onrender.com/api/checkoutmusic/${userId}`)
       .then((response) => setMusic(response.data))
       .catch((error) => console.error("Error fetching checked-out music items:", error));
-
-    axios.get(`https://library-database-backend.onrender.com/api/waitlist/${userId}`)
-      .then((response) => setWaitlist(response.data))
-      .catch((error) => console.error("Error fetching waitlist items:", error));
   }, [userId]);
+  
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg">

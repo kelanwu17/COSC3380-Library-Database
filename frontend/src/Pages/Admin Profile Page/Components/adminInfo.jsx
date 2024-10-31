@@ -9,10 +9,10 @@ function AdminInfo({ adminId }) {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/admin/${adminId}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Ensure token is stored and used here
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        setAdminData(response.data); // Assuming response data contains the admin profile info
+        setAdminData(response.data);
       } catch (error) {
         console.error('Error fetching admin data:', error);
       }
@@ -22,16 +22,21 @@ function AdminInfo({ adminId }) {
   }, [adminId]);
 
   if (!adminData) {
-    return <p>Loading profile...</p>; // Loading state while data is being fetched
+    return <p>Loading profile...</p>;
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-gray-200 to-gray-400">
-      <div className="bg-gray-100 rounded-lg shadow-lg p-8 max-w-lg w-full text-gray-800">
+    <div
+      className="flex items-center justify-center min-h-screen"
+      style={{
+        backgroundColor: 'white',
+      }}
+    >
+      <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full text-gray-800">
         <div className="flex items-center mb-6">
           <img
-            src={adminData.profilePicture || 'path-to-placeholder.jpg'}
-            alt="Admin Profile"
+            src="/profilepic.png"  // Path to your image in the public folder
+            alt=""
             className="w-32 h-32 rounded-full shadow-md object-cover mr-6"
           />
           <div className="flex flex-col">
