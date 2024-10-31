@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Box, Container } from '@mui/material';
 import Navbar from '../../../Components/NavBar';
-import LandingPageImage from '../../../Assets/LandingPage.png';
+import LandingPageImage from '../../../Assets/LandingPage.webp';
 import { useNavigate } from 'react-router-dom';
 function Home() {
     const [openMenu, setOpenMenu] = useState(false);
