@@ -15,10 +15,11 @@ function AdminProfile() {
 
   
   useEffect(() => {
-    // Retrieve adminId from local storage or global state
     const storedAdminId = localStorage.getItem('adminId');
+    console.log("Stored Admin ID:", storedAdminId); // Check if adminId is stored and retrieved correctly
     setAdminId(storedAdminId);
   }, []);
+  
 
   const renderActiveSection = () => {
     switch (activeSection) {

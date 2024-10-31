@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './userProfile.css'; 
 import Navbar from '../../Components/NavBar';
 import axios from "axios";
 import ReserveComponent from './Components/ReserveComponent';
@@ -7,8 +6,6 @@ import CheckOutHistory from './Components/checkedOutHistory';
 import RecommendedBooks from './Components/recommendedBook';
 import RecommendedMusic from './Components/recommendedMusic'; 
 import UserEvents from './Components/userEvents'; // Import the component
-
-
 
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
@@ -111,85 +108,84 @@ function UserProfile() {
     }
   };
 
-// Define renderContent function
-const renderContent = () => {
-  switch (activeSection) {
-    case 'events':
-      return <UserEvents userId={userId} />; // Show user events component
-    case 'checkedOutHistory':
-      return <CheckOutHistory userId={userId} />; // Show checkout history component
-    case 'recommendedBooks':
-      return <RecommendedBooks preferences={userProfile.preferences} />;
-    case 'recommendedMusic':
-      return <RecommendedMusic preferences={userProfile.preferences} />;
-    case 'reservedItems':
-      return <ReserveComponent />; // Example usage of ReserveComponent
-    case 'waitListedItems':
-      return <p>Here are your waitlisted items...</p>; // Add this placeholder or the actual component
-    default:
-      return <p>Select a section from the sidebar.</p>;
-  }
-};
+  // Define renderContent function
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'events':
+        return <UserEvents userId={userId} />; // Show user events component
+      case 'checkedOutHistory':
+        return <CheckOutHistory userId={userId} />; // Show checkout history component
+      case 'recommendedBooks':
+        return <RecommendedBooks preferences={userProfile.preferences} />;
+      case 'recommendedMusic':
+        return <RecommendedMusic preferences={userProfile.preferences} />;
+      case 'reservedItems':
+        return <ReserveComponent />; // Example usage of ReserveComponent
+      case 'waitListedItems':
+        return <p>Here are your waitlisted items...</p>; // Add this placeholder or the actual component
+      default:
+        return <p>Select a section from the sidebar.</p>;
+    }
+  };
 
   return (
     <div>
       <Navbar />
-      <div className="profile-container">
-        <div className="profile-details">
-          <div className="sidebar">
-            <ul className="sidebar-menu">
-              <li onClick={() => setActiveSection('events')}>EVENTS</li>
-              <li onClick={() => setActiveSection('checkedOutHistory')}>CHECKED OUT HISTORY</li>
-              <li onClick={() => setActiveSection('recommendedBooks')}>RECOMMENDED BOOKS</li>
-              <li onClick={() => setActiveSection('recommendedMusic')}>RECOMMENDED MUSIC</li>
-              <li onClick={() => setActiveSection('reservedItems')}>RESERVED ITEMS</li>
-              <li onClick={() => setActiveSection('waitListedItems')}>WAITLISTED ITEMS</li>
-            </ul>
-            <div className="notification-sidebar">
-              <h3 className="notification-title">Notifications</h3>
-              <ul className="notification-list">
-                <li className="notification-item">
-                  <p><strong>Overdue Notice:</strong> You have 2 overdue books. Please return them by the end of this week.</p>
-                  <span>Oct 21, 2024</span>
-                </li>
-              </ul>
+      <div style={{ display: 'flex', padding: '20px' }}>
+        {/* Sidebar */}
+        <div style={{
+          width: '20%',
+          position: 'fixed',
+          top: '60px',
+          left: 0,
+          padding: '20px 0',
+          backgroundColor: '#f4f4f4',
+          minHeight: '100vh',
+          boxShadow: '2px 0 5px rgba(0, 0, 0, 0.1)',
+        }}>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            <li onClick={() => setActiveSection('events')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'events' ? '#ddd' : 'transparent', fontWeight: activeSection === 'events' ? 'bold' : 'normal' }}>Events</li>
+            <li onClick={() => setActiveSection('checkedOutHistory')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'checkedOutHistory' ? '#ddd' : 'transparent', fontWeight: activeSection === 'checkedOutHistory' ? 'bold' : 'normal' }}>Checked Out History</li>
+            <li onClick={() => setActiveSection('recommendedBooks')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'recommendedBooks' ? '#ddd' : 'transparent', fontWeight: activeSection === 'recommendedBooks' ? 'bold' : 'normal' }}>Recommended Books</li>
+            <li onClick={() => setActiveSection('recommendedMusic')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'recommendedMusic' ? '#ddd' : 'transparent', fontWeight: activeSection === 'recommendedMusic' ? 'bold' : 'normal' }}>Recommended Music</li>
+            <li onClick={() => setActiveSection('reservedItems')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reservedItems' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reservedItems' ? 'bold' : 'normal' }}>Reserved Items</li>
+            <li onClick={() => setActiveSection('waitListedItems')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'waitListedItems' ? '#ddd' : 'transparent', fontWeight: activeSection === 'waitListedItems' ? 'bold' : 'normal' }}>Waitlisted Items</li>
+          </ul>
+        </div>
+
+        <div style={{ flex: '3', marginLeft: '20%' }}>
+          <div style={{ display: 'flex', marginBottom: '20px', padding: '20px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+            <img
+              src={userProfile.profilePic}
+              alt={`${userProfile.firstName} ${userProfile.lastName}`}
+              style={{ width: '150px', height: '150px', borderRadius: '50%', marginRight: '20px' }}
+            />
+            <div>
+              <h2>{`${userProfile.firstName} ${userProfile.lastName}`}</h2>
+              <p><strong>Member since:</strong> {formattedMemberSince}</p>
+              <p><strong>Member ID:</strong> {userProfile.memberId}</p>
+              <p><strong>Email:</strong> {userProfile.email}</p>
+              <p><strong>DOB:</strong> {formattedDOB}</p>
+              <p><strong>Phone Number:</strong> {userProfile.phone}</p>
             </div>
           </div>
 
-          <div className="profile-content">
-            <div className="member-info-rectangle">
-              <img
-                src={userProfile.profilePic}
-                alt={`${userProfile.firstName} ${userProfile.lastName}`}
-                className="profile-image"
-              />
-              <div className="profile-info">
-                <h2>{`${userProfile.firstName} ${userProfile.lastName}`}</h2>
-                <p><strong>Member since:</strong> {formattedMemberSince}</p>
-                <p><strong>Member ID:</strong> {userProfile.memberId}</p>
-                <p><strong>Email:</strong> {userProfile.email}</p>
-                <p><strong>DOB:</strong> {formattedDOB}</p>
-                <p><strong>Phone Number:</strong> {userProfile.phone}</p>
-              </div>
-
-              <div className="profile-footer">
-                <div className="fines">
-                  <p><strong>Fines:</strong> ${userProfile.fines}</p>
-                  {parseFloat(userProfile.fines) > 0 && (
-                    <button onClick={handlePayFines} className="pay-fines-button">
-                      Pay Fines
-                    </button>
-                  )}
-                </div>
-                <div className="holds">
-                  <p><strong>Holds:</strong> {userProfile.holds}</p>
-                </div>
-              </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+            <div>
+              <p><strong>Fines:</strong> ${userProfile.fines}</p>
+              {parseFloat(userProfile.fines) > 0 && (
+                <button onClick={handlePayFines} style={{ padding: '10px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                  Pay Fines
+                </button>
+              )}
             </div>
-
-            <div className="section-content">
-              {renderContent()}
+            <div>
+              <p><strong>Holds:</strong> {userProfile.holds}</p>
             </div>
+          </div>
+
+          <div>
+            {renderContent()}
           </div>
         </div>
       </div>
