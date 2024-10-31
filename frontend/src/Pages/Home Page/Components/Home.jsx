@@ -1,110 +1,120 @@
 import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import InputBase from '@mui/material/InputBase';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu'; 
+import { useState, useEffect } from 'react';
+import { Box, Container } from '@mui/material';
+import Navbar from '../../../Components/NavBar';
 import LandingPageImage from '../../../Assets/LandingPage.webp';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import NavBar from '../../../Components/NavBar';
-import { useState } from 'react';
-import Footer from '../../../Components/Footer'
-
-
+import { useNavigate } from 'react-router-dom';
 function Home() {
- 
-    
-    const [openMenu, setOpenMenu] = React.useState(false);
-    const [anchorEl, setAnchorEl] = React.useState(null); 
-    const [category, setCategory] = useState('')
-  
-    console.log(category)
-    const handleMenuToggle = (event) => {
-        setAnchorEl(event.currentTarget);
-        setOpenMenu((prevOpen) => !prevOpen);
+    const [openMenu, setOpenMenu] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null); 
+    const [category, setCategory] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        document.body.style.overflow = 'hidden'; 
+        return () => {
+            document.body.style.overflow = ''; 
+        };
+    }, []);
+
+    useEffect(() => {
+        // Trigger the fade-in effect after component mounts
+        setIsVisible(true);
+    }, []);
+
+    const navigate = useNavigate();
+    const handleBooks = () => {
+        navigate('/books');
     };
-
-    const handleClose = () => {
-        setOpenMenu(false);
-        setAnchorEl(null);
-
+    const handleMusic = () => {
+        navigate('/music');
     };
-
+    const handleTech = () => {
+        navigate('/technology');
+    };
 
     return (
-        <div>
-      <div className="home-container h-screen flex flex-col">
-          <NavBar />
-          <div
-              className="flex-grow flex items-center justify-center bg-cover bg-center"
-              style={{
-                  backgroundImage: `url(${LandingPageImage})`,
-              }}
-          >
-              <div className="flex flex-col items-center "style={{ marginTop: '-125px' }}>
-                  <p className="mt-{-10px} text-purple-200 text-7xl font-bold" > {/* Reduced margin top for the first text */}
-                      Discover the Future of
-                  </p>
-                  <p className="mt-{-10px} text-purple-200 text-7xl font-bold"> {/* Reduced margin top for the second text */}
-                      Knowledge
-                  </p>
-                  <Paper
-                      component="form"
-                      sx={{
-                          p: '2px 4px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          width: 700,
-                          mt: 4, // Increased margin top to push the search bar further down
-                          borderRadius: '20px',
-                      }}
-                  >
-                      <InputBase
-                          sx={{ ml: 2, flex: 1 }}
-                          placeholder="Search..."
-                      />
-                      <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                          <SearchIcon />
-                      </IconButton>
-                      <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                      <IconButton
-                          color="primary"
-                          sx={{
-                              p: '10px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                          }}
-                          tabIndex={-1}
-                          aria-label="directions"
-                          onClick={handleMenuToggle}
-                      >
-                          <ArrowDropDownIcon sx={{ color: 'black' }} />
-                      </IconButton>
-                  </Paper>
-                  <Menu
-                      anchorEl={anchorEl}
-                      open={openMenu}
-                      onClose={handleClose}
-                      PaperProps={{
-                          sx: {
-                              borderRadius: '20px', // Make the menu items rounded
-                          },
-                      }}
-                  >
-                      <MenuItem onClick={() => {handleClose(); setCategory('Book');}}>Books</MenuItem>
-                      <MenuItem onClick={() => {handleClose(); setCategory('Music');}}>Music</MenuItem>
-                      <MenuItem onClick={() => {handleClose(); setCategory('Technology');}}>Technology</MenuItem>
-                  </Menu>
-              </div>
-          </div>
-          
-      </div>
-      
-      </div>
-  );
-}  
+        <div className="h-screen">
+            <Navbar />
+            <Container 
+                maxWidth={false} 
+                sx={{
+                    height: "100vh", 
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "0",
+                    padding: "0",
+                    width: "100vw",
+                    overflow: "hidden",
+                    position: "relative"
+                    
+                }}
+            >
+                {/* Blurred background */}
+                <Box 
+                    sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100vw",
+                        height: "100vh",
+                        backgroundImage: `url(${LandingPageImage})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        zIndex: 0,
+                         
+                    }} 
+                >
+                    <Box 
+                        sx={{
+                            background: "rgba(101, 80, 60, 0.7)",
+                            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", 
+                            borderRadius: "25px",
+                            width: "100%",
+                            height: "100%",
+                            zIndex: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            overflow: "hidden",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            paddingTop: "200px" // Adjust this value to raise components higher
+                            
+                        }}
+                    >
+                        {/* Title Text */}
+                        <p className={`text-purple-200 text-5xl md:text-6xl lg:text-7xl font-bold mt-[-10px]`}>
+                            Discover the Future of
+                        </p>
+                        <p className={`text-purple-200 text-5xl md:text-6xl lg:text-7xl font-bold mt-[-10px] `}>
+                            Knowledge
+                        </p>
+
+                        {/* Responsive Buttons */}
+                        <Box sx={{ 
+                            display: 'flex', 
+                            gap: { xs: 2, md: 4, lg: 6 },  
+                            flexDirection: { xs: 'column', sm: 'row' },  
+                            mt: 4,
+                            justifyContent: 'center', 
+                            alignItems: 'center' 
+                        }}>
+                            <button onClick={handleBooks} className='px-6 py-3 bg-purple-500 text-white rounded rounded-lg text-lg md:text-xl lg:text-2xl '>
+                                Books
+                            </button>
+                            <button onClick={handleMusic} className='px-6 py-3 bg-purple-500 text-white rounded-lg rounded text-lg md:text-xl lg:text-2xl' >
+                                Music
+                            </button>
+                            <button onClick={handleTech} className='px-6 py-3 bg-purple-500 rounded-lg text-white rounded text-lg md:text-xl lg:text-2xl'>
+                                Technology
+                            </button>
+                        </Box>
+                    </Box>
+                </Box>
+            </Container>
+        </div>
+    );
+}
 
 export default Home;
