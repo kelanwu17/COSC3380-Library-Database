@@ -6,7 +6,7 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: linear-gradient(to right, #816950b2, #87654163);
+    background: linear-gradient(to right, #d1c0afb2, #87654163);
 }
 
 /* Wrapper styles */
@@ -17,7 +17,7 @@
     border-radius: 25px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    background-color: #65503c4b;
+    background-color: #b0a9a24b;
 }
 
 /* Image section styles */
@@ -71,7 +71,7 @@
 }
 
 .toggle-button.active {
-    background-color: #d6cefac4;
+    background-color: #c2c7d9c4;
     font-weight: bold;
 }
 
@@ -80,7 +80,7 @@
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
     font-size: 45px;
-    color: #ffffff;
+    color: #000000;
     padding-top: 50px;
     margin-bottom: 10px;
     text-align: center;
@@ -88,7 +88,7 @@
 
 /* Signup link styles */
 .signup-link {
-    color: #ffffff;
+    color: #000000;
     margin-bottom: 40px;
     margin-top: 10px;
     text-align: center;
@@ -128,5 +128,5 @@
 }
 
 .login-button:hover {
-    background-color: #d6cefac4;
+    background-color: #c2c7d9c4;
 }
