@@ -13,6 +13,7 @@ function AdminProfile() {
   const [activeSection, setActiveSection] = useState('');
   const [adminId, setAdminId] = useState(null);
 
+  
   useEffect(() => {
     // Retrieve adminId from local storage or global state
     const storedAdminId = localStorage.getItem('adminId');
