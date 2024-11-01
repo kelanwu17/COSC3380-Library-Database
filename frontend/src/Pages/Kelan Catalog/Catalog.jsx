@@ -118,7 +118,7 @@ import {
           rowSpacing={4}
           sx={{
             backgroundColor: "#E9E5DF",
-            width: "80%",
+            width: {xs:"100%", lg:"80%"},
             margin: "0 auto",
             borderRadius: "25px",
             overflow: "hidden",
