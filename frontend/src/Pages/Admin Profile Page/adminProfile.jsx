@@ -36,6 +36,16 @@ function AdminProfile() {
   }
 }
 
+function handleReportCheck() {
+ 
+  if (role === 'technician') {
+    setActiveSection('reports');
+  } else {
+    
+    handleClick();
+  }
+}
+
 
   const renderActiveSection = () => {
    
@@ -83,7 +93,7 @@ function AdminProfile() {
             <li onClick={() => setActiveSection('manageMusic')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageMusic' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageMusic' ? 'bold' : 'normal' }}>Manage Music</li>
             <li onClick={() => setActiveSection('manageTech')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageTech' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageTech' ? 'bold' : 'normal' }}>Manage Technology</li>
             <li onClick={handleTechCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageAdmin' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageAdmin' ? 'bold' : 'normal' }}>Manage Admins</li>
-            <li onClick={() => setActiveSection('reports')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reports' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reports' ? 'bold' : 'normal' }}>Reports</li>
+            <li onClick={handleReportCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reports' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reports' ? 'bold' : 'normal' }}>Reports</li>
           </ul>
         </div>
 
