@@ -5,6 +5,11 @@ function AdminInfo({ adminId }) {
   const [adminData, setAdminData] = useState(null);
 
   useEffect(() => {
+    if (!adminId) {
+      console.warn("Admin ID is not available.");
+      return;
+    }
+
     const fetchAdminData = async () => {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/admin/${adminId}`, {
@@ -12,21 +17,22 @@ function AdminInfo({ adminId }) {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        console.log("Admin Data:", response.data); // Log the response to check the data
+        console.log("Admin Data:", response.data);
         setAdminData(response.data);
       } catch (error) {
         console.error('Error fetching admin data:', error);
-        console.log("Admin ID passed to AdminInfo:", adminId);
-
       }
     };
   
     fetchAdminData();
   }, [adminId]);
   
+  if (!adminId) {
+    return <p>Admin ID is not available.</p>;
+  }
 
   if (!adminData) {
-    return <p></p>;
+    return <p>Loading admin data...</p>;
   }
 
   return (
@@ -46,12 +52,12 @@ function AdminInfo({ adminId }) {
     >
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '30px', textAlign: 'left', width: '100%' }}>
         <img
-          src="/profilepic.png" // Path to your image in the public folder
-          alt=""
+          src="/profilepic.png"
+          alt="Profile"
           style={{
             width: '150px',
             height: '150px',
-            borderRadius: '50%', // Circular shape
+            borderRadius: '50%',
             marginRight: '30px',
             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           }}
