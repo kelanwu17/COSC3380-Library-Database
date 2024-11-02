@@ -17,13 +17,14 @@ function AdminProfile() {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    const storedAdminId = localStorage.getItem('adminId');
+    const storedAdminId = sessionStorage.getItem('adminId');
     if (storedAdminId) {
       setAdminId(storedAdminId);
       console.log("Stored Admin ID:", storedAdminId);
     } else {
       console.warn("No adminId found in localStorage.");
     }
+    
   }, []);
 
   const handleClick = () => {

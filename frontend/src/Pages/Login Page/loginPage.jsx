@@ -56,6 +56,7 @@ function LoginPage() {
       
       if (loginType === 'admin') {
         sessionStorage.setItem('roles', user.roles);
+        sessionStorage.setItem('adminId', user.adminId);
       }
       if (loginType === 'member') {
         sessionStorage.setItem('roles', 'member');
