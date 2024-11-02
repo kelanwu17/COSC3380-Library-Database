@@ -149,7 +149,7 @@ function SignUpPage() {
             <div className="preferences">
               <p>Preferences</p>
               <div className="checkbox-group">
-                {['Fiction', 'Romance', 'Mystery', 'Action', 'Horror', 'Science', 'Adventure', 'History'].map((pref) => (
+                {['Romance', 'Mystery', 'Action', 'Horror', 'Science', 'Adventure', 'History'].map((pref) => (
                   <label key={pref}>
                     <input 
                       type="checkbox" 
