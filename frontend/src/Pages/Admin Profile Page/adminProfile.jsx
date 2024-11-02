@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Button from '@mui/material/Button';
+import { SnackbarProvider, VariantType, useSnackbar } from 'notistack';
 import Navbar from '../../Components/NavBar';
 import ManageMembers from './Components/manageMembers';
 import ManageBooks from '../Admin Item Page/adminItem';
@@ -12,16 +14,41 @@ import Reports from './Components/Reports';
 function AdminProfile() {
   const [activeSection, setActiveSection] = useState('');
   const [adminId, setAdminId] = useState(null);
+  const role = sessionStorage.getItem('roles')
+  const { enqueueSnackbar } = useSnackbar();
+  const handleClick = () => {
+    enqueueSnackbar('You do not have access to this page.', { autoHideDuration: 900 });
+  };
 
-  
   useEffect(() => {
     const storedAdminId = localStorage.getItem('adminId');
     console.log("Stored Admin ID:", storedAdminId); // Check if adminId is stored and retrieved correctly
     setAdminId(storedAdminId);
   }, []);
   
+  function handleTechCheck() {
+ 
+  if (role === 'technician') {
+    setActiveSection('manageAdmin');
+  } else {
+    
+    handleClick();
+  }
+}
+
+function handleReportCheck() {
+ 
+  if (role === 'technician') {
+    setActiveSection('reports');
+  } else {
+    
+    handleClick();
+  }
+}
+
 
   const renderActiveSection = () => {
+   
     switch (activeSection) {
       case 'manageMembers':
         return <ManageMembers />;
@@ -44,6 +71,7 @@ function AdminProfile() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
+      
       <Navbar />
       <div style={{ display: 'flex', paddingTop: '60px' }}>
         {/* Sidebar */}
@@ -64,8 +92,8 @@ function AdminProfile() {
             <li onClick={() => setActiveSection('manageEvents')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageEvents' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageEvents' ? 'bold' : 'normal' }}>Manage Events</li>
             <li onClick={() => setActiveSection('manageMusic')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageMusic' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageMusic' ? 'bold' : 'normal' }}>Manage Music</li>
             <li onClick={() => setActiveSection('manageTech')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageTech' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageTech' ? 'bold' : 'normal' }}>Manage Technology</li>
-            <li onClick={() => setActiveSection('manageAdmin')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageAdmin' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageAdmin' ? 'bold' : 'normal' }}>Manage Admins</li>
-            <li onClick={() => setActiveSection('reports')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reports' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reports' ? 'bold' : 'normal' }}>Reports</li>
+            <li onClick={handleTechCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageAdmin' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageAdmin' ? 'bold' : 'normal' }}>Manage Admins</li>
+            <li onClick={handleReportCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reports' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reports' ? 'bold' : 'normal' }}>Reports</li>
           </ul>
         </div>
 
@@ -74,8 +102,15 @@ function AdminProfile() {
           {renderActiveSection()}
         </div>
       </div>
+      
     </div>
+   
   );
 }
 
-export default AdminProfile;
+export default  function IntegrationNotistack() {
+  return (
+    <SnackbarProvider maxSnack={3}>
+      <AdminProfile />
+    </SnackbarProvider>
+  )};

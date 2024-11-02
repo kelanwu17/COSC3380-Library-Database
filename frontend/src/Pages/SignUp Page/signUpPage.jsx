@@ -46,6 +46,11 @@ function SignUpPage() {
   console.log("Data being sent to the server:", dataToSend);
 
   async function submit(e) {
+     // Check if required fields are filled out
+  if (!username || !password || !firstName || !lastName || !email || !DOB || !phone) {
+    alert("Please fill out all required fields.");
+    return; // Stop further execution if any field is empty
+  }
     e.preventDefault();
     try {
       const response = await axios.post('https://library-database-backend.onrender.com/api/member/createMember', dataToSend);
