@@ -98,15 +98,15 @@ function ManageMembers() {
     }
   };
 
-  const handleDeleteMember = async (memberId) => {
+  const handleDeactivateMember = async (memberId) => {
     try {
-      const response = await axios.delete(
-        `https://library-database-backend.onrender.com/api/member/deleteMember/${memberId}`
+      const response = await axios.put(
+        `https://library-database-backend.onrender.com/api/member/deactivateMember/${memberId}`
       );
-      alert(response.data.message);
+      alert(response.data.message || 'Member deactivated successfully!');
       fetchAllMembers();
     } catch (err) {
-      console.error('Error deleting member.', err);
+      console.error('Error deactivating member.', err);
     }
   };
 
@@ -143,18 +143,21 @@ function ManageMembers() {
         backgroundColor: '#fff',
         maxHeight: '500px',
       }}>
-        <table style={{ width: '105%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
           <thead>
             <tr>
-              {['Name', 'Email', 'Username', 'Phone', 'DOB', 'Roles', 'Status', 'Actions'].map((header, idx) => (
+              {['Name', 'Email', 'Username', 'Phone', 'DOB', 'Status', 'Actions'].map((header, idx) => (
                 <th key={idx} style={{
                   padding: '10px',
                   backgroundColor: '#455a7a',
                   color: 'white',
                   borderBottom: '1px solid #ddd',
                   textAlign: 'left',
-                  width: idx === 7 ? '220px' : 'auto'
-                }}>{header}</th>
+                  whiteSpace: 'nowrap',
+                  width: header === 'Email' || header === 'Username' ? '150px' : 'auto' // Limit width for Email and Username
+                }}>
+                  {header}
+                </th>
               ))}
             </tr>
           </thead>
@@ -162,15 +165,16 @@ function ManageMembers() {
             {membersData.map((member) => (
               <tr key={member.memberId} style={{ borderBottom: '1px solid #ddd' }}>
                 <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`${member.firstName} ${member.lastName}`}</td>
-                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{member.email}</td>
-                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{member.username}</td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{member.email}</td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{member.username}</td>
                 <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{member.phone}</td>
                 <td style={{ padding: '10px', whiteSpace: 'nowrap' }}>{new Date(member.DOB).toLocaleDateString()}</td>
-                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{member.roles}</td>
-                <td style={{ padding: '10px', color: member.accountStatus === 1 ? 'green' : 'red', whiteSpace: 'nowrap' }}>{member.accountStatus === 1 ? 'Active' : 'Inactive'}</td>
-                <td style={{ padding: '10px', whiteSpace: 'nowrap' }}>
+                <td style={{ padding: '10px', color: member.accountStatus === 1 ? 'green' : 'red', whiteSpace: 'nowrap' }}>
+                  {member.accountStatus === 1 ? 'Active' : 'Inactive'}
+                </td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap', textAlign: 'center' }}>
                   <button onClick={() => handleEditMember(member)} style={{ marginRight: '5px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Modify</button>
-                  <button onClick={() => handleDeleteMember(member.memberId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Delete</button>
+                  <button onClick={() => handleDeactivateMember(member.memberId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Deactivate</button>
                 </td>
               </tr>
             ))}
