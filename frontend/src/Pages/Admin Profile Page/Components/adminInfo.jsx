@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ContinuousColorLegend } from '@mui/x-charts';
 
 function AdminInfo({ adminId }) {
   const [adminData, setAdminData] = useState(null);
@@ -18,13 +19,15 @@ function AdminInfo({ adminId }) {
           },
         });
         console.log("Admin Data:", response.data);
-        setAdminData(response.data);
+        setAdminData(response.data[0]);
       } catch (error) {
         console.error('Error fetching admin data:', error);
       }
     };
   
     fetchAdminData();
+    console.log(adminData)
+    
   }, [adminId]);
   
   if (!adminId) {

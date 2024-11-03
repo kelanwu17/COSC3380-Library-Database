@@ -6,7 +6,8 @@ import CheckOutHistory from './Components/checkedOutHistory';
 import RecommendedBooks from './Components/recommendedBook';
 import RecommendedMusic from './Components/recommendedMusic'; 
 import UserEvents from './Components/userEvents'; // Import the component
-
+import WaitListComponent from './Components/WaitlistComponent';
+import WaitlistComponent from './Components/WaitlistComponent';
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
 
@@ -122,7 +123,7 @@ function UserProfile() {
       case 'reservedItems':
         return <ReserveComponent />; // Example usage of ReserveComponent
       case 'waitListedItems':
-        return <p>Here are your waitlisted items...</p>; // Add this placeholder or the actual component
+        return  <WaitlistComponent/>
       default:
         return <p>Select a section from the sidebar.</p>;
     }
