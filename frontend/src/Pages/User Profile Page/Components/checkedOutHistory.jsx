@@ -107,28 +107,7 @@ function CheckedOutHistory({ userId }) {
           </table>
         </section>
 
-        {/* Waitlist Section */}
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-2 text-gray-700">Waitlist</h2>
-          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-            <thead>
-              <tr className="bg-gray-300 text-left">
-                <th className="p-3 text-gray-800">Item</th>
-                <th className="p-3 text-gray-800">Type</th>
-                <th className="p-3 text-gray-800">Added Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {waitlist.map(item => (
-                <tr key={item.id} className="border-b">
-                  <td className="p-3 text-gray-700">{item.title || item.deviceName || item.albumName}</td>
-                  <td className="p-3 text-gray-700">{item.type}</td>
-                  <td className="p-3 text-gray-700">{new Date(item.addedDate).toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+     
 
       </div>
     </div>

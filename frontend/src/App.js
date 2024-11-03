@@ -23,7 +23,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route element={<ProtectedRoutes requiredRole={['admin', 'librarian', 'technician']}/>}>
+        <Route element={<ProtectedRoutes requiredRole={['assistant librarian', 'librarian', 'technician']}/>}>
         
         <Route path='/AdminItem' element={<AdminItem/>}/>
         <Route path='/AdminProfile' element={<AdminProfile/>}/>

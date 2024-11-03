@@ -9,6 +9,8 @@ function UserEvents({ userId }) {
     axios.get(`https://library-database-backend.onrender.com/api/eventSignUp/member/${userId}`)
       .then((response) => setEvents(response.data))
       .catch((error) => console.error("Error fetching user events:", error));
+
+      
   }, [userId]);
 
   return (
@@ -26,8 +28,8 @@ function UserEvents({ userId }) {
           <tbody>
             {events.map(event => (
               <tr key={event.eventId} style={{ borderBottom: '1px solid #ddd' }}>
-                <td style={{ padding: '12px', color: '#555' }}>{event.name}</td>
-                <td style={{ padding: '12px', color: '#555' }}>{new Date(event.date).toLocaleDateString()}</td>
+                <td style={{ padding: '12px', color: '#555' }}>{event.eventTitle}</td>
+                <td style={{ padding: '12px', color: '#555' }}>{new Date(event.timeDate).toLocaleDateString()}</td>
                 <td style={{ padding: '12px', color: '#555' }}>{event.location}</td>
               </tr>
             ))}

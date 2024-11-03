@@ -13,7 +13,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import MemberReport from "./Reports Components/MemberReport";
 import AdminReport from "./Reports Components/AdminReport";
 import FinesReport from "./Reports Components/FinesReport";
-
+import CheckoutItemReport from "./Reports Components/CheckoutItemReport";
 const Reports = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,13 +75,15 @@ const Reports = () => {
 
    
       <br />
-      {selectedTable === "members" ? (
-        <MemberReport api={apiEndpoints[selectedTable]} />
-      ) : selectedTable === "admins" ? (
-        <AdminReport data={data} />
-      ) : selectedTable === "fines" ? (
-        <FinesReport api={apiEndpoints[selectedTable]}/>
-      ) : null}
+{selectedTable === "members" ? (
+  <MemberReport api={apiEndpoints[selectedTable]} />
+) : selectedTable === "admins" ? (
+  <AdminReport data={data} />
+) : selectedTable === "fines" ? (
+  <FinesReport api={apiEndpoints[selectedTable]} />
+) : selectedTable === "checkoutBooks" ? (
+  <CheckoutItemReport data={data} /> // Placeholder component for checkoutbook
+) : null}
     </div>
   );
 };
