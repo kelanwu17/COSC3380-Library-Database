@@ -4,7 +4,7 @@ import axios from 'axios';
 function RecommendedBooks({ preferences, userId }) {
   const [recommendedBooks, setRecommendedBooks] = useState([]);
   const [selectedBookGenres, setSelectedBookGenres] = useState([]);
-  const bookGenres = ['fiction', 'non-fiction', 'other']; // Available book genres
+  const bookGenres = ['romance', 'adventure', 'mystery', 'history', 'horror', 'action'];
 
   // Sync preferences prop with selectedBookGenres on mount or when preferences change
   useEffect(() => {
