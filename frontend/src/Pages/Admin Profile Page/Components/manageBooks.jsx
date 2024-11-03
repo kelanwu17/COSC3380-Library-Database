@@ -138,34 +138,49 @@ function ManageBooks() {
         backgroundColor: '#fff',
         maxHeight: '500px',
       }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto', textAlign: 'center' }}>
           <thead>
             <tr>
               {['Title', 'Author', 'Genre', 'Count', 'Aisle', 'Actions'].map((header, idx) => (
                 <th key={idx} style={{
-                  padding: '10px',
+                  padding: '12px 15px',
                   backgroundColor: '#455a7a',
                   color: 'white',
-                  borderBottom: '1px solid #ddd',
+                  fontWeight: 'bold',
+                  borderBottom: '2px solid #ddd',
                   position: 'sticky',
                   top: 0,
                   zIndex: 2,
-                  textAlign: 'left'
+                  textAlign: 'center'
                 }}>{header}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {filteredBooks.map((book) => (
-              <tr key={book.bookId} style={{ borderBottom: '1px solid #ddd' }}>
+              <tr key={book.bookId} style={{ borderBottom: '1px solid #ddd', height: '60px' }}>
                 <td style={{ padding: '10px' }}>{book.title}</td>
                 <td style={{ padding: '10px' }}>{book.author}</td>
                 <td style={{ padding: '10px' }}>{book.genre}</td>
                 <td style={{ padding: '10px' }}>{book.count}</td>
                 <td style={{ padding: '10px' }}>{book.aisle}</td>
-                <td style={{ padding: '10px', display: 'flex', gap: '5px' }}>
-                  <button onClick={() => handleEditBook(book)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '8px 15px', cursor: 'pointer' }}>Modify</button>
-                  <button onClick={() => handleDeleteBook(book.bookId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '8px 15px', cursor: 'pointer' }}>Delete</button>
+                <td style={{ padding: '10px', display: 'flex', gap: '5px', justifyContent: 'center' }}>
+                  <button onClick={() => handleEditBook(book)} style={{
+                    backgroundColor: '#455a7a',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    padding: '8px 15px',
+                    cursor: 'pointer'
+                  }}>Modify</button>
+                  <button onClick={() => handleDeleteBook(book.bookId)} style={{
+                    backgroundColor: '#455a7a',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    padding: '8px 15px',
+                    cursor: 'pointer'
+                  }}>Delete</button>
                 </td>
               </tr>
             ))}
