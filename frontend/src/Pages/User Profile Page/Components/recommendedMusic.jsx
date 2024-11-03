@@ -64,10 +64,8 @@ function RecommendedMusic({ preferences, userId }) {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg">
-      <h1 className="text-2xl font-bold mb-4 text-black">Recommended Music</h1>
-
-      <div style={{ marginBottom: '20px' }}>
+    <div className="p-4 bg-white rounded-lg" style={{ display: 'flex', gap: '20px' }}>
+      <div style={{ flex: 1 }}>
         <h3>Select Music Genres</h3>
         {musicGenres.map(genre => (
           <label key={genre} style={{ display: 'block' }}>
@@ -80,23 +78,37 @@ function RecommendedMusic({ preferences, userId }) {
             {genre.charAt(0).toUpperCase() + genre.slice(1)}
           </label>
         ))}
-        <button onClick={saveMusicPreferences} style={{ marginTop: '10px', padding: '10px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+        <button
+          onClick={saveMusicPreferences}
+          style={{
+            marginTop: '10px',
+            padding: '10px',
+            backgroundColor: '#007bff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
           Save Music Preferences
         </button>
       </div>
 
-      {recommendedMusic.length > 0 ? (
-        <ul>
-          {recommendedMusic.map((music) => (
-            <li key={music.id || music.title} className="mb-2">
-              <p className="font-semibold text-black">{music.title}</p>
-              <p className="text-sm text-gray-600">{music.artist}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-600">No recommended music available.</p>
-      )}
+      <div style={{ flex: 1 }}>
+        <h1 className="text-2xl font-bold mb-4 text-black">Recommended Music</h1>
+        {recommendedMusic.length > 0 ? (
+          <ul>
+            {recommendedMusic.map((music) => (
+              <li key={music.id || music.title} className="mb-2">
+                <p className="font-semibold text-black">{music.title}</p>
+                <p className="text-sm text-gray-600">{music.artist}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-600">No recommended music available.</p>
+        )}
+      </div>
     </div>
   );
 }

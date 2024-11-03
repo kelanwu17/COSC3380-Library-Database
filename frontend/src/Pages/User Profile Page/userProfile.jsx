@@ -171,15 +171,14 @@ function UserProfile() {
               style={{ width: '150px', height: '150px', borderRadius: '50%', marginRight: '20px' }}
             />
             <div>
-              <h2>{`${userProfile.firstName} ${userProfile.lastName}`}</h2>
+              <h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>{`${userProfile.firstName} ${userProfile.lastName}`}</h2>
               <p><strong>Member since:</strong> {formattedMemberSince}</p>
               <p><strong>Member ID:</strong> {userProfile.memberId}</p>
-              <p><strong>Email:</strong> {userProfile.email}</p>
               <p><strong>DOB:</strong> {formattedDOB}</p>
+              <p><strong>Email:</strong> {userProfile.email}</p>
               <p><strong>Phone Number:</strong> {userProfile.phone}</p>
             </div>
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
             <div>
               <p><strong>Fines:</strong> ${userProfile.fines}</p>

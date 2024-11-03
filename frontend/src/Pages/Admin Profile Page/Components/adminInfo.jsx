@@ -61,7 +61,7 @@ function AdminInfo({ adminId }) {
         margin: 'auto',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '30px', textAlign: 'left', width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '30px', textAlign: 'left', width: '100%', }}>
         <img
           src="/profilepic.png"
           alt="Profile"

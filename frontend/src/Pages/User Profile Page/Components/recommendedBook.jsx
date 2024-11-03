@@ -62,10 +62,8 @@ function RecommendedBooks({ preferences, userId }) {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg">
-      <h1 className="text-2xl font-bold mb-4 text-black">Recommended Books</h1>
-
-      <div style={{ marginBottom: '20px' }}>
+    <div className="p-4 bg-white rounded-lg" style={{ display: 'flex', gap: '20px' }}>
+      <div style={{ flex: 1 }}>
         <h3>Select Book Genres</h3>
         {bookGenres.map(genre => (
           <label key={genre} style={{ display: 'block' }}>
@@ -78,23 +76,37 @@ function RecommendedBooks({ preferences, userId }) {
             {genre.charAt(0).toUpperCase() + genre.slice(1)}
           </label>
         ))}
-        <button onClick={saveBookPreferences} style={{ marginTop: '10px', padding: '10px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+        <button
+          onClick={saveBookPreferences}
+          style={{
+            marginTop: '10px',
+            padding: '10px',
+            backgroundColor: '#007bff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
           Save Book Preferences
         </button>
       </div>
 
-      {recommendedBooks.length > 0 ? (
-        <ul>
-          {recommendedBooks.map((book) => (
-            <li key={book.id} className="mb-2">
-              <p className="font-semibold text-black">{book.title}</p>
-              <p className="text-sm text-gray-500">{book.author}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-500">No recommended books available.</p>
-      )}
+      <div style={{ flex: 1 }}>
+        <h1 className="text-2xl font-bold mb-4 text-black">Recommended Books</h1>
+        {recommendedBooks.length > 0 ? (
+          <ul>
+            {recommendedBooks.map((book) => (
+              <li key={book.id} className="mb-2">
+                <p className="font-semibold text-black">{book.title}</p>
+                <p className="text-sm text-gray-500">{book.author}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500">No recommended books available.</p>
+        )}
+      </div>
     </div>
   );
 }
