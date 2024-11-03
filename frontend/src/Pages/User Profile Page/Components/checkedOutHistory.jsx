@@ -52,7 +52,7 @@ function CheckedOutHistory({ userId }) {
             <tbody>
               {books.map(book => (
                 <tr key={book.checkedOutBookHistoryId} className="border-b">
-                  <td className="p-3 text-gray-700">{book.title}</td>
+                  <td className="p-3 text-gray-700">{book.bookId}</td>
                   <td className="p-3 text-gray-700">{new Date(book.timeStampCheckedOut).toLocaleDateString()}</td>
                   <td className="p-3 text-gray-700">{new Date(book.timeStampDue).toLocaleDateString()}</td>
                 </tr>
@@ -75,9 +75,9 @@ function CheckedOutHistory({ userId }) {
             <tbody>
               {tech.map(item => (
                 <tr key={item.id} className="border-b">
-                  <td className="p-3 text-gray-700">{item.deviceName}</td>
-                  <td className="p-3 text-gray-700">{new Date(item.checkoutDate).toLocaleDateString()}</td>
-                  <td className="p-3 text-gray-700">{new Date(item.dueDate).toLocaleDateString()}</td>
+                  <td className="p-3 text-gray-700">{item.techId}</td>
+                  <td className="p-3 text-gray-700">{new Date(item.timeStampCheckedOut).toLocaleDateString()}</td>
+                  <td className="p-3 text-gray-700">{new Date(item.timeStampDue).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -98,9 +98,9 @@ function CheckedOutHistory({ userId }) {
             <tbody>
               {music.map(album => (
                 <tr key={album.id} className="border-b">
-                  <td className="p-3 text-gray-700">{album.albumName}</td>
-                  <td className="p-3 text-gray-700">{new Date(album.checkoutDate).toLocaleDateString()}</td>
-                  <td className="p-3 text-gray-700">{new Date(album.dueDate).toLocaleDateString()}</td>
+                  <td className="p-3 text-gray-700">{album.musicId}</td>
+                  <td className="p-3 text-gray-700">{new Date(album.timeStampCheckedOut).toLocaleDateString()}</td>
+                  <td className="p-3 text-gray-700">{new Date(album.timeStampDue).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
