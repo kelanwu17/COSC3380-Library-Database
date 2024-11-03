@@ -45,7 +45,7 @@ import {
         let apiUrl = "https://library-database-backend.onrender.com/api/";
         if (type === "books") {
           apiUrl += "books/";
-          setCategories(["all", "fiction", "non-fiction", "other"]);
+          setCategories(["all", "romance", "science", "mystery", "adventure","action","history","horror"]);
         } else if (type === "music") {
           apiUrl += "music/";
           setCategories(["all", "pop", "hip-hop", "rock", "electronic", "other"]);
@@ -140,7 +140,7 @@ import {
             <Grid2 size={{ xs: 12, md: 3 }}>
               {type === "books" || type === "music" ? (
                 <FormControl fullWidth>
-                  <InputLabel>{type === "books" ? "Category" : "Genre"}</InputLabel>
+                  <InputLabel>Genres</InputLabel>
                   <Select
                     label="category"
                     value={selectedCategory}
