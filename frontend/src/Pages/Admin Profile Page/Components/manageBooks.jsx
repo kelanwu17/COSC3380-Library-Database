@@ -93,7 +93,7 @@ function ManageBooks() {
         `https://library-database-backend.onrender.com/api/books/updateBook/${editBookId}`,
         editableData
       );
-      alert(response.data.message);
+      alert(response.data.message || 'Operation completed successfully.');
       setEditBookId(null);
       fetchAllBooks();
     } catch (err) {

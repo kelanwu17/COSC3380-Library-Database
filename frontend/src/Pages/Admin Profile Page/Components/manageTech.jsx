@@ -65,13 +65,24 @@ function ManageTech() {
 
   const handleUpdateTech = async () => {
     try {
+      console.log("Data being sent to server:", editableTech);
+  
       const response = await axios.put(
         `https://library-database-backend.onrender.com/api/technology/updateTechnology/${editTechId}`,
         editableTech
       );
-      setStatusMessage(response.data.success ? 'Technology updated successfully!' : `Failed to update technology: ${response.data.message || 'Unknown error'}`);
+  
+      console.log("Response from server:", response); // Log the response
+  
+      // Use status 200 as success confirmation
+      if (response.status === 200) {
+        setStatusMessage("Technology updated successfully!");
+      } else {
+        setStatusMessage(response.data.message);
+      }
+      
+      fetchAllTech(); // Refresh the tech list
       setEditTechId(null);
-      fetchAllTech();
       setEditableTech({
         deviceName: '',
         modelNumber: '',
@@ -81,9 +92,15 @@ function ManageTech() {
         imgUrl: '',
       });
     } catch (error) {
-      setStatusMessage(`Error updating technology: ${error.message}`);
+      const errorMessage = error.response && error.response.data && error.response.data.message 
+                           ? error.response.data.message 
+                           : "Unknown error";
+      setStatusMessage(`Failed to update technology: ${errorMessage}`);
+      console.error("Error updating technology:", error);
     }
   };
+  
+
 
   const handleDeleteTech = async (techId) => {
     try {
