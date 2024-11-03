@@ -6,13 +6,14 @@ import CheckOutHistory from './Components/checkedOutHistory';
 import RecommendedBooks from './Components/recommendedBook';
 import RecommendedMusic from './Components/recommendedMusic'; 
 import UserEvents from './Components/userEvents'; // Import the component
-import WaitListComponent from './Components/WaitlistComponent';
 import WaitlistComponent from './Components/WaitlistComponent';
+
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
 
   const [activeSection, setActiveSection] = useState('events');
   const userId = sessionStorage.getItem('memberId');
+
   
   const [userProfile, setUserProfile] = useState({
     username: '',
@@ -21,7 +22,7 @@ function UserProfile() {
     email: '',
     phone: '',
     DOB: '',
-    preferences: 0,
+    preferences: '',
     accountStatus: 1,
     memberSince: '',
     memberId: userId,
@@ -46,15 +47,23 @@ function UserProfile() {
             email: userFound.email,
             phone: userFound.phone,
             DOB: userFound.DOB,
-            preferences: userFound.preferences || 0,
+            preferences: userFound.preferences || "",
             accountStatus: userFound.accountStatus || 1,
             memberSince: userFound.memberSince || new Date().toISOString(),
             memberId: userFound.memberId || userId,
             holds: userFound.holds || '0',
             profilePic: userFound.profilePic || defaultProfilePic
+              
           }));
-
-          // Fetch fines
+          
+        // Log preferences to confirm value
+        console.log("User Preferences:", userFound.preferences);
+        console.log("API response for member:", userFound); // Log the full response to inspect
+        console.log("Type of preferences:", typeof userFound.preferences); // Log data type of preferences
+        console.log("Content of preferences:", userFound.preferences); 
+        
+        
+        // Fetch fines
           const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
           const memberFines = finesResponse.data;
           if (memberFines.length > 0) {
@@ -117,9 +126,9 @@ function UserProfile() {
       case 'checkedOutHistory':
         return <CheckOutHistory userId={userId} />; // Show checkout history component
       case 'recommendedBooks':
-        return <RecommendedBooks preferences={userProfile.preferences} />;
+        return <RecommendedBooks preferences={userProfile.preferences} userId={userId} />;
       case 'recommendedMusic':
-        return <RecommendedMusic preferences={userProfile.preferences} />;
+        return <RecommendedMusic preferences={userProfile.preferences} userId={userId} />;
       case 'reservedItems':
         return <ReserveComponent />; // Example usage of ReserveComponent
       case 'waitListedItems':
