@@ -57,17 +57,34 @@ function ManageAdmin() {
     );
     setFilteredAdmins(filtered);
   };
-
+  
+  const formatDateForServer = (date) => {
+    return date ? new Date(date).toISOString().split('T')[0] : null; // Outputs "YYYY-MM-DD" or null
+  };  
+  
   const handleCreateAdmin = async () => {
+    // Validate email format using regex
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(newAdmin.email)) {
+      window.alert('Invalid email format');
+      return;
+    }   
+
+    // Format DOB to YYYY-MM-DD if it exists
+    const formattedDOB = newAdmin.DOB ? formatDateForServer(newAdmin.DOB) : null;
+    const dataToSend = { ...newAdmin, DOB: formattedDOB };
+    console.log('Data being sent to server:', dataToSend); // Add this for debugging
+
     try {
       const response = await axios.post(
         'https://library-database-backend.onrender.com/api/admin/createAdmin',
-        { ...newAdmin, DOB: newAdmin.DOB || null }
-      );
+        dataToSend,
+        { headers: { 'Content-Type': 'application/json' } }
+      );      
       console.log('Create Admin Response:', response);
   
-      if (response.data && response.data.success) {
-        setStatusMessage('Admin successfully created!');
+      if (response.status === 200 && response.data.success) {
+        window.alert('Admin successfully created!');
         fetchAllAdmins(); // Refresh the admin list
         // Reset the form fields
         setNewAdmin({
@@ -82,14 +99,18 @@ function ManageAdmin() {
           active: 1,
         });
       } else {
-        setStatusMessage('Failed to create admin.');
+        window.alert(response.data.message || 'Unexpected response format.');
       }
     } catch (err) {
-      setStatusMessage('Error creating admin. Please try again.');
+      const errorMessage = err.response && err.response.data && err.response.data.message
+        ? `Error: ${err.response.data.message}`
+        : 'Error creating admin. Please try again.';
+      window.alert(errorMessage);
       console.error('Error creating admin:', err);
     }
-    setTimeout(() => setStatusMessage(''), 3000); // Clear the status message after 3 seconds
   };
+
+
   
 
   const handleEditAdmin = (admin) => {
@@ -99,41 +120,50 @@ function ManageAdmin() {
       DOB: admin.DOB ? admin.DOB.split('T')[0] : '', // Ensure YYYY-MM-DD format
     });
   };
-
+  
   const handleUpdateAdmin = async () => {
+    const formattedDOB = formatDateForServer(editableAdminData.DOB);
+    const dataToSend = { ...editableAdminData, DOB: formattedDOB };
+  
     try {
       const response = await axios.put(
         `https://library-database-backend.onrender.com/api/admin/updateAdmin/${editAdminId}`,
-        { ...editableAdminData, DOB: editableAdminData.DOB || null }
+        dataToSend
       );
-      alert(response.data.message || 'Admin updated successfully!');
-      setEditAdminId(null);
-      fetchAllAdmins();
-      setEditableAdminData({
-        username: '',
-        password: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        DOB: '',
-        roles: '',
-        active: 1,
-      });
+  
+      if (response.status === 200) {
+        window.alert(response.data.message || 'Admin updated successfully!');
+        setEditAdminId(null);
+        fetchAllAdmins(); // Refresh the admin list
+        setEditableAdminData({
+          username: '',
+          password: '',
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          DOB: '',
+          roles: '',
+          active: 1,
+        });
+      } else {
+        window.alert(response.data.message || 'Failed to update admin.');
+      }
     } catch (error) {
-      alert('Failed to update admin.');
+      window.alert('Failed to update admin.');
       console.error('Error:', error);
     }
   };
+  
 
   const handleDeactivateAdmin = async (adminId) => {
     try {
       const response = await axios.put(`https://library-database-backend.onrender.com/api/Admin/deactivateAdmin/${adminId}`);
-      alert(response.data.message || 'Admin deactivated successfully!');
+      window.alert(response.data.message || 'Admin deactivated successfully!');
       fetchAllAdmins(); // Refresh the list to reflect the deactivation
     } catch (err) {
       console.error('Error deactivating admin:', err);
-      alert('Failed to deactivate admin. Please try again.');
+      window.alert('Failed to deactivate admin. Please try again.');
     }
   };
 

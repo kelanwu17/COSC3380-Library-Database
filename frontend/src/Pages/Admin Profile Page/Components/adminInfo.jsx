@@ -38,6 +38,14 @@ function AdminInfo({ adminId }) {
     return <p>Loading admin data...</p>;
   }
 
+  const formattedMemberSince = adminData.memberSince 
+  ? new Date(adminData.memberSince).getFullYear()
+  : new Date().getFullYear();
+  
+  console.log("Fetched Admin Data:", adminData);
+
+
+
   return (
     <div
       className="admin-info-container"
@@ -53,7 +61,7 @@ function AdminInfo({ adminId }) {
         margin: 'auto',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '30px', textAlign: 'left', width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '30px', textAlign: 'left', width: '100%', }}>
         <img
           src="/profilepic.png"
           alt="Profile"
@@ -69,9 +77,9 @@ function AdminInfo({ adminId }) {
           <h3 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#333' }}>
             {adminData.firstName} {adminData.lastName}
           </h3>
-          <p style={{ margin: '5px 0', fontSize: '1.2rem', fontWeight: 'bold', color: '#666' }}>Admin ID: {adminData.adminId}</p>
-          <p style={{ margin: '5px 0', fontSize: '1.2rem', color: '#888' }}>Member since: {adminData.memberSince}</p>
-          <p style={{ margin: '5px 0', fontSize: '1.2rem', color: '#888' }}>Username: {adminData.username}</p>
+          <p style={{ margin: '5px 0', fontSize: '1.2rem', fontWeight: 'bold', color: '#333' }}>Admin ID: {adminData.adminId}</p>
+          <p style={{ margin: '5px 0', fontSize: '1.2rem', color: '#333' }}>Admin since: {formattedMemberSince}</p>
+          <p style={{ margin: '5px 0', fontSize: '1.2rem', color: '#333' }}>Username: {adminData.username}</p>
         </div>
       </div>
 
@@ -80,13 +88,13 @@ function AdminInfo({ adminId }) {
           <strong>Email:</strong> {adminData.email}
         </p>
         <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
-          <strong>DOB:</strong> {new Date(adminData.DOB).toLocaleDateString()}
-        </p>
-        <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
           <strong>Phone Number:</strong> {adminData.phone}
         </p>
         <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
-          <strong>Roles:</strong> {adminData.roles}
+          <strong>DOB:</strong> {new Date(adminData.DOB).toLocaleDateString()}
+        </p>
+        <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
+          <strong>Role:</strong> {adminData.roles}
         </p>
         <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
           <strong>Active:</strong> {adminData.active ? 'Yes' : 'No'}

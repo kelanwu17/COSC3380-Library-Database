@@ -49,7 +49,7 @@ function AdminProfile() {
 
   const renderActiveSection = () => {
     if (!adminId) {
-      return <p>Admin ID is not available.</p>;
+      return <p>...</p>;
     }
 
     switch (activeSection) {
@@ -75,8 +75,8 @@ function AdminProfile() {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
       <Navbar />
-      <div style={{ display: 'flex', paddingTop: '60px' }}>
-        <div style={{
+      <div style={{ display: 'flex' }}>
+      <div style={{
           width: '20%',
           position: 'fixed',
           top: '60px',

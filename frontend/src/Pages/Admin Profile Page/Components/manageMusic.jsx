@@ -40,6 +40,7 @@ function ManageMusic() {
       console.error('Error fetching music data');
     }
   };
+  
 
   const handleSearch = () => {
     const filtered = musicData.filter(
@@ -140,7 +141,7 @@ function ManageMusic() {
         backgroundColor: '#fff',
         maxHeight: '500px',
       }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               {['Album', 'Artist', 'Genre', 'Release Date', 'Count', 'Value', 'Status', 'Actions'].map((header, idx) => (
@@ -165,11 +166,11 @@ function ManageMusic() {
                 <td style={{ padding: '10px' }}>{music.musicGenre}</td>
                 <td style={{ padding: '10px' }}>{new Date(music.dateReleased).toLocaleDateString()}</td>
                 <td style={{ padding: '10px' }}>{music.count}</td>
-                <td style={{ padding: '10px' }}>${music.monetaryValue}</td>
+                <td style={{ padding: '10px' }}>${music.monetaryValue.toFixed(2)}</td>
                 <td style={{ padding: '10px' }}>{music.availabilityStatus === 1 ? 'Available' : 'Not Available'}</td>
-                <td style={{ padding: '10px', display: 'flex', gap: '3px' }}>
-                  <button onClick={() => handleEditMusic(music)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '8px 15px', cursor: 'pointer' }}>Modify</button>
-                  <button onClick={() => handleDeleteMusic(music.musicId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '8px 15px', cursor: 'pointer' }}>Delete</button>
+                <td style={{ padding: '10px', display: 'flex', gap: '5px' }}>
+                  <button onClick={() => handleEditMusic(music)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Edit</button>
+                  <button onClick={() => handleDeleteMusic(music.musicId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Delete</button>
                 </td>
               </tr>
             ))}
