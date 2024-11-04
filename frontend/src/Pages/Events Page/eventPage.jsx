@@ -6,62 +6,98 @@ import axios from "axios";
 const EventsPage = () => {
   const [eventsData, setEventsData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [registeredEvents, setRegisteredEvents] = useState(new Set()); // Track registered events
+  const [registeredEvents, setRegisteredEvents] = useState(new Set());
   const navigate = useNavigate();
 
   // Fetching Events
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('https://library-database-backend.onrender.com/api/event'); // API endpoint
+        const response = await axios.get('https://library-database-backend.onrender.com/api/event');
         setEventsData(response.data); 
       } catch (error) {
         console.error('Error fetching events:', error);
       }
     };
-
-    fetchEvents(); // Call the fetch function
+    fetchEvents();
   }, []);
 
   // Fetch Registered Events
   useEffect(() => {
     const fetchRegisteredEvents = async () => {
-      const userId = sessionStorage.getItem('memberId'); // Get the user ID
+      const userId = sessionStorage.getItem('memberId');
       if (userId) {
         try {
-          const response = await axios.get(`https://library-database-backend.onrender.com/api/eventSignUp/${userId}`);
-          const registeredEventIds = new Set(response.data.map(event => event.eventId)); // Assuming response data contains eventId
-          setRegisteredEvents(registeredEventIds); // Store registered events in state
+          const response = await axios.get(`https://library-database-backend.onrender.com/api/eventSignUp/member/${userId}`);
+          const registeredEventIds = new Set(response.data.map(event => event.eventId));
+          //console.log("Fetched registered events:", registeredEventIds); // Debugging log
+          setRegisteredEvents(registeredEventIds);
         } catch (error) {
           console.error('Error fetching registered events:', error);
         }
       }
     };
-
-    fetchRegisteredEvents(); // Call the fetch function
+    fetchRegisteredEvents();
   }, []);
 
-  // Handle Sign Up button
+  // Handle Sign Up
   const handleSignUp = async (eventId) => {
-    const userId = sessionStorage.getItem('memberId'); // Get the user ID
+    const userId = sessionStorage.getItem('memberId');
     if (!userId) {
       alert("You need to be logged in to sign up for an event.");
       return;
     }
 
     try {
-      // Call the sign-up API
       await axios.post('https://library-database-backend.onrender.com/api/eventSignUp/insertEventSignUp', {
         eventId: eventId,
         memberId: userId
       });
-      setRegisteredEvents((prev) => new Set(prev).add(eventId)); // Update registered events
+      setRegisteredEvents((prev) => new Set(prev).add(eventId));
       alert(`Successfully signed up for event with id: ${eventId}`);
     } catch (error) {
       console.error('Error signing up for event:', error);
       alert('Failed to sign up for the event. Please try again.');
     }
   };
+
+  // Handle Unregister
+const handleUnregister = async (eventId) => {
+  const userId = sessionStorage.getItem('memberId');
+  if (!userId) {
+    alert("You need to be logged in to unregister from an event.");
+    return;
+  }
+
+  try {
+    // Fetch all event signups for the current user
+    const response = await axios.get(`https://library-database-backend.onrender.com/api/eventSignUp/member/${userId}`);
+    const userSignUps = response.data;
+
+    // Find the eventSignUpId for the given eventId
+    const eventSignUp = userSignUps.find(signUp => signUp.eventId === eventId);
+    
+    if (!eventSignUp) {
+      alert("You are not registered for this event.");
+      return;
+    }
+
+    // Use the found eventSignUpId to delete the signup
+    await axios.delete(`https://library-database-backend.onrender.com/api/eventSignUp/deleteEventSignUp/${eventSignUp.eventSignUpId}`);
+    
+    // Update registered events state
+    setRegisteredEvents((prev) => {
+      const updatedSet = new Set(prev);
+      updatedSet.delete(eventId);
+      return updatedSet;
+    });
+    alert(`Successfully unregistered from event with id: ${eventId}`);
+  } catch (error) {
+    console.error('Error unregistering from event:', error);
+    alert('Failed to unregister from the event. Please try again.');
+  }
+};
+
 
   const filteredEvents = eventsData.filter(event =>
     event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -80,10 +116,9 @@ const EventsPage = () => {
         padding: "0",
         width: "100vw",
         overflowX: "hidden",
-        position: "relative" // Position relative to apply background on a pseudo-element
+        position: "relative"
       }}
     >
-      {/* Blurred background */}
       <Box 
         sx={{
           position: "absolute",
@@ -94,19 +129,19 @@ const EventsPage = () => {
           backgroundImage: 'url("/loginpage.png")',
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "blur(8px)", // Apply blur
-          zIndex: -1, // Ensure the background stays behind the content
+          filter: "blur(8px)",
+          zIndex: -1,
         }} 
       />
 
       <Box 
         sx={{
-          background: "rgba(101, 80, 60, 0.7)", // Semi-transparent to make content more visible
+          background: "rgba(101, 80, 60, 0.7)",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", 
           borderRadius: "25px",
           width: "1200px",
           height: "800px",
-          zIndex: 1, // Bring the content on top of the blurred background
+          zIndex: 1,
           display: "flex",
           flexDirection: "column",
           padding: "20px",
@@ -183,13 +218,14 @@ const EventsPage = () => {
                         Time and Date: {new Date(event.timeDate).toLocaleString()}
                       </Typography>
                     </Box>
-                    {registeredEvents.has(event.eventId) ? ( // Check if registered
-                    <Button 
-                    variant="contained" 
-                    disabled
-                  >
-                    Signed up
-                  </Button>
+                    {registeredEvents.has(event.eventId) ? (
+                      <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={() => handleUnregister(event.eventId)}
+                      >
+                        Unregister
+                      </Button>
                     ) : (
                       <Button 
                         variant="contained" 
@@ -213,12 +249,12 @@ const EventsPage = () => {
       <Button 
         variant="contained" 
         color="secondary" 
-        onClick={() => navigate('/')} // Go back to the previous page
+        onClick={() => navigate('/')}
         sx={{
           position: "absolute",
           bottom: 20, 
           left: 20, 
-          zIndex: 2 // Ensure the button appears above the blurred background
+          zIndex: 2 
         }}
       >
         Back
@@ -228,5 +264,3 @@ const EventsPage = () => {
 };
 
 export default EventsPage;
-
-
