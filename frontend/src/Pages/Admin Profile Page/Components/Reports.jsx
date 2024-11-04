@@ -82,7 +82,7 @@ const Reports = () => {
 ) : selectedTable === "fines" ? (
   <FinesReport api={apiEndpoints[selectedTable]} />
 ) : selectedTable === "checkoutBooks" ? (
-  <CheckoutItemReport data={data} /> // Placeholder component for checkoutbook
+  <CheckoutItemReport api={apiEndpoints[selectedTable]} /> // Placeholder component for checkoutbook
 ) : null}
     </div>
   );

@@ -251,9 +251,9 @@ const fetchMemberHistory = async () => {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/checkoutbook/${userId}`);
         const memberHistory = response.data; 
-       
+        console.log(memberHistory)
         const instanceFound = memberHistory.find(instance => instance.bookId == id && instance.timeStampReturn == null);
-       
+       console.log(instanceFound)
         if(instanceFound == undefined)
         {
           setCheckedOut(false);
