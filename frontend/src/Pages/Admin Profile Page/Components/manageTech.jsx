@@ -65,13 +65,24 @@ function ManageTech() {
 
   const handleUpdateTech = async () => {
     try {
+      console.log("Data being sent to server:", editableTech);
+  
       const response = await axios.put(
         `https://library-database-backend.onrender.com/api/technology/updateTechnology/${editTechId}`,
         editableTech
       );
-      setStatusMessage(response.data.success ? 'Technology updated successfully!' : `Failed to update technology: ${response.data.message || 'Unknown error'}`);
+  
+      console.log("Response from server:", response); // Log the response
+  
+      // Use status 200 as success confirmation
+      if (response.status === 200) {
+        setStatusMessage("Technology updated successfully!");
+      } else {
+        setStatusMessage(response.data.message);
+      }
+      
+      fetchAllTech(); // Refresh the tech list
       setEditTechId(null);
-      fetchAllTech();
       setEditableTech({
         deviceName: '',
         modelNumber: '',
@@ -81,9 +92,15 @@ function ManageTech() {
         imgUrl: '',
       });
     } catch (error) {
-      setStatusMessage(`Error updating technology: ${error.message}`);
+      const errorMessage = error.response && error.response.data && error.response.data.message 
+                           ? error.response.data.message 
+                           : "Unknown error";
+      setStatusMessage(`Failed to update technology: ${errorMessage}`);
+      console.error("Error updating technology:", error);
     }
   };
+  
+
 
   const handleDeleteTech = async (techId) => {
     try {
@@ -103,48 +120,71 @@ function ManageTech() {
       {statusMessage && <p style={{ color: 'red', marginBottom: '10px' }}>{statusMessage}</p>}
 
       <div style={{
-        overflowX: 'auto',
-        borderRadius: '10px',
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-        marginBottom: '20px',
-        backgroundColor: '#fff',
-        maxHeight: '500px',
-      }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
-          <thead>
-            <tr>
-              {['Device Name', 'Model Number', 'Count', 'Availability Status', 'Monetary Value', 'Image', 'Actions'].map((header, idx) => (
-                <th key={idx} style={{
-                  padding: '10px',
-                  backgroundColor: '#455a7a',
-                  color: 'white',
-                  borderBottom: '1px solid #ddd',
-                  position: 'sticky',
-                  top: 0,
-                  zIndex: 2,
-                  textAlign: 'left'
-                }}>{header}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {techData.map((tech) => (
-              <tr key={tech.techId} style={{ borderBottom: '1px solid #ddd' }}>
-                <td style={{ padding: '10px' }}>{tech.deviceName}</td>
-                <td style={{ padding: '10px' }}>{tech.modelNumber}</td>
-                <td style={{ padding: '10px' }}>{tech.count}</td>
-                <td style={{ padding: '10px' }}>{tech.availabilityStatus === 1 ? "Available" : "Not Available"}</td>
-                <td style={{ padding: '10px' }}>${tech.monetaryValue}</td>
-                <td style={{ padding: '10px' }}><img src={tech.imgUrl} alt={tech.deviceName} style={{ width: '100px' }} /></td>
-                <td style={{ padding: '10px', display: 'flex', gap: '5px' }}>
-                  <button style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '8px 15px', cursor: 'pointer' }} onClick={() => handleEditTech(tech)}>Edit</button>
-                  <button style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '8px 15px', cursor: 'pointer' }} onClick={() => handleDeleteTech(tech.techId)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+  overflowX: 'auto',
+  borderRadius: '10px',
+  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+  marginBottom: '20px',
+  backgroundColor: '#fff',
+  maxHeight: '500px',
+}}>
+  <table style={{
+    width: '100%',
+    borderCollapse: 'collapse',
+    tableLayout: 'auto', // Use 'auto' for dynamic column width
+    textAlign: 'center' // Center-align all text for a cleaner look
+  }}>
+    <thead>
+      <tr>
+        {['Device Name', 'Model Number', 'Count', 'Availability Status', 'Monetary Value', 'Image', 'Actions'].map((header, idx) => (
+          <th key={idx} style={{
+            padding: '12px 15px', // More padding for better spacing
+            backgroundColor: '#455a7a', // Darker header background
+            color: 'white',
+            fontWeight: 'bold',
+            borderBottom: '2px solid #ddd',
+            position: 'sticky',
+            top: 0,
+            zIndex: 2,
+            textAlign: 'center'
+          }}>{header}</th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {techData.map((tech) => (
+        <tr key={tech.techId} style={{ borderBottom: '1px solid #ddd', height: '60px' }}>
+          <td style={{ padding: '10px' }}>{tech.deviceName}</td>
+          <td style={{ padding: '10px' }}>{tech.modelNumber}</td>
+          <td style={{ padding: '10px' }}>{tech.count}</td>
+          <td style={{ padding: '10px' }}>{tech.availabilityStatus === 1 ? "Available" : "Not Available"}</td>
+          <td style={{ padding: '10px' }}>${parseFloat(tech.monetaryValue).toFixed(2)}</td>
+          <td style={{ padding: '10px' }}>
+            <img src={tech.imgUrl} alt={tech.deviceName} style={{ width: '80px', height: 'auto', borderRadius: '5px' }} />
+          </td>
+          <td style={{ padding: '10px', display: 'flex', gap: '5px', justifyContent: 'center' }}>
+            <button style={{
+              backgroundColor: '#455a7a',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '8px 15px',
+              cursor: 'pointer'
+            }} onClick={() => handleEditTech(tech)}>Edit</button>
+            <button style={{
+              backgroundColor: '#455a7a', 
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              padding: '8px 15px',
+              cursor: 'pointer'
+            }} onClick={() => handleDeleteTech(tech.techId)}>Delete</button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
 
       <div style={{ display: 'flex', gap: '20px', justifyContent: 'space-between' }}>
         {/* Create Technology Form */}

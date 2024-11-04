@@ -1,7 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Grid, Box, Paper, Typography, Button, Container, TextField, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import axios from 'axios';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#000080', // Your custom primary color 
+    },
+    secondary: {
+      main: '#B0C4DE', // Your custom secondary color
+    },
+  },
+});
 
 function AdminEvent() {
   const navigate = useNavigate();
@@ -118,6 +130,7 @@ function AdminEvent() {
   );
 
   return (
+    <ThemeProvider theme={theme}>
     <Container 
       maxWidth="lg" 
       sx={{
@@ -367,6 +380,7 @@ function AdminEvent() {
         </DialogActions>
       </Dialog>
     </Container>
+    </ThemeProvider>
   );
 }
 
