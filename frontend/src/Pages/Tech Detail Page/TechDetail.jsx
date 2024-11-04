@@ -213,7 +213,7 @@ function TechDetail() {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/checkouttech/${userId}`);
         const memberHistory = response.data; 
-      
+      console.log(memberHistory)
         const instanceFound = memberHistory.find(instance => instance.techId == id && instance.timeStampReturn == null);
        
         if(instanceFound == undefined)
