@@ -18,27 +18,25 @@ import TechDetail from './Pages/Tech Detail Page/TechDetail';
 import ContactPage from './Pages/Contact Page/ContactPage';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import Reports from '../src/Pages/Admin Profile Page/Components/Reports'
-import BookCatalog from './Pages/Kelan Catalog/BookCatalog';
-import MusicCatalog from './Pages/Kelan Catalog/MusicCatalog';
-import TechCatalog from './Pages/Kelan Catalog/TechCatalog';
+import Catalog from './Pages/Kelan Catalog/Catalog';
 function App() {
   return (
     <Router>
       <Routes>
-        <Route element={<ProtectedRoutes requiredRole={['admin', 'librarian', 'technician']}/>}>
+        <Route element={<ProtectedRoutes requiredRole={['assistant librarian', 'librarian', 'technician']}/>}>
         
         <Route path='/AdminItem' element={<AdminItem/>}/>
         <Route path='/AdminProfile' element={<AdminProfile/>}/>
         <Route path='/AdminEvent' element={<AdminEvent/>}/>
         </Route>
         <Route path='/Contact' element={<ContactPage/>}/>
-        <Route path='/Books' element={<BookCatalog/>}/>
+        <Route path='/Books' element={<Catalog type="books"/>}/>
         <Route path='/Events' element={<EventPage/>}/>
         <Route path='/' element={<HomePage/>}/>
         <Route path='/Login' element={<LoginPage/>}/>
-        <Route path='/Music' element={<MusicCatalog/>}/>
+        <Route path='/Music' element={<Catalog type="music"/>}/>
         <Route path='/Signup' element={<SignUpPage/>}/>
-        <Route path='/Technology' element={<TechCatalog/>}/>
+        <Route path='/Technology' element={<Catalog type="tech"/>}/>
         <Route element={<ProtectedRoutes requiredRole={['member']}/>}>
         <Route path='/Profile' element={<UserProfile/>}/>
         </Route>

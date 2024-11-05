@@ -12,7 +12,6 @@ function SignUpPage() {
   const [email, setEmail] = useState('');
   const [DOB, setDob] = useState('');
   const [phone, setPhone] = useState('');
-  const [preference, setPreference] = useState([]); // Array to store selected preferences
   const [isUserLoggedin, setIsUserLoggedIn] = useState(false);
   
   const userId = sessionStorage.getItem('username');
@@ -26,13 +25,6 @@ function SignUpPage() {
     console.log(DOB)
   }, [userId, navigate]); // Added navigate to dependency array
 
-  const handleCheckboxChange = (event) => {
-    const { value, checked } = event.target;
-    setPreference((prev) => 
-      checked ? [...prev, value] : prev.filter((pref) => pref !== value)
-    );
-  };
-
   const dataToSend = {
     username,
     password,
@@ -41,11 +33,15 @@ function SignUpPage() {
     email,
     phone,
     DOB,
-    preferences: preference.join(', '),
   };
   console.log("Data being sent to the server:", dataToSend);
 
   async function submit(e) {
+     // Check if required fields are filled out
+  if (!username || !password || !firstName || !lastName || !email || !DOB || !phone) {
+    alert("Please fill out all required fields.");
+    return; // Stop further execution if any field is empty
+  }
     e.preventDefault();
     try {
       const response = await axios.post('https://library-database-backend.onrender.com/api/member/createMember', dataToSend);
@@ -141,21 +137,6 @@ function SignUpPage() {
               required
               onChange={(e) => setPassword(e.target.value)}
             />
-            <div className="preferences">
-              <p>Preferences</p>
-              <div className="checkbox-group">
-                {['Fiction', 'Romance', 'Mystery', 'Action', 'Horror', 'Science', 'Adventure', 'History'].map((pref) => (
-                  <label key={pref}>
-                    <input 
-                      type="checkbox" 
-                      value={pref} 
-                      onChange={handleCheckboxChange} 
-                    />
-                    {pref}
-                  </label>
-                ))}
-              </div>
-            </div>
             <div className="terms">
               <label>
                 <input type="checkbox" required /> I agree to{' '}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../adminProfile.css';
 
 function ManageMembers() {
   const [membersData, setMembersData] = useState([]);
@@ -18,7 +17,14 @@ function ManageMembers() {
     accountStatus: 1,
   });
   const [editMemberId, setEditMemberId] = useState(null);
-  const [editableData, setEditableData] = useState({});
+  const [editableData, setEditableData] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    phone: '',
+    DOB: '',
+  });
 
   useEffect(() => {
     fetchAllMembers();
@@ -75,52 +81,33 @@ function ManageMembers() {
 
   const handleUpdateMember = async () => {
     try {
-      // Parse DOB to correct format
       let updatedData = { ...editableData };
       if (updatedData.DOB) {
         updatedData.DOB = updatedData.DOB.replace('T', ' ').replace('Z', '');
       }
-  
+
       const response = await axios.put(
         `https://library-database-backend.onrender.com/api/member/updateMember/${editMemberId}`,
         updatedData
       );
-      console.log(updatedData)
-
-
       alert(`${response.data.message || 'Member updated successfully!'}`);
       setEditMemberId(null);
-      fetchAllMembers(); // Refresh the list to reflect changes
+      fetchAllMembers();
     } catch (error) {
       console.error('Failed to update member:', error);
-  
-      if (error.response) {
-        const errorMessage = error.response.data.message || 'Unexpected error occurred';
-        const errorStatus = error.response.status;
-        alert(`Failed to update member: ${errorMessage} (Status: ${errorStatus})`);
-      } else if (error.request) {
-        alert('Failed to update member: No response from server. Please check your connection.');
-      } else {
-        alert(`Failed to update member: ${error.message}`);
-      }
     }
   };
-  
 
-  const handleDeleteMember = async (memberId) => {
+  const handleDeactivateMember = async (memberId) => {
     try {
-      const response = await axios.delete(
-        `https://library-database-backend.onrender.com/api/member/deleteMember/${memberId}`
+      const response = await axios.put(
+        `https://library-database-backend.onrender.com/api/member/deactivateMember/${memberId}`
       );
-      alert(response.data.message);
-      fetchAllMembers(); // Refresh the members list after deletion
+      alert(response.data.message || 'Member deactivated successfully!');
+      fetchAllMembers();
     } catch (err) {
-      console.error('Error deleting member.', err);
+      console.error('Error deactivating member.', err);
     }
-  };
-
-  const handleInputChange = (e, field) => {
-    setEditableData({ ...editableData, [field]: e.target.value });
   };
 
   const handleCheckboxChange = (e) => {
@@ -134,46 +121,60 @@ function ManageMembers() {
   };
 
   return (
-    <div className="manage-members">
-      <h2>Manage Users</h2>
-      <div className="search-bar">
+    <div style={{ padding: '20px' }}>
+      <h2 style={{ fontSize: '24px', marginBottom: '10px' }}>Manage Members</h2>
+      <div style={{ marginBottom: '10px' }}>
         <input
           type="text"
           placeholder="Search by Name or Username"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
+          style={{ padding: '8px', width: '200px', marginRight: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
         />
-        <button onClick={handleSearch}>Search</button>
-        <button onClick={fetchAllMembers}>Get All Users</button>
+        <button onClick={handleSearch} style={{ padding: '8px 15px', marginRight: '5px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>Search</button>
+        <button onClick={fetchAllMembers} style={{ padding: '8px 15px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>Get All Users</button>
       </div>
 
-      <div className="table-container">
-        <table className="user-table">
+      <div style={{
+        overflowX: 'auto',
+        borderRadius: '10px',
+        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+        marginBottom: '20px',
+        backgroundColor: '#fff',
+        maxHeight: '500px',
+      }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
           <thead>
-          <tr>
-            <th className="name-column">Name</th>
-            <th className="email-column">Email</th>
-            <th className="username-column">Username</th>
-            <th className="phone-column">Phone</th>
-            <th className="dob-column">DOB</th>
-            <th className="preferences-column">Preferences</th>
-            <th className="status-column">Account Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+            <tr>
+              {['Name', 'Email', 'Username', 'Phone', 'DOB', 'Status', 'Actions'].map((header, idx) => (
+                <th key={idx} style={{
+                  padding: '10px',
+                  backgroundColor: '#455a7a',
+                  color: 'white',
+                  borderBottom: '1px solid #ddd',
+                  textAlign: 'left',
+                  whiteSpace: 'nowrap',
+                  width: header === 'Email' || header === 'Username' ? '150px' : 'auto' // Limit width for Email and Username
+                }}>
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
           <tbody>
-            {filteredMembers.map((member) => (
-              <tr key={member.memberId}>
-                <td>{`${member.firstName} ${member.lastName}`}</td>
-                <td>{member.email}</td>
-                <td>{member.username}</td>
-                <td>{member.phone}</td>
-                <td>{new Date(member.DOB).toLocaleDateString()}</td>
-                <td>{member.preferences}</td>
-                <td>{member.accountStatus === 1 ? "Active" : "Not Active"}</td>
-                <td>
-                  <button onClick={() => handleEditMember(member)}>Modify</button>
-                  <button onClick={() => handleDeleteMember(member.memberId)}>Delete</button>
+            {membersData.map((member) => (
+              <tr key={member.memberId} style={{ borderBottom: '1px solid #ddd' }}>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`${member.firstName} ${member.lastName}`}</td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{member.email}</td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{member.username}</td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{member.phone}</td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap' }}>{new Date(member.DOB).toLocaleDateString()}</td>
+                <td style={{ padding: '10px', color: member.accountStatus === 1 ? 'green' : 'red', whiteSpace: 'nowrap' }}>
+                  {member.accountStatus === 1 ? 'Active' : 'Inactive'}
+                </td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                  <button onClick={() => handleEditMember(member)} style={{ marginRight: '5px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Modify</button>
+                  <button onClick={() => handleDeactivateMember(member.memberId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Deactivate</button>
                 </td>
               </tr>
             ))}
@@ -181,126 +182,67 @@ function ManageMembers() {
         </table>
       </div>
 
-      <h3>Create Member</h3>
-      <div className="form-section">
-        <table className="form-table">
-          <tbody>
-            <tr>
-              <td>First Name</td>
-              <td><input type="text" value={newMember.firstName} onChange={(e) => setNewMember({ ...newMember, firstName: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Last Name</td>
-              <td><input type="text" value={newMember.lastName} onChange={(e) => setNewMember({ ...newMember, lastName: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Username</td>
-              <td><input type="text" value={newMember.username} onChange={(e) => setNewMember({ ...newMember, username: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Password</td>
-              <td><input type="password" value={newMember.password} onChange={(e) => setNewMember({ ...newMember, password: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Email</td>
-              <td><input type="email" value={newMember.email} onChange={(e) => setNewMember({ ...newMember, email: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Phone</td>
-              <td><input type="text" value={newMember.phone} onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Date of Birth</td>
-              <td><input type="date" value={newMember.DOB} onChange={(e) => setNewMember({ ...newMember, DOB: e.target.value })} /></td>
-            </tr>
-            <tr>
-              <td>Preferences</td>
-              <td>
-                <div className="preferences">
-                  <p>Preferences</p>
-                  <div className="checkbox-group">
-                    {['Fiction', 'Romance', 'Mystery', 'Action', 'Horror', 'Science', 'Adventure', 'History'].map((pref) => (
-                      <label key={pref}>
-                        <input 
-                          type="checkbox" 
-                          value={pref} 
-                          onChange={handleCheckboxChange} 
-                          checked={newMember.preferences.includes(pref)} 
-                        /> {pref}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>Account Status</td>
-              <td>
-                <select value={newMember.accountStatus} onChange={(e) => setNewMember({ ...newMember, accountStatus: e.target.value })}>
-                  <option value={1}>Active</option>
-                  <option value={0}>Not Active</option>
-                </select>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <button onClick={handleCreateMember}>Add Member</button>
-      </div>
-
-      {/* Edit Member Section */}
-      {editMemberId && (
-        <div className="form-section">
-          <h3>Edit Member</h3>
-          <table className="form-table">
+      <div style={{ display: 'flex', gap: '20px', justifyContent: 'space-between' }}>
+        {/* Create Member Form */}
+        <div style={{
+          padding: '15px',
+          backgroundColor: '#455a7a',
+          borderRadius: '10px',
+          color: 'white',
+          flex: 1,
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>Create Member</h3>
+          <table style={{ width: '100%' }}>
             <tbody>
-              <tr>
-                <td>First Name</td>
-                <td><input type="text" value={editableData.firstName} onChange={(e) => handleInputChange(e, 'firstName')} /></td>
-              </tr>
-              <tr>
-                <td>Last Name</td>
-                <td><input type="text" value={editableData.lastName} onChange={(e) => handleInputChange(e, 'lastName')} /></td>
-              </tr>
-              <tr>
-                <td>Username</td>
-                <td><input type="text" value={editableData.username} onChange={(e) => handleInputChange(e, 'username')} /></td>
-              </tr>
-              <tr>
-                <td>Email</td>
-                <td><input type="text" value={editableData.email} onChange={(e) => handleInputChange(e, 'email')} /></td>
-              </tr>
-              <tr>
-                <td>Phone</td>
-                <td><input type="text" value={editableData.phone} onChange={(e) => handleInputChange(e, 'phone')} /></td>
-              </tr>
-              <tr>
-                <td>Date of Birth</td>
-                <td><input type="date" value={editableData.DOB} onChange={(e) => handleInputChange(e, 'DOB')} /></td>
-              </tr>
-              <tr>
-                <td>Preferences</td>
-                <td>
-                  <input
-                    type="text"
-                    value={editableData.preferences}
-                    onChange={(e) => handleInputChange(e, 'preferences')}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Account Status</td>
-                <td>
-                  <select value={editableData.accountStatus} onChange={(e) => handleInputChange(e, 'accountStatus')}>
-                    <option value={1}>Active</option>
-                    <option value={0}>Not Active</option>
-                  </select>
-                </td>
-              </tr>
+              {['firstName', 'lastName', 'username', 'password', 'email', 'phone', 'DOB'].map((field) => (
+                <tr key={field}>
+                  <td style={{ padding: '8px', color: 'white' }}>{field.charAt(0).toUpperCase() + field.slice(1)}</td>
+                  <td>
+                    <input
+                      type={field === 'password' ? 'password' : field === 'DOB' ? 'date' : 'text'}
+                      value={newMember[field]}
+                      onChange={(e) => setNewMember({ ...newMember, [field]: e.target.value })}
+                      style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc', color: 'black' }}
+                    />
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
-          <button onClick={handleUpdateMember}>Update Member</button>
+          <button onClick={handleCreateMember} style={{ marginTop: '10px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '8px 15px', cursor: 'pointer' }}>Add Member</button>
         </div>
-      )}
+
+        {/* Modify Member Form */}
+        <div style={{
+          padding: '15px',
+          backgroundColor: '#455a7a',
+          borderRadius: '10px',
+          color: 'white',
+          flex: 1,
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+        }}>
+          <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>Modify Member</h3>
+          <table style={{ width: '100%' }}>
+            <tbody>
+              {['firstName', 'lastName', 'username', 'email', 'phone', 'DOB'].map((field) => (
+                <tr key={field}>
+                  <td style={{ padding: '8px', color: 'white' }}>{field.charAt(0).toUpperCase() + field.slice(1)}</td>
+                  <td>
+                    <input
+                      type={field === 'DOB' ? 'date' : 'text'}
+                      value={editableData[field] || ''}
+                      onChange={(e) => setEditableData({ ...editableData, [field]: e.target.value })}
+                      style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc', color: 'black' }}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button onClick={handleUpdateMember} style={{ marginTop: '10px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '8px 15px', cursor: 'pointer' }}>Update Member</button>
+        </div>
+      </div>
     </div>
   );
 }
