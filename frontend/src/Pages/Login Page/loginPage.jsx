@@ -50,7 +50,7 @@ function LoginPage() {
       sessionStorage.setItem('username', user.username);
       sessionStorage.setItem('email', user.email);
       sessionStorage.setItem('firstName', user.firstName);
-      sessionStorage.setItem('memberId', user.memberId);
+     
       sessionStorage.setItem('lastName', user.lastName);
       sessionStorage.setItem('phone', user.phone);
       
@@ -61,6 +61,7 @@ function LoginPage() {
       if (loginType === 'member') {
         sessionStorage.setItem('roles', 'member');
         sessionStorage.setItem('preferences', user.preferences);
+        sessionStorage.setItem('memberId', user.memberId);
       }
       sessionStorage.setItem('loggedin', true);
       setIsUserLoggedIn(true);

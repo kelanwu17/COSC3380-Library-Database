@@ -62,7 +62,7 @@ const groupByGenre = async (data, dateRange) => {
       }
     })
   );
-
+  console.log(genreCounts)
   return Object.entries(genreCounts).map(([genre, count]) => ({ genre, count }));
 };
 

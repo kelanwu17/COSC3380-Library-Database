@@ -1,117 +1,255 @@
 import React, { useState, useEffect } from 'react';
-import './NavBar.css';
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Button,
+  Stack,
+  Menu,
+  MenuItem,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu'; 
-import { IconButton } from '@mui/material';
+import { useMediaQuery } from '@mui/material'; // Import useMediaQuery
 
 const Navbar = () => {
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu
-    const userId = sessionStorage.getItem('username'); 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const role = sessionStorage.getItem("roles");
-    const [userRole, setRole] = useState('');
-    const [isAdmin, setAdmin] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const userId = sessionStorage.getItem('username');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const role = sessionStorage.getItem("roles");
+  const [isAdmin, setAdmin] = useState(false);
 
-    useEffect(() => {
-        if (userId) {
-            setIsLoggedIn(true);
-        } else {
-            setIsLoggedIn(false);
-        }
-        if (role === 'member') {
-            setRole('member');
-            setAdmin(true);
-        } else {
-            setRole('admin');
-            setAdmin(false);
-        }
-    }, [userId, role]);
+  const isSmallScreen = useMediaQuery('(max-width:600px)'); // Define small screen breakpoint
 
-    const handleMenuClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+  useEffect(() => {
+    setIsLoggedIn(!!userId);
+    setAdmin(role === 'member');
+  }, [userId, role]);
 
-    const handleClose = () => {
-        setAnchorEl(null);
-        setIsMenuOpen(false); // Close mobile menu
-    };
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-    const openMenu = Boolean(anchorEl);
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setIsMenuOpen(false);
+  };
 
-    const handleLogout = () => {
-        console.log('User has logged out');
-        sessionStorage.clear(); 
-        window.location.href = '/login'; 
-    };
+  const handleLogout = () => {
+    console.log('User has logged out');
+    sessionStorage.clear();
+    window.location.href = '/login';
+  };
 
-    const toggleMenu = () => {
-        setIsMenuOpen((prev) => !prev);
-    };
+  const toggleDrawer = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
-    return (
-        <nav className="navbar">
-            <div className="navbar-left">
-                <a href="/" className="logo">
-                    Lumina Archives
-                </a>
-            </div>
-            <div className="navbar-center">
-                <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
-                    <li>
-                        {isAdmin ? (<a href="/Events">Events</a>) : (<a href="/AdminEvent">Events</a>)}
-                    </li>
-                    <li>
-                        <a href="/Books">Browse & Borrow</a>
-                    </li>
-                    <li>
-                        <a href="/Music">Music</a>
-                    </li>
-                    <li>
-                        <a href="/Technology">Get Connected</a>
-                    </li>
-                    <li>
-                        <a href="/contact">Contact</a>
-                    </li>
-                </ul>
-            </div>
-            <div className="navbar-right">
-                {isLoggedIn ? (
-                    <div className="loggedin-button">
-                        <IconButton
-                            sx={{ width: '50px', height: '50px', padding: 0 }}
-                            onClick={handleMenuClick}
-                        >
-                            <PersonIcon sx={{ width: '30px', height: '30px', color: '#051650' }} />
-                        </IconButton>
-                        <Menu
-                            anchorEl={anchorEl}
-                            open={openMenu}
-                            onClose={handleClose}
-                            PaperProps={{
-                                sx: { backgroundColor: '#ECECEC', borderRadius: '20px' },
-                            }}
-                        >
-                            <MenuItem onClick={handleClose}>{isAdmin ? (<a href='/Profile'>User Profile</a>) : (<a href='/AdminProfile'>Admin Profile</a>)}</MenuItem>
-                            <MenuItem onClick={() => { handleClose(); handleLogout(); }}>Logout</MenuItem>
-                        </Menu>
-                    </div>
-                ) : (
-                    <a className='login-button font-bold' href='/login'>Login</a>
-                )}
+  return (
+    <>
+      <AppBar position="static" color="transparent" sx={{ boxShadow: 'none', height: '57px' }}>
+        <Toolbar sx={{ minHeight: '64px', display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 0 }}>
+            <a href="/" style={{ textDecoration: 'none', color: '#001F5B', fontWeight: 'bold', fontSize:'1.5rem' }}>
+              Lumina Archives
+            </a>
+          </Typography>
+
+          <Stack
+            direction="row"
+            spacing={7}
+            sx={{
+              flexGrow: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              typography: 'body1',
+              color: '#001F5B',
+              fontWeight: 'bold',
+              display: { xs: 'none', md: 'flex' }
+            }}
+          >
+            <Button
+              sx={{
+                textTransform: 'none',
+                fontWeight: 'bold',
+                fontSize: '.92rem' // Slightly larger
+              }}
+              color="inherit"
+              href={isAdmin ? "/Events" : "/AdminEvent"}
+            >
+              Events
+            </Button>
+            <Button
+              sx={{
+                textTransform: 'none',
+                fontWeight: 'bold',
+                fontSize: '.92rem' // Slightly larger
+              }}
+              color="inherit"
+              href="/Books"
+            >
+              Browse & Borrow
+            </Button>
+            <Button
+              sx={{
+                textTransform: 'none',
+                fontWeight: 'bold',
+                fontSize: '.92rem' // Slightly larger
+              }}
+              color="inherit"
+              href="/Music"
+            >
+              Music
+            </Button>
+            <Button
+              sx={{
+                textTransform: 'none',
+                fontWeight: 'bold',
+                fontSize: '.92rem' // Slightly larger
+              }}
+              color="inherit"
+              href="/Technology"
+            >
+              Get Connected
+            </Button>
+            <Button
+              sx={{
+                textTransform: 'none',
+                fontWeight: 'bold',
+                fontSize: '.95rem' // Slightly larger
+              }}
+              color="inherit"
+              href="/contact"
+            >
+              Contact
+            </Button>
+          </Stack>
+
+      
+          {!isMenuOpen && !isSmallScreen && (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {isLoggedIn && (
                 <IconButton
-                    onClick={toggleMenu}
-                    className="hamburger-button"
-                    sx={{ display: { xs: 'block', md: 'none' } }} // Show on mobile
+                  onClick={handleMenuClick}
+                  sx={{
+                    color: '#001F5B',
+                    mr: '60px',
+                    minWidth: '40px',
+                    maxWidth: '40px',
+                  }}
                 >
-                    {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
+                  <PersonIcon sx={{ width: '30px', height: '30px' }} />
                 </IconButton>
+              )}
+
+              {!isLoggedIn && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  href="/login"
+                  sx={{
+                    fontWeight: 'bold',
+                    textTransform: 'none',
+                    textDecoration: 'none',
+                    color: 'white',
+                    backgroundColor: '#001F5B',
+                    borderRadius: '20px',
+                    padding: '6px 32px',
+                    minWidth: '120px', 
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                    '&:hover': {
+                      backgroundColor: '#001F5B',
+                      boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.3)',
+                    }
+                  }}
+                >
+                  Login
+                </Button>
+              )}
             </div>
-        </nav>
-    );
+          )}
+
+          <IconButton
+            color="inherit"
+            onClick={toggleDrawer}
+            sx={{ display: { xs: 'flex', md: 'none' } }} 
+          >
+            <MenuIcon />
+          </IconButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleCloseMenu}
+            sx={{
+              '& .MuiMenu-paper': {
+                borderRadius: '12px', 
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', 
+              }
+            }}
+          >
+            <MenuItem
+              onClick={handleCloseMenu}
+              component="a"
+              href={isAdmin ? "/Profile" : "/AdminProfile"}
+              sx={{ borderRadius: '8px', '&:hover': { backgroundColor: '#f5f5f5' } }}
+            >
+              {isAdmin ? "User Profile" : "Admin Profile"}
+            </MenuItem>
+            <MenuItem
+              onClick={() => { handleCloseMenu(); handleLogout(); }}
+              sx={{ borderRadius: '8px', '&:hover': { backgroundColor: '#f5f5f5' } }} 
+            >
+              Logout
+            </MenuItem>
+          </Menu>
+
+        </Toolbar>
+      </AppBar>
+
+      {/* Drawer for Mobile Menu */}
+      <Drawer anchor="right" open={isMenuOpen} onClose={toggleDrawer}>
+        <div style={{ width: 250 }}>
+          <IconButton onClick={toggleDrawer} sx={{ justifyContent: 'flex-end' }}>
+            <CloseIcon />
+          </IconButton>
+          <List>
+            <ListItem button component="a" href={isAdmin ? "/Events" : "/AdminEvent"} sx={{ padding: '10px 16px' }}>
+              <ListItemText primary="Events" />
+            </ListItem>
+            <ListItem button component="a" href="/Books" sx={{ padding: '10px 16px' }}>
+              <ListItemText primary="Browse & Borrow" />
+            </ListItem>
+            <ListItem button component="a" href="/Music" sx={{ padding: '10px 16px' }}>
+              <ListItemText primary="Music" />
+            </ListItem>
+            <ListItem button component="a" href="/Technology" sx={{ padding: '10px 16px' }}>
+              <ListItemText primary="Get Connected" />
+            </ListItem>
+            <ListItem button component="a" href="/contact" sx={{ padding: '10px 16px' }}>
+              <ListItemText primary="Contact" />
+            </ListItem>
+            {!isLoggedIn ? (
+              <ListItem button component="a" href="/login" sx={{ padding: '10px 16px' }}>
+                <ListItemText primary="Login" />
+              </ListItem>
+            ) : (
+              <ListItem button onClick={() => { handleCloseMenu(); handleLogout(); }} sx={{ padding: '10px 16px' }}>
+                <ListItemText primary="Logout" />
+              </ListItem>
+            )}
+          </List>
+        </div>
+      </Drawer>
+    </>
+  );
 };
 
 export default Navbar;
