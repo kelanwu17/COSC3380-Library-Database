@@ -162,7 +162,7 @@ function ManageMembers() {
             </tr>
           </thead>
           <tbody>
-            {membersData.map((member) => (
+            {filteredMembers.map((member) => (
               <tr key={member.memberId} style={{ borderBottom: '1px solid #ddd' }}>
                 <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`${member.firstName} ${member.lastName}`}</td>
                 <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{member.email}</td>
@@ -200,10 +200,13 @@ function ManageMembers() {
                   <td style={{ padding: '8px', color: 'white' }}>{field.charAt(0).toUpperCase() + field.slice(1)}</td>
                   <td>
                     <input
-                      type={field === 'password' ? 'password' : field === 'DOB' ? 'date' : 'text'}
+                      type={field === 'phone' ? 'tel' : field === 'password' ? 'password' : field === 'DOB' ? 'date' : 'text'}
                       value={newMember[field]}
                       onChange={(e) => setNewMember({ ...newMember, [field]: e.target.value })}
                       style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc', color: 'black' }}
+                      maxLength={field === 'phone' ? 12 : undefined} // Adjust max length for format with hyphens
+                      pattern={field === 'phone' ? '^(\\d{3}-\\d{3}-\\d{4}|\\d{10})$' : undefined} // Pattern to allow 1234567890 or 123-456-7890
+                      placeholder={field === 'phone' ? '123-456-7890' : ''}
                     />
                   </td>
                 </tr>
@@ -230,10 +233,13 @@ function ManageMembers() {
                   <td style={{ padding: '8px', color: 'white' }}>{field.charAt(0).toUpperCase() + field.slice(1)}</td>
                   <td>
                     <input
-                      type={field === 'DOB' ? 'date' : 'text'}
+                      type={field === 'phone' ? 'tel' : field === 'DOB' ? 'date' : 'text'}
                       value={editableData[field] || ''}
                       onChange={(e) => setEditableData({ ...editableData, [field]: e.target.value })}
                       style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc', color: 'black' }}
+                      maxLength={field === 'phone' ? 12 : undefined} // Adjust max length for format with hyphens
+                      pattern={field === 'phone' ? '^(\\d{3}-\\d{3}-\\d{4}|\\d{10})$' : undefined} // Pattern to allow 1234567890 or 123-456-7890
+                      placeholder={field === 'phone' ? '123-456-7890' : ''}
                     />
                   </td>
                 </tr>
