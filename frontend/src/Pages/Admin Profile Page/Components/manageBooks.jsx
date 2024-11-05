@@ -101,13 +101,13 @@ function ManageBooks() {
     }
   };
 
-  const handleDeleteBook = async (bookId) => {
+  const handleDeactivateBook = async (bookId) => {
     try {
-      const response = await axios.delete(`https://library-database-backend.onrender.com/api/books/deleteBook/${bookId}`);
-      alert(response.data.message);
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/books/deactivateBook/${bookId}`);
+      alert(response.data.message || 'Book deactivated successfully.');
       fetchAllBooks();
     } catch (err) {
-      console.error('Error deleting book.');
+      console.error('Error deactivating book.');
     }
   };
 
@@ -173,14 +173,14 @@ function ManageBooks() {
                     padding: '8px 15px',
                     cursor: 'pointer'
                   }}>Edit</button>
-                  <button onClick={() => handleDeleteBook(book.bookId)} style={{
+                  <button onClick={() => handleDeactivateBook(book.bookId)} style={{
                     backgroundColor: '#455a7a',
                     color: 'white',
                     border: 'none',
                     borderRadius: '5px',
                     padding: '8px 15px',
                     cursor: 'pointer'
-                  }}>Delete</button>
+                  }}>Deactivate</button>
                 </td>
               </tr>
             ))}
@@ -214,7 +214,7 @@ function ManageBooks() {
                         padding: '8px',
                         borderRadius: '5px',
                         border: '1px solid #ccc',
-                        color: 'black' // Set input text color to black
+                        color: 'black'
                       }}
                     />
                   </td>
@@ -250,7 +250,7 @@ function ManageBooks() {
                         padding: '8px',
                         borderRadius: '5px',
                         border: '1px solid #ccc',
-                        color: 'black' // Set input text color to black
+                        color: 'black'
                       }}
                     />
                   </td>
