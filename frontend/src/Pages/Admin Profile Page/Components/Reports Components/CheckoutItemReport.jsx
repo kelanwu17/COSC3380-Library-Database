@@ -20,30 +20,35 @@ import axios from "axios";
 
 const groupByBookTitle = async (data, dateRange) => {
   const grouped = {};
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+  console.log(data, 'date')
   await Promise.all(
     data.map(async (item) => {
       const date = item.timeStampCheckedOut.split("T")[0];
       const bookId = item.bookId;
-
+      console.log('allbookids', bookId)
       if (dateRange.includes(date)) {
         try {
           const response = await axios.get(`https://library-database-backend.onrender.com/api/books/${bookId}`);
           const title = response.data[0].title;
+          console.log(`Processing book ID: ${bookId}`);
 
           grouped[title] = (grouped[title] || 0) + 1;
         } catch (error) {
           console.error(`Error fetching title for book ID ${bookId}:`, error);
         }
+        await sleep(500);
       }
     })
   );
-
+  
   return Object.entries(grouped).map(([title, count]) => ({ title, count }));
 };
 
 const groupByGenre = async (data, dateRange) => {
   const genreCounts = {};
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   await Promise.all(
     data.map(async (item) => {
@@ -59,10 +64,11 @@ const groupByGenre = async (data, dateRange) => {
         } catch (error) {
           console.error(`Error fetching genre for book ID ${bookId}:`, error);
         }
+        await sleep(500);
       }
     })
   );
-  console.log(genreCounts)
+
   return Object.entries(genreCounts).map(([genre, count]) => ({ genre, count }));
 };
 
@@ -80,7 +86,7 @@ function CheckoutItemReport({ api }) {
     return Array.from({ length: days }, (_, i) => {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      return date.toISOString().split("T")[0];
+      return date.toISOString().split("T")[0]; 
     }).reverse();
   };
 
@@ -93,6 +99,7 @@ function CheckoutItemReport({ api }) {
   const filterDataByRange = (range) =>
     allData.filter((member) => {
       const date = member.timeStampCheckedOut?.split("T")[0];
+      
       return range.includes(date);
     });
 
@@ -115,6 +122,7 @@ function CheckoutItemReport({ api }) {
 
     const filteredData = filterDataByRange(selectedRange);
     setData(filteredData);
+    console.log(filteredData)
     setSelected(index);
 
     const grouped = await groupByBookTitle(filteredData, selectedRange);
@@ -133,6 +141,7 @@ function CheckoutItemReport({ api }) {
 
         const result = await response.json();
         setAllData(result);
+        
         setData(result);
 
         const initialGrouped = await groupByBookTitle(result, dateRanges.last7days);
@@ -150,9 +159,7 @@ function CheckoutItemReport({ api }) {
     fetchData();
   }, [api]);
 
-  const activeAccounts = data.filter((member) => member.accountStatus === 1).length;
-  const inactiveAccounts = data.length - activeAccounts;
-
+  
   const columns =
     data.length > 0
       ? Object.keys(data[0]).map((key) => ({
