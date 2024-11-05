@@ -172,7 +172,7 @@ function ManageBooks() {
                     borderRadius: '5px',
                     padding: '8px 15px',
                     cursor: 'pointer'
-                  }}>Modify</button>
+                  }}>Edit</button>
                   <button onClick={() => handleDeleteBook(book.bookId)} style={{
                     backgroundColor: '#455a7a',
                     color: 'white',

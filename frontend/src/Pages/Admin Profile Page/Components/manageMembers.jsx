@@ -173,7 +173,7 @@ function ManageMembers() {
                   {member.accountStatus === 1 ? 'Active' : 'Inactive'}
                 </td>
                 <td style={{ padding: '10px', whiteSpace: 'nowrap', textAlign: 'center' }}>
-                  <button onClick={() => handleEditMember(member)} style={{ marginRight: '5px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Modify</button>
+                  <button onClick={() => handleEditMember(member)} style={{ marginRight: '5px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Edit</button>
                   <button onClick={() => handleDeactivateMember(member.memberId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Deactivate</button>
                 </td>
               </tr>
@@ -222,7 +222,7 @@ function ManageMembers() {
           flex: 1,
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
         }}>
-          <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>Modify Member</h3>
+          <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>Edit Member</h3>
           <table style={{ width: '100%' }}>
             <tbody>
               {['firstName', 'lastName', 'username', 'email', 'phone', 'DOB'].map((field) => (

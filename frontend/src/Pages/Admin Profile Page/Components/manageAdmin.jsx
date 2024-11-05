@@ -241,7 +241,7 @@ function ManageAdmin() {
                       cursor: 'pointer',
                     }}
                   >
-                    Modify
+                    Edit
                   </button>
                   <button
                     onClick={() => handleDeactivateAdmin(admin.adminId)}
