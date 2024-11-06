@@ -25,6 +25,7 @@ function EmployeeLog() {
     const fetchEmployeeLogs = async () => {
       try {
         const logResponse = await axios.get('https://library-database-backend.onrender.com/api/employeeLog/');
+        console.log("Fetched logs:", logResponse.data); // Log fetched data for inspection
         setLogs(logResponse.data);
         setFilteredLogs(logResponse.data);
         await fetchAdminNames();
@@ -35,6 +36,7 @@ function EmployeeLog() {
       }
     };
 
+  
     const fetchAdminNames = async () => {
       try {
         const adminResponse = await axios.get('https://library-database-backend.onrender.com/api/admin/');
