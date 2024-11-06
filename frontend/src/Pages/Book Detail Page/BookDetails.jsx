@@ -35,7 +35,8 @@ function BookDetails() {
   const [reserveID, setReserveID] = useState("");
   const [lastDate, setLastDate] = useState("");
   const [fines, setFines] = useState(false);
-
+  
+  const [bookCount, setBookCount] = useState(0)
   const userId = sessionStorage.getItem("memberId");
   useEffect(() => {
     if (userId) {
@@ -246,12 +247,16 @@ function BookDetails() {
           `https://library-database-backend.onrender.com/api/checkoutbook/${userId}`
         );
         const memberHistory = response.data;
-
+        
         const instanceFound = memberHistory.find(
           (instance) =>
             instance.bookId == id && instance.timeStampReturn == null
         );
-
+        const allBooks = memberHistory.filter(
+          (instance) =>
+             instance.timeStampReturn == null
+        );
+        
         if (instanceFound == undefined) {
           setCheckedOut(false);
         } else {
