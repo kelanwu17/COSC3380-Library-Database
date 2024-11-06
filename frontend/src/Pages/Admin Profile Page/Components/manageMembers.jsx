@@ -41,14 +41,21 @@ function ManageMembers() {
   };
 
   const handleSearch = () => {
-    const filtered = membersData.filter(
-      (member) =>
-        member.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-        member.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-        member.username.toLowerCase().includes(searchText.toLowerCase())
-    );
+    const filtered = membersData.filter((member) => {
+      const firstName = member.firstName ? member.firstName.toLowerCase() : '';
+      const lastName = member.lastName ? member.lastName.toLowerCase() : '';
+      const username = member.username ? member.username.toLowerCase() : '';
+      const searchLower = searchText.toLowerCase();
+  
+      return (
+        firstName.includes(searchLower) ||
+        lastName.includes(searchLower) ||
+        username.includes(searchLower)
+      );
+    });
     setFilteredMembers(filtered);
   };
+  
 
   const handleCreateMember = async () => {
     try {
