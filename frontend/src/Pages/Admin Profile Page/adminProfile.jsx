@@ -9,6 +9,7 @@ import ManageTech from './Components/manageTech';
 import ManageAdmin from './Components/manageAdmin';
 import AdminInfo from './Components/adminInfo';
 import Reports from './Components/Reports';
+import EmployeeLog from './Components/employeeLog'; // Import EmployeeLog component
 
 function AdminProfile() {
   const [activeSection, setActiveSection] = useState('');
@@ -24,7 +25,6 @@ function AdminProfile() {
     } else {
       console.warn("No adminId found in localStorage.");
     }
-    
   }, []);
 
   const handleClick = () => {
@@ -67,6 +67,8 @@ function AdminProfile() {
         return <ManageAdmin />;
       case 'reports':
         return <Reports />;
+      case 'employeeLog': // Add case for Employee Log
+        return <EmployeeLog />;
       default:
         return <AdminInfo adminId={adminId} />;
     }
@@ -76,7 +78,7 @@ function AdminProfile() {
     <div style={{ minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
       <Navbar />
       <div style={{ display: 'flex' }}>
-      <div style={{
+        <div style={{
           width: '20%',
           position: 'fixed',
           top: '60px',
@@ -95,6 +97,7 @@ function AdminProfile() {
             <li onClick={() => setActiveSection('manageTech')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageTech' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageTech' ? 'bold' : 'normal' }}>Manage Technology</li>
             <li onClick={handleTechCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageAdmin' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageAdmin' ? 'bold' : 'normal' }}>Manage Admins</li>
             <li onClick={handleReportCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reports' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reports' ? 'bold' : 'normal' }}>Reports</li>
+            <li onClick={() => setActiveSection('employeeLog')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'employeeLog' ? '#ddd' : 'transparent', fontWeight: activeSection === 'employeeLog' ? 'bold' : 'normal' }}>Employee Log</li>
           </ul>
         </div>
         <div style={{ flexGrow: 1, marginLeft: '20%', padding: '40px' }}>

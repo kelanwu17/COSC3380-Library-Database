@@ -5,16 +5,15 @@ import ReserveComponent from './Components/ReserveComponent';
 import CheckOutHistory from './Components/checkedOutHistory';
 import RecommendedBooks from './Components/recommendedBook';
 import RecommendedMusic from './Components/recommendedMusic'; 
-import UserEvents from './Components/userEvents'; // Import the component
+import UserEvents from './Components/userEvents'; 
 import WaitlistComponent from './Components/WaitlistComponent';
 
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
-
   const [activeSection, setActiveSection] = useState('events');
   const userId = sessionStorage.getItem('memberId');
+  const [isEditing, setIsEditing] = useState(false);
 
-  
   const [userProfile, setUserProfile] = useState({
     username: '',
     firstName: '',
@@ -30,7 +29,8 @@ function UserProfile() {
     holds: '0',
     profilePic: defaultProfilePic
   });
-  const [finesId, setFinesId] = useState(null); // Initialize finesId
+  const [originalProfile, setOriginalProfile] = useState({});
+  const [finesId, setFinesId] = useState(null);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -40,30 +40,13 @@ function UserProfile() {
 
         if (userFound) {
           setUserProfile(prevProfile => ({
-            ...prevProfile, // Preserve previous profile data
-            username: userFound.username,
-            firstName: userFound.firstName,
-            lastName: userFound.lastName,
-            email: userFound.email,
-            phone: userFound.phone,
-            DOB: userFound.DOB,
-            preferences: userFound.preferences || "",
-            accountStatus: userFound.accountStatus || 1,
-            memberSince: userFound.memberSince || new Date().toISOString(),
-            memberId: userFound.memberId || userId,
-            holds: userFound.holds || '0',
+            ...prevProfile,
+            ...userFound,
             profilePic: userFound.profilePic || defaultProfilePic
-              
           }));
-          
-        // Log preferences to confirm value
-        console.log("User Preferences:", userFound.preferences);
-        console.log("API response for member:", userFound); // Log the full response to inspect
-        console.log("Type of preferences:", typeof userFound.preferences); // Log data type of preferences
-        console.log("Content of preferences:", userFound.preferences); 
-        
-        
-        // Fetch fines
+          setOriginalProfile(userFound); // Store original data for comparison
+
+          // Fetch fines
           const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
           const memberFines = finesResponse.data;
           if (memberFines.length > 0) {
@@ -71,9 +54,9 @@ function UserProfile() {
               ...prevProfile,
               fines: memberFines[0].fineAmount
             }));
-            setFinesId(memberFines[0].finesId); // Set finesId correctly
+            setFinesId(memberFines[0].finesId);
           } else {
-            setFinesId(null); // No fines found, set finesId to null
+            setFinesId(null);
           }
         } else {
           throw new Error('User not found');
@@ -84,7 +67,7 @@ function UserProfile() {
     };
 
     fetchUserDetails();
-  }, [activeSection, userId]);
+  }, [userId]);
 
   const formattedDOB = new Date(userProfile.DOB).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -97,16 +80,13 @@ function UserProfile() {
     : new Date().getFullYear();
 
   const handlePayFines = async () => {
-    console.log("Attempting to pay fine with finesId:", finesId);
-
     if (!finesId) {
-      console.error("Error: finesId is not defined.");
       alert("No fine found to pay.");
       return;
     }
 
     try {
-      const response = await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${finesId}`);
+      await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${finesId}`);
       setUserProfile(prevProfile => ({
         ...prevProfile,
         fines: '0.00'
@@ -118,21 +98,65 @@ function UserProfile() {
     }
   };
 
-  // Define renderContent function
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserProfile(prevProfile => ({
+      ...prevProfile,
+      [name]: value
+    }));
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      // Prepare updated data only for fields that have been changed
+      const updatedProfileData = {};
+
+      if (userProfile.firstName !== originalProfile.firstName) {
+        updatedProfileData.firstName = userProfile.firstName;
+      }
+      if (userProfile.lastName !== originalProfile.lastName) {
+        updatedProfileData.lastName = userProfile.lastName;
+      }
+      if (userProfile.email !== originalProfile.email) {
+        updatedProfileData.email = userProfile.email;
+      }
+      if (userProfile.phone !== originalProfile.phone) {
+        updatedProfileData.phone = userProfile.phone;
+      }
+
+      // Only proceed if there are fields to update
+      if (Object.keys(updatedProfileData).length > 0) {
+        await axios.put(`https://library-database-backend.onrender.com/api/member/updateMember/${userId}`, updatedProfileData);
+        alert("Profile updated successfully!");
+        setIsEditing(false);
+        setOriginalProfile(prev => ({ ...prev, ...updatedProfileData })); // Update original data with the new changes
+      } else {
+        alert("No changes to save.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.");
+    }
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'events':
-        return <UserEvents userId={userId} />; // Show user events component
+        return <UserEvents userId={userId} />;
       case 'checkedOutHistory':
-        return <CheckOutHistory userId={userId} />; // Show checkout history component
+        return <CheckOutHistory userId={userId} />;
       case 'recommendedBooks':
         return <RecommendedBooks preferences={userProfile.preferences} userId={userId} />;
       case 'recommendedMusic':
         return <RecommendedMusic preferences={userProfile.preferences} userId={userId} />;
       case 'reservedItems':
-        return <ReserveComponent />; // Example usage of ReserveComponent
+        return <ReserveComponent />;
       case 'waitListedItems':
-        return  <WaitlistComponent/>
+        return <WaitlistComponent />;
       default:
         return <p>Select a section from the sidebar.</p>;
     }
@@ -142,7 +166,6 @@ function UserProfile() {
     <div>
       <Navbar />
       <div style={{ display: 'flex', padding: '20px' }}>
-        {/* Sidebar */}
         <div style={{
           width: '20%',
           position: 'fixed',
@@ -171,12 +194,65 @@ function UserProfile() {
               style={{ width: '150px', height: '150px', borderRadius: '50%', marginRight: '20px' }}
             />
             <div>
-              <h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>{`${userProfile.firstName} ${userProfile.lastName}`}</h2>
+              {isEditing ? (
+                <>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={userProfile.firstName}
+                    onChange={handleInputChange}
+                    style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}
+                  />
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={userProfile.lastName}
+                    onChange={handleInputChange}
+                    style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}
+                  />
+                </>
+              ) : (
+                <h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>{`${userProfile.firstName} ${userProfile.lastName}`}</h2>
+              )}
               <p><strong>Member since:</strong> {formattedMemberSince}</p>
               <p><strong>Member ID:</strong> {userProfile.memberId}</p>
               <p><strong>DOB:</strong> {formattedDOB}</p>
-              <p><strong>Email:</strong> {userProfile.email}</p>
-              <p><strong>Phone Number:</strong> {userProfile.phone}</p>
+              <p>
+                <strong>Email:</strong>
+                {isEditing ? (
+                  <input
+                    type="email"
+                    name="email"
+                    value={userProfile.email}
+                    onChange={handleInputChange}
+                    style={{ fontSize: '14px', marginLeft: '10px' }}
+                  />
+                ) : (
+                  userProfile.email
+                )}
+              </p>
+              <p>
+                <strong>Phone Number:</strong>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="phone"
+                    value={userProfile.phone}
+                    onChange={handleInputChange}
+                    style={{ fontSize: '14px', marginLeft: '10px' }}
+                  />
+                ) : (
+                  userProfile.phone
+                )}
+              </p>
+              <button onClick={handleEditToggle} style={{ marginTop: '10px', padding: '10px', backgroundColor: isEditing ? '#007bff' : '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                {isEditing ? 'Cancel' : 'Edit Profile'}
+              </button>
+              {isEditing && (
+                <button onClick={handleSaveProfile} style={{ marginTop: '10px', marginLeft: '10px', padding: '10px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                  Save
+                </button>
+              )}
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>

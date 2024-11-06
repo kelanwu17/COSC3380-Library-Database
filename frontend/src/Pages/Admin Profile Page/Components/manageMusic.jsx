@@ -108,13 +108,13 @@ function ManageMusic() {
     }
   };
 
-  const handleDeleteMusic = async (id) => {
+  const handleDeactivateMusic = async (id) => {
     try {
-      const response = await axios.delete(`https://library-database-backend.onrender.com/api/music/deleteMusic/${id}`);
-      alert(response.data.message);
+      const response = await axios.put(`https://library-database-backend.onrender.com/api/music/deactivateMusic/${id}`);
+      alert(response.data.message || 'Music deactivated successfully.');
       fetchAllMusic();
     } catch (err) {
-      console.error('Error deleting music');
+      console.error('Error deactivating music');
     }
   };
 
@@ -170,7 +170,7 @@ function ManageMusic() {
                 <td style={{ padding: '10px' }}>{music.availabilityStatus === 1 ? 'Available' : 'Not Available'}</td>
                 <td style={{ padding: '10px', display: 'flex', gap: '5px' }}>
                   <button onClick={() => handleEditMusic(music)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Edit</button>
-                  <button onClick={() => handleDeleteMusic(music.musicId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Delete</button>
+                  <button onClick={() => handleDeactivateMusic(music.musicId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Deactivate</button>
                 </td>
               </tr>
             ))}
