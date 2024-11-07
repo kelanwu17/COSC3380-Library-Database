@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'; // Combined imports for better readability
 import './signUpPage.css'; // Import the CSS file
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
+
 
 function SignUpPage() {
   // State variables for user inputs
@@ -161,8 +163,8 @@ function SignUpPage() {
 
             <div className="terms">
               <label>
-                <input type="checkbox" required /> I agree to{' '}
-                <a href="/terms" className="terms-anchor">Terms & Conditions</a>
+                <input type="checkbox" required /> I agree to the{' '}
+                <Link to="/terms" className="terms-anchor">Terms & Conditions</Link>              
               </label>
             </div>
             <button type="submit" className="signup-button" onClick={submit}>
