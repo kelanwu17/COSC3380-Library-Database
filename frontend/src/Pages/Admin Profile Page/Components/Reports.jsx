@@ -31,7 +31,7 @@ const Reports = () => {
     fines: baseUrl + "fines/",
     waitlist: baseUrl + "waitlist/",
     libraryCards: baseUrl + "libraryCard/",
-    checkoutBooks: baseUrl + "checkoutbook/",
+    checkoutBooks: baseUrl + "checkoutbook/allInfo",
     checkoutMusic: baseUrl + "checkoutmusic/",
     checkoutTech: baseUrl + "checkouttech/",
     bookInstances: baseUrl + "bookInstance/",

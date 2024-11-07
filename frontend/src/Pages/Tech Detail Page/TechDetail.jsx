@@ -30,6 +30,10 @@ function TechDetail() {
   const [reserveID, setReserveID] = useState('')
   const [lastDate, setLastDate] = useState('')
 
+  const faculty = sessionStorage.getItem("faculty");
+  const [bookCount, setBookCount] = useState(0)
+  const [checkMax, setCheckMax] = useState(false)
+
   const dataToSend = {
     memberId: userId,
     techId: id,
@@ -215,7 +219,36 @@ function TechDetail() {
         const memberHistory = response.data; 
       console.log(memberHistory)
         const instanceFound = memberHistory.find(instance => instance.techId == id && instance.timeStampReturn == null);
-       
+        const allBooks = memberHistory.filter(
+          (instance) =>
+             instance.timeStampReturn == null
+        );
+        
+       setBookCount(allBooks.length)
+       console.log('hi',bookCount)
+       if(faculty == 'faculty')
+        {
+         
+          if(bookCount >= 2)
+          {
+            setCheckMax(true)
+          }
+          else
+          {
+            setCheckMax(false)
+          }
+        }
+        if(faculty == 'student')
+          {
+            if(bookCount >= 1)
+            {
+              setCheckMax(true)
+            }
+            else
+            {
+              setCheckMax(false)
+            }
+          }
         if(instanceFound == undefined)
         {
           setCheckedOut(false);
@@ -298,17 +331,22 @@ function TechDetail() {
     };
     const fetchUserLibraryCard = async (genre) => {
       try {
-        const response = await axios.get(`https://library-database-backend.onrender.com/api/libraryCard/${userId}`);
-        const lCard = response.data
-        
-        if(lCard.status !==1)
-        {
-          setFines(true)
-        }
-        else
-        {
-          setFines(true)
-        }
+        const response = await axios.get(
+          `https://library-database-backend.onrender.com/api/fines/${userId}`
+        );
+        const lCardArray = response.data;
+        // Loop through the array to check if any acStatus is positive
+  let hasPositiveFine = false;
+  for (let lCard of lCardArray) {
+    let acStatus = lCard.fineAmount - lCard.paid;
+    if (acStatus > 0) {
+      hasPositiveFine = true;
+      break; // Exit the loop if a positive acStatus is found
+    }
+  }
+
+  // Set fines based on whether any acStatus is positive
+  setFines(hasPositiveFine);
       } catch (error) {
         console.error('Error fetching similar books:', error);
         
@@ -321,7 +359,7 @@ function TechDetail() {
     fetchMemberHistory();
     fetchReserveList();
     fetchUserLibraryCard();
-  }, [id,waitList,reserve]);
+  }, [id,waitList,reserve, checkMax, bookCount]);
 
   const handleBackClick = () => navigate('/technology');
   
@@ -354,7 +392,7 @@ function TechDetail() {
           <p className="text-sm mt-1">Count: {techDetails.count}</p>
         </div>
   
-        {(userId && fines) && (
+        {(userId && !fines) && (
   <div className="ml-auto mr-12 flex flex-col">
     {waitList || techDetails.count <= 0 ? (
       waitList ? (
@@ -372,21 +410,21 @@ function TechDetail() {
           Waitlist
         </button>
       )
-    ) : !checkedOut ? (
+    ) : !checkedOut && !checkMax ? ( // Checkout button appears if not checked out and checkMax is false
       <button
         onClick={checkout}
         className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
       >
         Checkout
       </button>
-    ) : (
+    ) : (checkedOut && ( // Return button appears if checked out
       <button
         onClick={returnTech}
         className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
       >
         Return
       </button>
-    )}
+    ))}
 
     {/* Render Reserve or Cancel Reserve button based on the reserve variable and checkedOut status */}
     {techDetails.count > 0 && !waitList && !checkedOut && ( // Add !checkedOut condition here
@@ -408,6 +446,7 @@ function TechDetail() {
     )}
   </div>
 )}
+
         </div>
       
   
