@@ -62,7 +62,7 @@ function LoginPage() {
         sessionStorage.setItem('roles', 'member');
         sessionStorage.setItem('preferences', user.preferences);
         sessionStorage.setItem('memberId', user.memberId);
-        sessionStorage.setItem('faculty', user.faculty);
+        sessionStorage.setItem('faculty', user.role);
       }
       sessionStorage.setItem('loggedin', true);
       setIsUserLoggedIn(true);
