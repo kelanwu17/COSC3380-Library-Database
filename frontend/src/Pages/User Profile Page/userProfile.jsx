@@ -7,6 +7,8 @@ import RecommendedBooks from './Components/recommendedBook';
 import RecommendedMusic from './Components/recommendedMusic'; 
 import UserEvents from './Components/userEvents'; 
 import WaitlistComponent from './Components/WaitlistComponent';
+import LibraryCard from './Components/libraryCard'; // Import the LibraryCard component
+
 
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
@@ -157,7 +159,9 @@ function UserProfile() {
         return <ReserveComponent />;
       case 'waitListedItems':
         return <WaitlistComponent />;
-      default:
+      case 'libraryCard':
+        return <LibraryCard userId={userId} />; // Render LibraryCard component
+        default:
         return <p>Select a section from the sidebar.</p>;
     }
   };
@@ -183,7 +187,8 @@ function UserProfile() {
             <li onClick={() => setActiveSection('recommendedMusic')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'recommendedMusic' ? '#ddd' : 'transparent', fontWeight: activeSection === 'recommendedMusic' ? 'bold' : 'normal' }}>Recommended Music</li>
             <li onClick={() => setActiveSection('reservedItems')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reservedItems' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reservedItems' ? 'bold' : 'normal' }}>Reserved Items</li>
             <li onClick={() => setActiveSection('waitListedItems')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'waitListedItems' ? '#ddd' : 'transparent', fontWeight: activeSection === 'waitListedItems' ? 'bold' : 'normal' }}>Waitlisted Items</li>
-          </ul>
+            <li onClick={() => setActiveSection('libraryCard')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'libraryCard' ? '#ddd' : 'transparent', fontWeight: activeSection === 'libraryCard' ? 'bold' : 'normal' }}>Library Card</li>
+            </ul>
         </div>
 
         <div style={{ flex: '3', marginLeft: '20%' }}>
