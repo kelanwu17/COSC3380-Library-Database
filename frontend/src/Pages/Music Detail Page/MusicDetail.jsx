@@ -29,6 +29,9 @@ function MusicDetails() {
   const [fines, setFines] = useState(false)
   
   const userId = sessionStorage.getItem('memberId');
+  const faculty = sessionStorage.getItem("faculty");
+  const [bookCount, setBookCount] = useState(0)
+  const [checkMax, setCheckMax] = useState(false)
   //Checkout Logic
   const[itemInstance, setItemInstance] = useState('')
   const dataToSend = {
@@ -225,7 +228,36 @@ function MusicDetails() {
         const memberHistory = response.data; 
       
         const instanceFound = memberHistory.find(instance => instance.musicId == id && instance.timeStampReturn == null);
-       
+        const allBooks = memberHistory.filter(
+          (instance) =>
+             instance.timeStampReturn == null
+        );
+        
+       setBookCount(allBooks.length)
+       console.log('hi',bookCount)
+       if(faculty == 'faculty')
+        {
+         
+          if(bookCount >= 2)
+          {
+            setCheckMax(true)
+          }
+          else
+          {
+            setCheckMax(false)
+          }
+        }
+        if(faculty == 'student')
+          {
+            if(bookCount >= 1)
+            {
+              setCheckMax(true)
+            }
+            else
+            {
+              setCheckMax(false)
+            }
+          }
         if(instanceFound == undefined)
         {
           setCheckedOut(false);
@@ -323,17 +355,23 @@ function MusicDetails() {
     };
     const fetchUserLibraryCard = async (genre) => {
       try {
-        const response = await axios.get(`https://library-database-backend.onrender.com/api/libraryCard/${userId}`);
-        const lCard = response.data
-        
-        if(lCard.status !==1)
-        {
-          setFines(true)
-        }
-        else
-        {
-          setFines(true)
-        }
+        const response = await axios.get(
+          `https://library-database-backend.onrender.com/api/fines/${userId}`
+        );
+        const lCardArray = response.data;
+        // Loop through the array to check if any acStatus is positive
+  let hasPositiveFine = false;
+  for (let lCard of lCardArray) {
+    let acStatus = lCard.fineAmount - lCard.paid;
+    if (acStatus > 0) {
+      hasPositiveFine = true;
+      break; // Exit the loop if a positive acStatus is found
+    }
+  }
+
+  // Set fines based on whether any acStatus is positive
+  setFines(hasPositiveFine);
+  
       } catch (error) {
         console.error('Error fetching similar books:', error);
         
@@ -348,7 +386,7 @@ function MusicDetails() {
     fetchReserveList();
     fetchUserLibraryCard();
     
-  }, [id,checkedOut,waitList, reserve]);
+  }, [id,checkedOut,waitList, reserve, checkMax, bookCount]);
 
   const filteredSimilarMusic = similarMusic.filter((music) => music.albumName !== albumName);
   const handleToggleDetails = () => setShowMoreDetails(!showMoreDetails);
@@ -391,7 +429,7 @@ function MusicDetails() {
             <p className="text-sm mt-1">Date Released: {dateReleased}</p>
           </div>
   
-          {(userId && fines) && (
+          {(userId && !fines) && (
   <div className="ml-auto mr-12 flex flex-col">
     {waitList || count <= 0 ? (
       waitList ? (
@@ -409,21 +447,21 @@ function MusicDetails() {
           Waitlist
         </button>
       )
-    ) : !checkedOut ? (
+    ) : !checkedOut && !checkMax ? ( // Checkout button appears if not checked out and checkMax is false
       <button
         onClick={checkout}
         className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
       >
         Checkout
       </button>
-    ) : (
+    ) : checkedOut && !checkMax ? ( // Return button appears only if checked out and checkMax is false
       <button
         onClick={returnMusic}
         className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
       >
         Return
       </button>
-    )}
+    ) : null}
 
     {/* Render Reserve or Cancel Reserve button based on the reserve variable and checkedOut status */}
     {count > 0 && !waitList && !checkedOut && ( // Add !checkedOut condition here
@@ -445,6 +483,7 @@ function MusicDetails() {
     )}
   </div>
 )}
+
         </div>
       )}
   
