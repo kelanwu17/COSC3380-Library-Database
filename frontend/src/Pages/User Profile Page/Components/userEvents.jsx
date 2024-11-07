@@ -90,15 +90,15 @@ function UserEvents({ userId }) {
             {events.map(event => {
               
               const eventStartTime = (event.timeDate);
-              const timeDiff = currentTime - eventStartTime;
+              
               const utcDate = new Date(eventStartTime);
-
+              const timeDiff = currentTime - utcDate;
               // Get the local time zone offset in minutes
               const timezoneOffset = utcDate.getTimezoneOffset() 
               const localTimeAsUtc = new Date(utcDate.getTime() - timezoneOffset * 60000);
               const thirtyMinutes = 30 * 60 * 1000;
               const isEventUnavailable = timeDiff > thirtyMinutes || currentTime < localTimeAsUtc; 
-              console.log(currentTime, "Event",localTimeAsUtc)
+              
               return (
                 <tr key={event.eventId} style={{ borderBottom: '1px solid #ddd' }}>
                   <td style={{ padding: '12px', color: '#555' }}>{event.eventTitle}</td>

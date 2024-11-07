@@ -4,72 +4,43 @@ import {
   Button,
   ButtonGroup,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Checkbox,
+  ListItemText,
 } from "@mui/material";
-import { LineChart } from "@mui/x-charts/LineChart";
-import { PieChart } from "@mui/x-charts";
 import { DataGrid } from "@mui/x-data-grid";
 import { BarChart } from "@mui/x-charts/BarChart";
-import axios from "axios";
+import { PieChart } from "@mui/x-charts/PieChart";
 
-const groupByBookTitle = async (data, dateRange) => {
+const groupByBookTitle = (data) => {
   const grouped = {};
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  console.log(data, 'date')
-  await Promise.all(
-    data.map(async (item) => {
-      const date = item.timeStampCheckedOut.split("T")[0];
-      const bookId = item.bookId;
-      console.log('allbookids', bookId)
-      if (dateRange.includes(date)) {
-        try {
-          const response = await axios.get(`https://library-database-backend.onrender.com/api/books/${bookId}`);
-          const title = response.data[0].title;
-          console.log(`Processing book ID: ${bookId}`);
+  data.forEach((item) => {
+    const title = item.bookTitle;
+    grouped[title] = (grouped[title] || 0) + 1;
+  });
 
-          grouped[title] = (grouped[title] || 0) + 1;
-        } catch (error) {
-          console.error(`Error fetching title for book ID ${bookId}:`, error);
-        }
-        await sleep(500);
-      }
-    })
-  );
-  
   return Object.entries(grouped).map(([title, count]) => ({ title, count }));
 };
 
-const groupByGenre = async (data, dateRange) => {
+const groupByGenreAndUser = (data) => {
   const genreCounts = {};
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  await Promise.all(
-    data.map(async (item) => {
-      const date = item.timeStampCheckedOut.split("T")[0];
-      const bookId = item.bookId;
+  data.forEach((item) => {
+    const genre = item.bookGenre;
+    const user = item.memberUsername;
 
-      if (dateRange.includes(date)) {
-        try {
-          const response = await axios.get(`https://library-database-backend.onrender.com/api/books/${bookId}`);
-          const genre = response.data[0].genre;
+    if (!genreCounts[genre]) genreCounts[genre] = {};
+    genreCounts[genre][user] = (genreCounts[genre][user] || 0) + 1;
+  });
 
-          genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-        } catch (error) {
-          console.error(`Error fetching genre for book ID ${bookId}:`, error);
-        }
-        await sleep(500);
-      }
-    })
+  return Object.entries(genreCounts).flatMap(([genre, users]) =>
+    Object.entries(users).map(([user, count]) => ({ genre, user, count }))
   );
-
-  return Object.entries(genreCounts).map(([genre, count]) => ({ genre, count }));
 };
 
 function CheckoutItemReport({ api }) {
@@ -80,13 +51,15 @@ function CheckoutItemReport({ api }) {
   const [selected, setSelected] = useState(0);
   const [signUpData, setSignUpData] = useState([]);
   const [genreData, setGenreData] = useState([]);
+  const [genreFilter, setGenreFilter] = useState("");
+  const [userFilter, setUserFilter] = useState([]);
 
   const getDateRange = (days) => {
     const today = new Date();
     return Array.from({ length: days }, (_, i) => {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      return date.toISOString().split("T")[0]; 
+      return date.toISOString().split("T")[0];
     }).reverse();
   };
 
@@ -96,41 +69,60 @@ function CheckoutItemReport({ api }) {
     lastQuarter: getDateRange(90),
   };
 
-  const filterDataByRange = (range) =>
-    allData.filter((member) => {
-      const date = member.timeStampCheckedOut?.split("T")[0];
-      
-      return range.includes(date);
+  const filterData = () => {
+    const range = dateRanges[["last7days", "lastMonth", "lastQuarter"][selected]];
+    return allData.filter((item) => {
+      const date = item.timeStampCheckedOut.split("T")[0];
+      return range.includes(date) &&
+             (genreFilter ? item.bookGenre === genreFilter : true) &&
+             (userFilter.length === 0 || userFilter.includes(item.memberUsername));
     });
+  };
 
-  const handleClick = async (index) => {
-    let selectedRange;
+  const updateFilteredData = () => {
+    const filteredData = filterData();
+    setData(filteredData);
+    setSignUpData(groupByBookTitle(filteredData));
 
-    switch (index) {
-      case 0:
-        selectedRange = dateRanges.last7days;
-        break;
-      case 1:
-        selectedRange = dateRanges.lastMonth;
-        break;
-      case 2:
-        selectedRange = dateRanges.lastQuarter;
-        break;
-      default:
-        selectedRange = [];
+    let filteredGenreData = groupByGenreAndUser(filteredData);
+
+    // If no users are selected, combine counts for all users
+    if (userFilter.length === 0) {
+      const genreSummary = filteredGenreData.reduce((acc, item) => {
+        if (!acc[item.genre]) {
+          acc[item.genre] = 0;
+        }
+        acc[item.genre] += item.count;
+        return acc;
+      }, {});
+
+      filteredGenreData = Object.keys(genreSummary).map((genre) => ({
+        genre,
+        user: "All Users",  // Label to indicate all users
+        count: genreSummary[genre],
+      }));
     }
 
-    const filteredData = filterDataByRange(selectedRange);
-    setData(filteredData);
-    console.log(filteredData)
-    setSelected(index);
-
-    const grouped = await groupByBookTitle(filteredData, selectedRange);
-    setSignUpData(grouped);
-
-    const genreGrouped = await groupByGenre(filteredData, selectedRange);
-    setGenreData(genreGrouped);
+    setGenreData(filteredGenreData);
   };
+
+  const handleDateRangeClick = (index) => {
+    setSelected(index);
+    updateFilteredData();
+  };
+
+  const handleGenreFilterChange = (event) => {
+    setGenreFilter(event.target.value);
+  };
+
+  const handleUserFilterChange = (event) => {
+    const selectedUsers = event.target.value;
+    setUserFilter(selectedUsers);
+  };
+
+  useEffect(() => {
+    updateFilteredData();
+  }, [selected, genreFilter, userFilter, genreData]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,14 +133,10 @@ function CheckoutItemReport({ api }) {
 
         const result = await response.json();
         setAllData(result);
-        
         setData(result);
 
-        const initialGrouped = await groupByBookTitle(result, dateRanges.last7days);
-        setSignUpData(initialGrouped);
-
-        const initialGenreGrouped = await groupByGenre(result, dateRanges.last7days);
-        setGenreData(initialGenreGrouped);
+        setSignUpData(groupByBookTitle(result));
+        setGenreData(groupByGenreAndUser(result));
       } catch (err) {
         setError(err.message);
       } finally {
@@ -159,15 +147,13 @@ function CheckoutItemReport({ api }) {
     fetchData();
   }, [api]);
 
-  
-  const columns =
-    data.length > 0
-      ? Object.keys(data[0]).map((key) => ({
-          field: key,
-          headerName: key.charAt(0).toUpperCase() + key.slice(1),
-          flex: 1,
-        }))
-      : [];
+  const columns = data.length > 0
+    ? Object.keys(data[0]).map((key) => ({
+        field: key,
+        headerName: key.charAt(0).toUpperCase() + key.slice(1),
+        flex: 1,
+      }))
+    : [];
 
   return (
     <div>
@@ -175,13 +161,45 @@ function CheckoutItemReport({ api }) {
         {["7 Days", "30 Days", "90 Days", "All"].map((label, index) => (
           <Button
             key={index}
-            onClick={() => handleClick(index)}
+            onClick={() => handleDateRangeClick(index)}
             color={selected === index ? "primary" : "inherit"}
           >
             {label}
           </Button>
         ))}
       </ButtonGroup>
+
+      <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel>Genre</InputLabel>
+        <Select
+          value={genreFilter}
+          onChange={handleGenreFilterChange}
+          label="Genre"
+        >
+          <MenuItem value=""><em>None</em></MenuItem>
+          {[...new Set(allData.map((item) => item.bookGenre))].map((genre) => (
+            <MenuItem key={genre} value={genre}>{genre}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel>User</InputLabel>
+        <Select
+          multiple
+          value={userFilter}
+          onChange={handleUserFilterChange}
+          label="User"
+          renderValue={() => ''} 
+        >
+          {[...new Set(allData.map((item) => item.memberUsername))].map((user) => (
+            <MenuItem key={user} value={user}>
+              <Checkbox checked={userFilter.includes(user)} />
+              <ListItemText primary={user} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
       <Paper sx={{ height: 500, width: "100%", marginTop: 2 }}>
         <DataGrid
@@ -213,12 +231,14 @@ function CheckoutItemReport({ api }) {
         <PieChart
           series={[{
             data: genreData.map((item, index) => ({
-              id: index,
+              id: `${item.genre}-${item.user}`,
               value: item.count,
-              label: item.genre,
+              label: item.user === "All Users"
+                ? `${item.genre}`  // Label with genre only if no user filter is applied
+                : `${item.genre} - ${item.user}`,  // Show both genre and user if user filter is applied
             })),
           }]}
-          width={400}
+          width={600}
           height={200}
         />
       </Paper>
