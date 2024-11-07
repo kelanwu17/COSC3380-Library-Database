@@ -19,6 +19,8 @@ import ContactPage from './Pages/Contact Page/ContactPage';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import Reports from '../src/Pages/Admin Profile Page/Components/Reports'
 import Catalog from './Pages/Kelan Catalog/Catalog';
+import Terms from './Pages/SignUp Page/Components/terms';
+
 function App() {
   return (
     <Router>
@@ -36,6 +38,7 @@ function App() {
         <Route path='/Login' element={<LoginPage/>}/>
         <Route path='/Music' element={<Catalog type="music"/>}/>
         <Route path='/Signup' element={<SignUpPage/>}/>
+        <Route path="/terms" element={<Terms />} />
         <Route path='/Technology' element={<Catalog type="tech"/>}/>
         <Route element={<ProtectedRoutes requiredRole={['member']}/>}>
         <Route path='/Profile' element={<UserProfile/>}/>

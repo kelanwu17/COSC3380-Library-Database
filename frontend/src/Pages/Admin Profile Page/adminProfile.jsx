@@ -9,7 +9,9 @@ import ManageTech from './Components/manageTech';
 import ManageAdmin from './Components/manageAdmin';
 import AdminInfo from './Components/adminInfo';
 import Reports from './Components/Reports';
-import EmployeeLog from './Components/employeeLog'; // Import EmployeeLog component
+import EmployeeLog from './Components/employeeLog';
+import ManageLibraryCard from './Components/manageLibrarycard';
+
 
 function AdminProfile() {
   const [activeSection, setActiveSection] = useState('');
@@ -69,6 +71,8 @@ function AdminProfile() {
         return <Reports />;
       case 'employeeLog': // Add case for Employee Log
         return <EmployeeLog />;
+      case 'manageLibraryCard': // New case for ManageLibraryCard
+        return <ManageLibraryCard />;
       default:
         return <AdminInfo adminId={adminId} />;
     }
@@ -98,6 +102,7 @@ function AdminProfile() {
             <li onClick={handleTechCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageAdmin' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageAdmin' ? 'bold' : 'normal' }}>Manage Admins</li>
             <li onClick={handleReportCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reports' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reports' ? 'bold' : 'normal' }}>Reports</li>
             <li onClick={() => setActiveSection('employeeLog')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'employeeLog' ? '#ddd' : 'transparent', fontWeight: activeSection === 'employeeLog' ? 'bold' : 'normal' }}>Employee Log</li>
+            <li onClick={() => setActiveSection('manageLibraryCard')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageLibraryCard' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageLibraryCard' ? 'bold' : 'normal' }}>Manage Library Cards</li>
           </ul>
         </div>
         <div style={{ flexGrow: 1, marginLeft: '20%', padding: '40px' }}>
