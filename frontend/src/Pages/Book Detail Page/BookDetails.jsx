@@ -35,8 +35,12 @@ function BookDetails() {
   const [reserveID, setReserveID] = useState("");
   const [lastDate, setLastDate] = useState("");
   const [fines, setFines] = useState(false);
-
+  
+  const [bookCount, setBookCount] = useState(0)
+  const [checkMax, setCheckMax] = useState(false)
   const userId = sessionStorage.getItem("memberId");
+  const faculty = sessionStorage.getItem("faculty");
+
   useEffect(() => {
     if (userId) {
       setIsLoggedIn(true);
@@ -246,12 +250,41 @@ function BookDetails() {
           `https://library-database-backend.onrender.com/api/checkoutbook/${userId}`
         );
         const memberHistory = response.data;
-
+        
         const instanceFound = memberHistory.find(
           (instance) =>
             instance.bookId == id && instance.timeStampReturn == null
         );
-
+        const allBooks = memberHistory.filter(
+          (instance) =>
+             instance.timeStampReturn == null
+        );
+        
+       setBookCount(allBooks.length)
+       console.log('hi',bookCount)
+       if(faculty == 'faculty')
+        {
+         
+          if(bookCount >= 2)
+          {
+            setCheckMax(true)
+          }
+          else
+          {
+            setCheckMax(false)
+          }
+        }
+        if(faculty == 'student')
+          {
+            if(bookCount >= 1)
+            {
+              setCheckMax(true)
+            }
+            else
+            {
+              setCheckMax(false)
+            }
+          }
         if (instanceFound == undefined) {
           setCheckedOut(false);
         } else {
@@ -342,26 +375,36 @@ function BookDetails() {
     const fetchUserLibraryCard = async (genre) => {
       try {
         const response = await axios.get(
-          `https://library-database-backend.onrender.com/api/libraryCard/${userId}`
+          `https://library-database-backend.onrender.com/api/fines/${userId}`
         );
-        const lCard = response.data;
-        if (lCard.status !== 1) {
-          setFines(true);
-        } else {
-          setFines(true);
-        }
+        const lCardArray = response.data;
+        // Loop through the array to check if any acStatus is positive
+  let hasPositiveFine = false;
+  for (let lCard of lCardArray) {
+    let acStatus = lCard.fineAmount - lCard.paid;
+    if (acStatus > 0) {
+      hasPositiveFine = true;
+      break; // Exit the loop if a positive acStatus is found
+    }
+  }
+
+  // Set fines based on whether any acStatus is positive
+  setFines(hasPositiveFine);
+  
       } catch (error) {
         console.error("Error fetching similar books:", error);
       }
     };
 
+   
+      fetchMemberHistory();
     fetchInstance();
     fetchBookDetails();
-    fetchMemberHistory();
+    
     fetchWaitList();
     fetchReserveList();
     fetchUserLibraryCard();
-  }, [id, checkedOut, waitList, reserve]);
+  }, [id, checkedOut, waitList, reserve, bookCount, checkMax]);
 
   const handleToggleDetails = () => setShowMoreDetails(!showMoreDetails);
   const handleBackClick = () => navigate("/books");
@@ -430,61 +473,75 @@ function BookDetails() {
             </button>
           )}
         </div>
-        {userId && fines && (
-          <div className="ml-auto mr-12 flex flex-col">
-            {waitList || count <= 0 ? (
-              waitList ? (
-                <button
-                  onClick={cancelwaitListBook}
-                  className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
-                >
-                  Cancel Waitlist
-                </button>
-              ) : (
-                <button
-                  onClick={waitListBook}
-                  className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
-                >
-                  Waitlist
-                </button>
-              )
-            ) : !checkedOut ? (
-              <button
-                onClick={checkout}
-                className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-              >
-                Checkout
-              </button>
-            ) : (
-              <button
-                onClick={returnBook}
-                className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-              >
-                Return
-              </button>
-            )}
-            {/* Render Reserve or Cancel Reserve button based on the reserve variable */}
-            {count > 0 && !waitList && !checkedOut ? ( // Add checkedOut check here
-              !reserve ? ( // Check if reserve is false
-                <button
-                  onClick={reserveItem}
-                  className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-                >
-                  Reserve
-                </button>
-              ) : (
-                // If reserve is true
-                <button
-                  onClick={cancelReserveItem}
-                  className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-                >
-                  Cancel Reserve{" "}
-                  <span className="block text-xs">{lastDate}</span>
-                </button>
-              )
-            ) : null}
-          </div>
-        )}
+        {userId && !fines && (
+  <div className="ml-auto mr-12 flex flex-col">
+    {waitList || count <= 0 ? (
+      waitList ? (
+        <button
+          onClick={cancelwaitListBook}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+        >
+          Cancel Waitlist
+        </button>
+      ) : (
+        <button
+          onClick={waitListBook}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black"
+        >
+          Waitlist
+        </button>
+      )
+    ) : (
+      !checkMax ? (
+        !checkedOut ? (
+          <button
+            onClick={checkout}
+            className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+          >
+            Checkout
+          </button>
+        ) : (
+          <button
+            onClick={returnBook}
+            className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+          >
+            Return
+          </button>
+        )
+      ) : (
+        checkedOut && (
+          <button
+            onClick={returnBook}
+            className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+          >
+            Return
+          </button>
+        )
+      )
+    )}
+
+    {/* Render Reserve or Cancel Reserve button based on the reserve variable */}
+    {!checkMax && count > 0 && !waitList && !checkedOut ? (
+      !reserve ? (
+        <button
+          onClick={reserveItem}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Reserve
+        </button>
+      ) : (
+        <button
+          onClick={cancelReserveItem}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Cancel Reserve{" "}
+          <span className="block text-xs">{lastDate}</span>
+        </button>
+      )
+    ) : null}
+  </div>
+)}
+
       </div>
 
       <hr className="ml-6 mt-2 bg-black border-0" />

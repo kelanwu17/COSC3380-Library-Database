@@ -9,7 +9,6 @@ function EmployeeLog() {
   const [error, setError] = useState(null);
 
   // Filter states
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedAdmin, setSelectedAdmin] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -18,18 +17,18 @@ function EmployeeLog() {
   const [selectedActionType, setSelectedActionType] = useState('');
   const [selectedItemType, setSelectedItemType] = useState('');
 
-  // Categories and Action Types
-  const categories = ['All', 'Update', 'Delete', 'Create'];
+  // Action Types and Item Types
   const actionTypes = ['Insert', 'Update', 'Delete'];
-  const itemTypes = ['All', 'Book', 'Tech', 'Music', 'Admin', 'Member']; // New item type filter options
+  const itemTypes = ['All', 'Book', 'Tech', 'Music', 'Admin', 'Member', 'Event'];
 
   useEffect(() => {
     const fetchEmployeeLogs = async () => {
       try {
         const logResponse = await axios.get('https://library-database-backend.onrender.com/api/employeeLog/');
+        console.log("Fetched logs:", logResponse.data); // Log fetched data for inspection
         setLogs(logResponse.data);
         setFilteredLogs(logResponse.data);
-        await fetchAdminNames(); // Fetch all admin names once
+        await fetchAdminNames();
         setLoading(false);
       } catch (error) {
         setError('Failed to fetch employee logs.');
@@ -37,6 +36,7 @@ function EmployeeLog() {
       }
     };
 
+  
     const fetchAdminNames = async () => {
       try {
         const adminResponse = await axios.get('https://library-database-backend.onrender.com/api/admin/');
@@ -56,19 +56,39 @@ function EmployeeLog() {
   useEffect(() => {
     let filtered = logs;
 
-    // Filter by category
-    if (selectedCategory && selectedCategory !== 'All') {
-      filtered = filtered.filter(log => log.description.includes(selectedCategory));
-    }
-
     // Filter by item type
     if (selectedItemType && selectedItemType !== 'All') {
-      filtered = filtered.filter(log => log.category === selectedItemType);
+      filtered = filtered.filter(log => {
+        const description = log.description || '';
+        const lowerCaseDescription = description.toLowerCase();
+
+        if (selectedItemType === 'Book') {
+          return lowerCaseDescription.includes('book');
+        } else if (selectedItemType === 'Tech') {
+          return lowerCaseDescription.includes('tech');
+        } else if (selectedItemType === 'Music') {
+          return lowerCaseDescription.includes('music');
+        } else if (selectedItemType === 'Admin') {
+          return lowerCaseDescription.includes('admin') || 
+                 lowerCaseDescription.includes('created admin') ||
+                 lowerCaseDescription.includes('deactivate admin') ||
+                 lowerCaseDescription.includes('update admin');
+        } else if (selectedItemType === 'Member') {
+          return lowerCaseDescription.includes('member') ||
+                 lowerCaseDescription.includes('created member') ||
+                 lowerCaseDescription.includes('deactivate member') ||
+                 lowerCaseDescription.includes('update member');
+        } else if (selectedItemType === 'Event') {
+          return lowerCaseDescription.includes('event');
+        }
+
+        return true;
+      });
     }
 
     // Filter by admin
     if (selectedAdmin) {
-      filtered = filtered.filter(log => log.adminId === selectedAdmin);
+      filtered = filtered.filter(log => log.adminId === parseInt(selectedAdmin, 10));
     }
 
     // Filter by time range
@@ -82,7 +102,7 @@ function EmployeeLog() {
     // Filter by description keyword
     if (searchKeyword) {
       filtered = filtered.filter(log =>
-        log.description.toLowerCase().includes(searchKeyword.toLowerCase())
+        log.description && log.description.toLowerCase().includes(searchKeyword.toLowerCase())
       );
     }
 
@@ -93,11 +113,12 @@ function EmployeeLog() {
 
     // Filter by action type
     if (selectedActionType) {
-      filtered = filtered.filter(log => log.description.startsWith(selectedActionType));
+      filtered = filtered.filter(log => log.description && log.description.startsWith(selectedActionType.toLowerCase()));
     }
 
     setFilteredLogs(filtered);
-  }, [selectedCategory, selectedItemType, selectedAdmin, startDate, endDate, searchKeyword, logId, selectedActionType, logs]);
+    console.log("Filtered logs:", filtered);
+  }, [selectedItemType, selectedAdmin, startDate, endDate, searchKeyword, logId, selectedActionType, logs]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -109,22 +130,6 @@ function EmployeeLog() {
       {/* Filter Controls */}
       <div style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         
-        {/* Category Filter */}
-        <div>
-          <label>Filter by Category:</label>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{ marginLeft: '10px', padding: '5px' }}
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Item Type Filter */}
         <div>
           <label>Filter by Item Type:</label>

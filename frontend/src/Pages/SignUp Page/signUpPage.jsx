@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'; // Combined imports for better readability
 import './signUpPage.css'; // Import the CSS file
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
+
 
 function SignUpPage() {
   // State variables for user inputs
@@ -13,10 +15,11 @@ function SignUpPage() {
   const [DOB, setDob] = useState('');
   const [phone, setPhone] = useState('');
   const [isUserLoggedin, setIsUserLoggedIn] = useState(false);
-  
+  const [faculty, setFaculty] = useState('')
   const userId = sessionStorage.getItem('username');
   const navigate = useNavigate();
 
+  
   useEffect(() => {
     if (userId) {
       setIsUserLoggedIn(true);
@@ -33,7 +36,9 @@ function SignUpPage() {
     email,
     phone,
     DOB,
+    role: faculty
   };
+  console.log(faculty)
   console.log("Data being sent to the server:", dataToSend);
 
   async function submit(e) {
@@ -52,7 +57,9 @@ function SignUpPage() {
       console.log(error.response?.data || error.message);
     }
   }
-
+  const handleFacultySelection = (value) => {
+    setFaculty(value);
+  };
   const handlePhoneChange = (e) => {
     // Remove non-digit characters
     let value = e.target.value.replace(/[^0-9]/g, '');
@@ -137,10 +144,27 @@ function SignUpPage() {
               required
               onChange={(e) => setPassword(e.target.value)}
             />
+           <div className="faculty-selection">
+  <button
+    type="button"
+    className={`faculty-button ${faculty === 'student' ? 'selected' : ''}`}
+    onClick={() => handleFacultySelection('student')}
+  >
+    Student
+  </button>
+  <button
+    type="button"
+    className={`faculty-button ${faculty === 'faculty' ? 'selected' : ''}`}
+    onClick={() => handleFacultySelection('faculty')}
+  >
+    Faculty
+  </button>
+</div>
+
             <div className="terms">
               <label>
-                <input type="checkbox" required /> I agree to{' '}
-                <a href="/terms" className="terms-anchor">Terms & Conditions</a>
+                <input type="checkbox" required /> I agree to the{' '}
+                <Link to="/terms" className="terms-anchor">Terms & Conditions</Link>              
               </label>
             </div>
             <button type="submit" className="signup-button" onClick={submit}>

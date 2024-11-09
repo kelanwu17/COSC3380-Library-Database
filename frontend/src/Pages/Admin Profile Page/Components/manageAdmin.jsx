@@ -34,12 +34,18 @@ function ManageAdmin() {
     fetchAllAdmins();
   }, []);
 
+  const adjustToTimezone = (utcDate) => {
+    const timezoneOffset = utcDate.getTimezoneOffset();
+    return new Date(utcDate.getTime() - timezoneOffset * 60000);
+  };
+  
+  // Usage Example for `fetchAllAdmins` with DOB
   const fetchAllAdmins = async () => {
     try {
       const response = await axios.get('https://library-database-backend.onrender.com/api/admin/');
       const formattedAdmins = response.data.map(admin => ({
         ...admin,
-        DOB: admin.DOB ? new Date(admin.DOB).toISOString().split('T')[0] : '', // Ensure YYYY-MM-DD format
+        DOB: admin.DOB ? adjustToTimezone(new Date(admin.DOB)).toISOString().split('T')[0] : '',
       }));
       setAdminsData(formattedAdmins);
       setFilteredAdmins(formattedAdmins);
@@ -47,6 +53,7 @@ function ManageAdmin() {
       console.error('Error fetching admins:', err);
     }
   };
+  
   
   const handleSearchAdmin = () => {
     const filtered = adminsData.filter(

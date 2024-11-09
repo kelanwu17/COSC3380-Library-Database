@@ -7,6 +7,8 @@ import RecommendedBooks from './Components/recommendedBook';
 import RecommendedMusic from './Components/recommendedMusic'; 
 import UserEvents from './Components/userEvents'; 
 import WaitlistComponent from './Components/WaitlistComponent';
+import LibraryCard from './Components/libraryCard'; 
+
 
 function UserProfile() {
   const defaultProfilePic = "/profilepic.png"; 
@@ -37,15 +39,23 @@ function UserProfile() {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/member/${userId}`);
         const userFound = response.data[0];
-
+  
         if (userFound) {
           setUserProfile(prevProfile => ({
             ...prevProfile,
-            ...userFound,
+            firstName: userFound.firstName || prevProfile.firstName,
+            lastName: userFound.lastName || prevProfile.lastName,
+            email: userFound.email || prevProfile.email,
+            phone: userFound.phone || prevProfile.phone,
+            DOB: userFound.DOB || prevProfile.DOB,
+            preferences: userFound.preferences || prevProfile.preferences,
+            accountStatus: userFound.accountStatus || prevProfile.accountStatus,
+            memberSince: userFound.createdAt || prevProfile.memberSince,
+            role: userFound.role || prevProfile.role,
             profilePic: userFound.profilePic || defaultProfilePic
           }));
           setOriginalProfile(userFound); // Store original data for comparison
-
+  
           // Fetch fines
           const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
           const memberFines = finesResponse.data;
@@ -62,18 +72,21 @@ function UserProfile() {
           throw new Error('User not found');
         }
       } catch (error) {
-        console.error('Error fetching User details or fines:', error);
+        console.error('Error fetching user details or fines:', error);
       }
     };
-
+  
     fetchUserDetails();
   }, [userId]);
+  
 
   const formattedDOB = new Date(userProfile.DOB).toLocaleDateString('en-US', {
+    timeZone: 'UTC',  // This forces it to display the date as-is, without shifting time zones
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
+  
 
   const formattedMemberSince = userProfile.memberSince 
     ? new Date(userProfile.memberSince).getFullYear()
@@ -157,7 +170,9 @@ function UserProfile() {
         return <ReserveComponent />;
       case 'waitListedItems':
         return <WaitlistComponent />;
-      default:
+      case 'libraryCard':
+        return <LibraryCard userId={userId} />; // Render LibraryCard component
+        default:
         return <p>Select a section from the sidebar.</p>;
     }
   };
@@ -183,7 +198,8 @@ function UserProfile() {
             <li onClick={() => setActiveSection('recommendedMusic')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'recommendedMusic' ? '#ddd' : 'transparent', fontWeight: activeSection === 'recommendedMusic' ? 'bold' : 'normal' }}>Recommended Music</li>
             <li onClick={() => setActiveSection('reservedItems')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reservedItems' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reservedItems' ? 'bold' : 'normal' }}>Reserved Items</li>
             <li onClick={() => setActiveSection('waitListedItems')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'waitListedItems' ? '#ddd' : 'transparent', fontWeight: activeSection === 'waitListedItems' ? 'bold' : 'normal' }}>Waitlisted Items</li>
-          </ul>
+            <li onClick={() => setActiveSection('libraryCard')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'libraryCard' ? '#ddd' : 'transparent', fontWeight: activeSection === 'libraryCard' ? 'bold' : 'normal' }}>Library Card</li>
+            </ul>
         </div>
 
         <div style={{ flex: '3', marginLeft: '20%' }}>
@@ -194,26 +210,28 @@ function UserProfile() {
               style={{ width: '150px', height: '150px', borderRadius: '50%', marginRight: '20px' }}
             />
             <div>
-              {isEditing ? (
-                <>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={userProfile.firstName}
-                    onChange={handleInputChange}
-                    style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}
-                  />
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={userProfile.lastName}
-                    onChange={handleInputChange}
-                    style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}
-                  />
-                </>
-              ) : (
-                <h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>{`${userProfile.firstName} ${userProfile.lastName}`}</h2>
-              )}
+            {isEditing ? (
+              <>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={userProfile.firstName || ''} // Ensure value is bound
+                  onChange={handleInputChange}
+                  style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}
+                  placeholder="First Name"
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  value={userProfile.lastName || ''} // Ensure value is bound
+                  onChange={handleInputChange}
+                  style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}
+                  placeholder="Last Name"
+                />
+              </>
+            ) : (
+              <h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>{`${userProfile.firstName} ${userProfile.lastName}`}</h2>
+            )}   
               <p><strong>Member since:</strong> {formattedMemberSince}</p>
               <p><strong>Member ID:</strong> {userProfile.memberId}</p>
               <p><strong>DOB:</strong> {formattedDOB}</p>
