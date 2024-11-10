@@ -44,7 +44,12 @@ function AdminInfo({ adminId }) {
   
   console.log("Fetched Admin Data:", adminData);
 
+  // Format DOB to display as YYYY-MM-DD without time part
+  const formattedDOB = adminData.DOB
+    ? new Date(adminData.DOB).toISOString().split('T')[0]  // Extract just the date part (YYYY-MM-DD)
+    : 'Date Invalid';
 
+  console.log("Formatted Admin DOB:", formattedDOB);
 
   return (
     <div
@@ -91,7 +96,7 @@ function AdminInfo({ adminId }) {
           <strong>Phone Number:</strong> {adminData.phone}
         </p>
         <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
-          <strong>DOB:</strong> {new Date(adminData.DOB).toLocaleDateString()}
+          <strong>DOB:</strong> {formattedDOB}
         </p>
         <p style={{ fontSize: '1.2rem', margin: '10px 0' }}>
           <strong>Role:</strong> {adminData.roles}

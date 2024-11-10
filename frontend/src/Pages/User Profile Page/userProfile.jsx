@@ -41,6 +41,8 @@ function UserProfile() {
         const userFound = response.data[0];
   
         if (userFound) {
+          const formattedDOB = userFound.DOB ? userFound.DOB.split('T')[0] : '';
+
           setUserProfile(prevProfile => ({
             ...prevProfile,
             firstName: userFound.firstName || prevProfile.firstName,
@@ -56,6 +58,8 @@ function UserProfile() {
           }));
           setOriginalProfile(userFound); // Store original data for comparison
   
+          console.log("Backend response:", response.data);
+
           // Fetch fines
           const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
           const memberFines = finesResponse.data;
@@ -79,14 +83,14 @@ function UserProfile() {
     fetchUserDetails();
   }, [userId]);
   
+  const formattedDOB = userProfile.DOB
+  ? new Date(userProfile.DOB).toISOString().split('T')[0] // Extract just the date part
+  : 'Date Invalid';
 
-  const formattedDOB = new Date(userProfile.DOB).toLocaleDateString('en-US', {
-    timeZone: 'UTC',  // This forces it to display the date as-is, without shifting time zones
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-  
+  console.log("Formatted DOB:", formattedDOB);
+  console.log('Fetched DOB:', userProfile.DOB);
+
+
 
   const formattedMemberSince = userProfile.memberSince 
     ? new Date(userProfile.memberSince).getFullYear()
@@ -171,7 +175,7 @@ function UserProfile() {
       case 'waitListedItems':
         return <WaitlistComponent />;
       case 'libraryCard':
-        return <LibraryCard userId={userId} />; // Render LibraryCard component
+        return <LibraryCard userId={userId} />; 
         default:
         return <p>Select a section from the sidebar.</p>;
     }
