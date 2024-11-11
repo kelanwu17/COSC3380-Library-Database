@@ -30,22 +30,36 @@ function ManageAdmin() {
     active: 1,
   });
 
+  // Retrieve logged-in admin ID
+  const currentAdminId = localStorage.getItem('adminId'); // Ensure this has the correct admin ID
+  console.log("Current Admin ID:", currentAdminId);
+  
   useEffect(() => {
     fetchAllAdmins();
   }, []);
 
-  const adjustToTimezone = (utcDate) => {
-    const timezoneOffset = utcDate.getTimezoneOffset();
-    return new Date(utcDate.getTime() - timezoneOffset * 60000);
+  const logEmployeeAction = async (adminId, description) => {
+    try {
+      const adjustedTimestamp = new Date();
+      adjustedTimestamp.setHours(adjustedTimestamp.getHours() + 6);
+      
+      await axios.post('https://library-database-backend.onrender.com/api/employeeLog', {
+        adminId: adminId || currentAdminId, // Ensures we have an ID
+        description,
+        timeStamp: new Date().toISOString(),
+      });
+      console.log('Action logged:', description);
+    } catch (error) {
+      console.error('Error logging action:', error);
+    }
   };
-  
-  // Usage Example for `fetchAllAdmins` with DOB
+
   const fetchAllAdmins = async () => {
     try {
       const response = await axios.get('https://library-database-backend.onrender.com/api/admin/');
       const formattedAdmins = response.data.map(admin => ({
         ...admin,
-        DOB: admin.DOB ? adjustToTimezone(new Date(admin.DOB)).toISOString().split('T')[0] : '',
+        DOB: admin.DOB ? admin.DOB.split('T')[0] : '', // Ensures only the date part (YYYY-MM-DD)
       }));
       setAdminsData(formattedAdmins);
       setFilteredAdmins(formattedAdmins);
@@ -53,8 +67,7 @@ function ManageAdmin() {
       console.error('Error fetching admins:', err);
     }
   };
-  
-  
+
   const handleSearchAdmin = () => {
     const filtered = adminsData.filter(
       (admin) =>
@@ -64,36 +77,33 @@ function ManageAdmin() {
     );
     setFilteredAdmins(filtered);
   };
-  
+
   const formatDateForServer = (date) => {
-    return date ? new Date(date).toISOString().split('T')[0] : null; // Outputs "YYYY-MM-DD" or null
-  };  
-  
+    return date ? date.split('T')[0] : null; // Outputs only the date part "YYYY-MM-DD"
+  };
+
   const handleCreateAdmin = async () => {
-    // Validate email format using regex
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(newAdmin.email)) {
       window.alert('Invalid email format');
       return;
-    }   
+    }
 
-    // Format DOB to YYYY-MM-DD if it exists
-    const formattedDOB = newAdmin.DOB ? formatDateForServer(newAdmin.DOB) : null;
+    const formattedDOB = formatDateForServer(newAdmin.DOB);
     const dataToSend = { ...newAdmin, DOB: formattedDOB };
-    console.log('Data being sent to server:', dataToSend); // Add this for debugging
+    console.log('Data being sent to server:', dataToSend);
 
     try {
       const response = await axios.post(
         'https://library-database-backend.onrender.com/api/admin/createAdmin',
         dataToSend,
         { headers: { 'Content-Type': 'application/json' } }
-      );      
-      console.log('Create Admin Response:', response);
-  
+      );
+
       if (response.status === 200 && response.data.success) {
         window.alert('Admin successfully created!');
-        fetchAllAdmins(); // Refresh the admin list
-        // Reset the form fields
+        fetchAllAdmins();
+        logEmployeeAction(currentAdminId, `Admin created: ${newAdmin.username}`);
         setNewAdmin({
           username: '',
           password: '',
@@ -109,39 +119,34 @@ function ManageAdmin() {
         window.alert(response.data.message || 'Unexpected response format.');
       }
     } catch (err) {
-      const errorMessage = err.response && err.response.data && err.response.data.message
-        ? `Error: ${err.response.data.message}`
-        : 'Error creating admin. Please try again.';
-      window.alert(errorMessage);
+      window.alert('Error creating admin. Please try again.');
       console.error('Error creating admin:', err);
     }
   };
-
-
-  
 
   const handleEditAdmin = (admin) => {
     setEditAdminId(admin.adminId);
     setEditableAdminData({
       ...admin,
-      DOB: admin.DOB ? admin.DOB.split('T')[0] : '', // Ensure YYYY-MM-DD format
+      DOB: admin.DOB ? admin.DOB.split('T')[0] : '', // Ensures only the date part (YYYY-MM-DD)
     });
   };
-  
+
   const handleUpdateAdmin = async () => {
     const formattedDOB = formatDateForServer(editableAdminData.DOB);
     const dataToSend = { ...editableAdminData, DOB: formattedDOB };
-  
+
     try {
       const response = await axios.put(
         `https://library-database-backend.onrender.com/api/admin/updateAdmin/${editAdminId}`,
         dataToSend
       );
-  
+
       if (response.status === 200) {
         window.alert(response.data.message || 'Admin updated successfully!');
+        fetchAllAdmins();
+        logEmployeeAction(currentAdminId, `Admin updated: ${editableAdminData.username}`);
         setEditAdminId(null);
-        fetchAllAdmins(); // Refresh the admin list
         setEditableAdminData({
           username: '',
           password: '',
@@ -161,13 +166,13 @@ function ManageAdmin() {
       console.error('Error:', error);
     }
   };
-  
 
   const handleDeactivateAdmin = async (adminId) => {
     try {
       const response = await axios.put(`https://library-database-backend.onrender.com/api/Admin/deactivateAdmin/${adminId}`);
       window.alert(response.data.message || 'Admin deactivated successfully!');
-      fetchAllAdmins(); // Refresh the list to reflect the deactivation
+      fetchAllAdmins();
+      logEmployeeAction(currentAdminId, `Admin deactivated with ID: ${adminId}`);
     } catch (err) {
       console.error('Error deactivating admin:', err);
       window.alert('Failed to deactivate admin. Please try again.');
@@ -192,32 +197,19 @@ function ManageAdmin() {
       {statusMessage && <p style={{ color: 'red', marginBottom: '10px' }}>{statusMessage}</p>}
 
       <div style={{
-        overflowX: 'auto', // Enables horizontal scrolling if the table is too wide
+        overflowX: 'auto',
         borderRadius: '10px',
         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
         marginBottom: '20px',
         backgroundColor: '#fff',
-        maxWidth: '100%', // Ensure table stays within the container
+        maxWidth: '100%',
         maxHeight: '500px',
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
           <thead>
             <tr>
               {['Name', 'Email', 'Username', 'Phone', 'DOB', 'Roles', 'Status', 'Actions'].map((header, idx) => (
-                <th
-                  key={idx}
-                  style={{
-                    padding: '8px',
-                    backgroundColor: '#455a7a',
-                    color: 'white',
-                    borderBottom: '1px solid #ddd',
-                    textAlign: 'left',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    maxWidth: header === 'Email' || header === 'Username' ? '150px' : 'auto', // Limit width for Email and Username
-                  }}
-                >
+                <th key={idx} style={{ padding: '8px', backgroundColor: '#455a7a', color: 'white', borderBottom: '1px solid #ddd', textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {header}
                 </th>
               ))}
@@ -236,31 +228,10 @@ function ManageAdmin() {
                   {admin.active === 1 ? 'Active' : 'Inactive'}
                 </td>
                 <td style={{ padding: '8px', whiteSpace: 'nowrap', textAlign: 'center' }}>
-                  <button
-                    onClick={() => handleEditAdmin(admin)}
-                    style={{
-                      marginRight: '5px',
-                      backgroundColor: '#455a7a',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '5px',
-                      padding: '6px 10px',
-                      cursor: 'pointer',
-                    }}
-                  >
+                  <button onClick={() => handleEditAdmin(admin)} style={{ marginRight: '5px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '6px 10px', cursor: 'pointer' }}>
                     Edit
                   </button>
-                  <button
-                    onClick={() => handleDeactivateAdmin(admin.adminId)}
-                    style={{
-                      backgroundColor: '#455a7a',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '5px',
-                      padding: '6px 10px',
-                      cursor: 'pointer',
-                    }}
-                  >
+                  <button onClick={() => handleDeactivateAdmin(admin.adminId)} style={{ backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '6px 10px', cursor: 'pointer' }}>
                     Deactivate
                   </button>
                 </td>
@@ -272,14 +243,7 @@ function ManageAdmin() {
 
       <div style={{ display: 'flex', gap: '20px', justifyContent: 'space-between' }}>
         {/* Create Admin Form */}
-        <div style={{
-          padding: '15px',
-          backgroundColor: '#455a7a',
-          borderRadius: '10px',
-          color: 'white',
-          flex: 1,
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-        }}>
+        <div style={{ padding: '15px', backgroundColor: '#455a7a', borderRadius: '10px', color: 'white', flex: 1, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
           <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>Create Admin</h3>
           <table style={{ width: '100%' }}>
             <tbody>
@@ -302,14 +266,7 @@ function ManageAdmin() {
         </div>
 
         {/* Edit Admin Form */}
-        <div style={{
-          padding: '15px',
-          backgroundColor: '#455a7a',
-          borderRadius: '10px',
-          color: 'white',
-          flex: 1,
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-        }}>
+        <div style={{ padding: '15px', backgroundColor: '#455a7a', borderRadius: '10px', color: 'white', flex: 1, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
           <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>Edit Admin</h3>
           <table style={{ width: '100%' }}>
             <tbody>
