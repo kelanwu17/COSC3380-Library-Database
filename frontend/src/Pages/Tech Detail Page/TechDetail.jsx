@@ -107,6 +107,7 @@ function TechDetail() {
   }
   async function returnTech(e) {
     e.preventDefault();
+    
     try {
       console.log('chistory',cHistoryId)
       const response = await axios.put(`https://library-database-backend.onrender.com/api/checkouttech/updateCheckoutTech/${cHistoryId}`);
@@ -361,7 +362,7 @@ function TechDetail() {
     fetchMemberHistory();
     fetchReserveList();
     fetchUserLibraryCard();
-  }, [id,waitList,reserve, checkMax, bookCount]);
+  }, [id,waitList,reserve, checkMax, bookCount, checkedOut]);
 
   const handleBackClick = () => navigate('/technology');
   

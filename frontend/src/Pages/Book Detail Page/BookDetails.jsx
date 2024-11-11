@@ -120,7 +120,7 @@ function BookDetails() {
     try {
       console.log(cHistoryId)
       const response = await axios.put(
-        `https://library-database-backend.onrender.com/api/checkoutbook/updateCheckOutBook/${cHistoryId}`
+        `https://library-database-backend.onrender.com/api/checkoutbook/updateCheckOutBook/${cHistoryId}`,
       );
 
       alert("You have returned this item.");
