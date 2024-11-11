@@ -29,7 +29,6 @@ function CheckedOutHistory({ userId }) {
       })
       .catch((error) => console.error("Error fetching checked-out music items:", error));
   }, [userId]);
-  
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg">
@@ -47,6 +46,7 @@ function CheckedOutHistory({ userId }) {
                 <th className="p-3 text-gray-800">Title</th>
                 <th className="p-3 text-gray-800">Checkout Date</th>
                 <th className="p-3 text-gray-800">Due Date</th>
+                <th className="p-3 text-gray-800">Return Date</th>
               </tr>
             </thead>
             <tbody>
@@ -55,6 +55,9 @@ function CheckedOutHistory({ userId }) {
                   <td className="p-3 text-gray-700">{book.bookTitle}</td>
                   <td className="p-3 text-gray-700">{new Date(book.timeStampCheckedOut).toLocaleDateString()}</td>
                   <td className="p-3 text-gray-700">{new Date(book.timeStampDue).toLocaleDateString()}</td>
+                  <td className="p-3 text-gray-700">
+                    {book.timeStampReturn ? new Date(book.timeStampReturn).toLocaleDateString() : "Not Returned"}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -70,6 +73,7 @@ function CheckedOutHistory({ userId }) {
                 <th className="p-3 text-gray-800">Device Name</th>
                 <th className="p-3 text-gray-800">Checkout Date</th>
                 <th className="p-3 text-gray-800">Due Date</th>
+                <th className="p-3 text-gray-800">Return Date</th>
               </tr>
             </thead>
             <tbody>
@@ -78,6 +82,9 @@ function CheckedOutHistory({ userId }) {
                   <td className="p-3 text-gray-700">{item.deviceName}</td>
                   <td className="p-3 text-gray-700">{new Date(item.timeStampCheckedOut).toLocaleDateString()}</td>
                   <td className="p-3 text-gray-700">{new Date(item.timeStampDue).toLocaleDateString()}</td>
+                  <td className="p-3 text-gray-700">
+                    {item.timeStampReturn ? new Date(item.timeStampReturn).toLocaleDateString() : "Not Returned"}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -93,6 +100,7 @@ function CheckedOutHistory({ userId }) {
                 <th className="p-3 text-gray-800">Album</th>
                 <th className="p-3 text-gray-800">Checkout Date</th>
                 <th className="p-3 text-gray-800">Due Date</th>
+                <th className="p-3 text-gray-800">Return Date</th>
               </tr>
             </thead>
             <tbody>
@@ -101,13 +109,14 @@ function CheckedOutHistory({ userId }) {
                   <td className="p-3 text-gray-700">{album.albumName}</td>
                   <td className="p-3 text-gray-700">{new Date(album.timeStampCheckedOut).toLocaleDateString()}</td>
                   <td className="p-3 text-gray-700">{new Date(album.timeStampDue).toLocaleDateString()}</td>
+                  <td className="p-3 text-gray-700">
+                    {album.timeStampReturn ? new Date(album.timeStampReturn).toLocaleDateString() : "Not Returned"}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </section>
-
-     
 
       </div>
     </div>
