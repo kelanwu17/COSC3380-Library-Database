@@ -38,6 +38,8 @@ function TechDetail() {
     memberId: userId,
     techId: id,
     instanceId: itemInstance,
+    role: faculty
+
   };
  //Waitlist logic
  let waitListData = {
@@ -394,7 +396,7 @@ function TechDetail() {
   
         {(userId && !fines) && (
   <div className="ml-auto mr-12 flex flex-col">
-    {waitList || techDetails.count <= 0 ? (
+    {waitList || techDetails.count <= 0 && checkedOut? (
       waitList ? (
         <button
           onClick={cancelwaitListTech}
