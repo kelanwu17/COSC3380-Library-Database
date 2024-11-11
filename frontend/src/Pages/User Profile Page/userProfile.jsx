@@ -267,6 +267,9 @@ function UserProfile() {
                   userProfile.phone
                 )}
               </p>
+              <p>
+                <strong>Role:</strong> {userProfile.role}
+              </p>
               <button onClick={handleEditToggle} style={{ marginTop: '10px', padding: '10px', backgroundColor: isEditing ? '#007bff' : '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
                 {isEditing ? 'Cancel' : 'Edit Profile'}
               </button>
