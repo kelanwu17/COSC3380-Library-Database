@@ -11,7 +11,7 @@ import { PieChart } from "@mui/x-charts";
 
 const groupByDate = (data) =>
   data.reduce((acc, fine) => {
-    const date = fine.createdAt.split("T")[0]; //use split for some reason?
+    const date = fine.createdAt.split("T")[0];
     acc[date] = (acc[date] || 0) + 1;
     return acc;
   }, {});
@@ -65,10 +65,9 @@ function FinesReport({ api }) {
     setSelected(index);
 
     // Update the pie chart for filter data
-    const currentFines = filteredData.filter((row) => !row.paid).length;
     setPieData([
       { label: "Paid", value: filteredData.filter((row) => row.paid).length },
-      { label: "Unpaid", value: currentFines },
+      { label: "Unpaid", value: filteredData.filter((row) => !row.paid).length },
     ]);
   };
 
@@ -81,7 +80,13 @@ function FinesReport({ api }) {
 
         const result = await response.json();
         setAllData(result);
-        setData(result); // Initialize with all data
+        setData(result);
+
+        // Initialize pieData based on initial full data load
+        setPieData([
+          { label: "Paid", value: result.filter((row) => row.paid).length },
+          { label: "Unpaid", value: result.filter((row) => !row.paid).length },
+        ]);
 
         // Group data by date for signups or fines report
         const grouped = groupByDate(result);
