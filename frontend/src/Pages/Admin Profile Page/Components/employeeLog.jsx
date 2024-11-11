@@ -17,25 +17,22 @@ function EmployeeLog() {
   const [selectedActionType, setSelectedActionType] = useState('');
   const [selectedItemType, setSelectedItemType] = useState('');
 
-  // Action Types and Item Types
-  const actionTypes = ['Insert', 'Update', 'Delete'];
+  // Updated Action Types and Item Types
+  const actionTypes = ['Inserted', 'Updated', 'Deactivated', 'Created'];
   const itemTypes = ['All', 'Book', 'Tech', 'Music', 'Admin', 'Member', 'Event'];
 
   useEffect(() => {
     const fetchEmployeeLogs = async () => {
       try {
         const logResponse = await axios.get('https://library-database-backend.onrender.com/api/employeeLog/');
-        console.log("Fetched logs:", logResponse.data); // Log fetched data for inspection
         setLogs(logResponse.data);
         setFilteredLogs(logResponse.data);
-        await fetchAdminNames();
         setLoading(false);
       } catch (error) {
         setError('Failed to fetch employee logs.');
         setLoading(false);
       }
     };
-
   
     const fetchAdminNames = async () => {
       try {
@@ -50,7 +47,9 @@ function EmployeeLog() {
       }
     };
 
-    fetchEmployeeLogs();
+
+    fetchAdminNames(); // Fetch admin names independently
+    fetchEmployeeLogs(); // Fetch employee logs
   }, []);
 
   useEffect(() => {
@@ -69,15 +68,13 @@ function EmployeeLog() {
         } else if (selectedItemType === 'Music') {
           return lowerCaseDescription.includes('music');
         } else if (selectedItemType === 'Admin') {
-          return lowerCaseDescription.includes('admin') || 
-                 lowerCaseDescription.includes('created admin') ||
-                 lowerCaseDescription.includes('deactivate admin') ||
-                 lowerCaseDescription.includes('update admin');
+          return (
+            lowerCaseDescription.includes('created admin') ||
+            lowerCaseDescription.includes('updated admin') ||
+            lowerCaseDescription.includes('deactivated admin') 
+          );
         } else if (selectedItemType === 'Member') {
-          return lowerCaseDescription.includes('member') ||
-                 lowerCaseDescription.includes('created member') ||
-                 lowerCaseDescription.includes('deactivate member') ||
-                 lowerCaseDescription.includes('update member');
+          return lowerCaseDescription.includes('member');
         } else if (selectedItemType === 'Event') {
           return lowerCaseDescription.includes('event');
         }
@@ -94,10 +91,12 @@ function EmployeeLog() {
     // Filter by time range
     if (startDate && endDate) {
       filtered = filtered.filter(log => {
-        const logDate = new Date(log.timeStamp);
-        return logDate >= new Date(startDate) && logDate <= new Date(endDate);
+        const logDate = new Date(log.timeStamp || new Date());
+        const endDateWithTime = new Date(new Date(endDate).setHours(23, 59, 59, 999));
+        return logDate >= new Date(startDate) && logDate <= endDateWithTime;
       });
-    }
+    }    
+    
 
     // Filter by description keyword
     if (searchKeyword) {
@@ -113,11 +112,15 @@ function EmployeeLog() {
 
     // Filter by action type
     if (selectedActionType) {
-      filtered = filtered.filter(log => log.description && log.description.startsWith(selectedActionType.toLowerCase()));
+      filtered = filtered.filter(log =>
+        log.description &&
+        (selectedActionType.toLowerCase() === 'created' ? log.description.toLowerCase().includes('created') :
+         selectedActionType.toLowerCase() === 'deactivated' ? log.description.toLowerCase().includes('deactivated') :
+         log.description.toLowerCase().startsWith(selectedActionType.toLowerCase()))
+      );
     }
 
     setFilteredLogs(filtered);
-    console.log("Filtered logs:", filtered);
   }, [selectedItemType, selectedAdmin, startDate, endDate, searchKeyword, logId, selectedActionType, logs]);
 
   if (loading) return <p>Loading...</p>;
@@ -239,11 +242,13 @@ function EmployeeLog() {
             {filteredLogs.map((log) => (
               <tr key={log.employeeLogId}>
                 <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{log.employeeLogId}</td>
-                <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{log.adminId}</td>
+                <td style={{ padding:'8px', borderBottom: '1px solid #ddd' }}>{log.adminId}</td>
                 <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>
                   {adminNames[log.adminId] || 'Unknown'}
                 </td>
-                <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{new Date(log.timeStamp).toLocaleString()}</td>
+                <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>
+                  {new Date(log.timeStamp).toLocaleString()}
+                </td>
                 <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{log.description}</td>
               </tr>
             ))}

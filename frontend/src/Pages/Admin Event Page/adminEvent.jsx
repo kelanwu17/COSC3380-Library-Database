@@ -60,8 +60,11 @@ function AdminEvent() {
       location: event.location,
       ageGroup: event.ageGroup,
       category: event.category,
-      timeDate: new Date(event.timeDate).toISOString().slice(0, 16)
+      timeDate: event.timeDate
+        ? new Date(event.timeDate).toISOString().slice(0, 16) // Format suitable for datetime-local input
+        : '' // Default to empty string if no date
     });
+
     setEditModalOpen(true);
   };
 
@@ -112,8 +115,24 @@ function AdminEvent() {
     });
   };
 
+  const formatEventTime = (timeDate) => {
+    if (!timeDate) return 'Date Invalid';
+    const utcDate = new Date(timeDate);
+    return utcDate.toLocaleString(); // This will convert to the local time and format accordingly
+  };
+
+  
   const handleCreateEvent = async () => {
     try {
+      const formattedTimeDate = newEventData.timeDate 
+      ? new Date(newEventData.timeDate).toISOString().split('T')[0] + " " + new Date(newEventData.timeDate).toISOString().split('T')[1].slice(0, 5)
+      : '';
+
+    // Create new event data with formatted time
+    const eventToCreate = {
+      ...newEventData,
+      timeDate: formattedTimeDate
+    };
       await axios.post('https://library-database-backend.onrender.com/api/event/createEvent', newEventData);
       setCreateModalOpen(false);
       fetchEvents();
@@ -128,6 +147,8 @@ function AdminEvent() {
     event.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
     event.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -219,7 +240,7 @@ function AdminEvent() {
                       Event Holder ID: {event.eventHolder}
                     </Typography>
                     <Typography variant="body2">
-                      Time and Date: {new Date(event.timeDate).toLocaleString()}
+                      Time and Date: {event.timeDate ? formatEventTime(event.timeDate) : 'Date Invalid'}
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
