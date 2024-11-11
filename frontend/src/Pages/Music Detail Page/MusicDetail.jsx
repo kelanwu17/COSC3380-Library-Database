@@ -38,6 +38,7 @@ function MusicDetails() {
     memberId: userId,
     musicId: id,
     instanceId: itemInstance,
+    role: faculty
   };
 
   //Waitlist logic
@@ -431,7 +432,7 @@ function MusicDetails() {
   
           {(userId && !fines) && (
   <div className="ml-auto mr-12 flex flex-col">
-    {waitList || count <= 0 ? (
+    {waitList || count <= 0 && !checkedOut? (
       waitList ? (
         <button
           onClick={cancelwaitListMusic}

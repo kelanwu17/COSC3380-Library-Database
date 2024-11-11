@@ -94,6 +94,7 @@ function BookDetails() {
         memberId: userId,
         bookId: id,
         instanceId: itemInstance,
+        role: faculty
       };
       console.log(dataToSend);
       const response = await axios.post(
@@ -117,6 +118,7 @@ function BookDetails() {
   async function returnBook(e) {
     e.preventDefault();
     try {
+      console.log(cHistoryId)
       const response = await axios.put(
         `https://library-database-backend.onrender.com/api/checkoutbook/updateCheckOutBook/${cHistoryId}`
       );
@@ -475,7 +477,7 @@ function BookDetails() {
         </div>
         {userId && !fines && (
   <div className="ml-auto mr-12 flex flex-col">
-    {waitList || count <= 0 ? (
+    {waitList || count <= 0  && !checkedOut? (
       waitList ? (
         <button
           onClick={cancelwaitListBook}
