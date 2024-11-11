@@ -26,6 +26,26 @@ function ManageMembers() {
     DOB: '',
   });
 
+  // Retrieve logged-in admin ID
+  const currentAdminId = localStorage.getItem('adminId'); // Ensure this has the correct admin ID
+
+  // Define logEmployeeAction at the top level of ManageMembers
+  const logEmployeeAction = async (adminId, description) => {
+    try {
+      const adjustedTimestamp = new Date();
+      adjustedTimestamp.setHours(adjustedTimestamp.getHours() + 6);
+      
+      await axios.post('https://library-database-backend.onrender.com/api/employeeLog', {
+        adminId,
+        description,
+        timeStamp: new Date().toISOString(),
+      });
+      console.log('Action logged:', description);
+    } catch (error) {
+      console.error('Error logging action:', error);
+    }
+  };
+
   useEffect(() => {
     fetchAllMembers();
   }, []);
@@ -46,7 +66,7 @@ function ManageMembers() {
       const lastName = member.lastName ? member.lastName.toLowerCase() : '';
       const username = member.username ? member.username.toLowerCase() : '';
       const searchLower = searchText.toLowerCase();
-  
+
       return (
         firstName.includes(searchLower) ||
         lastName.includes(searchLower) ||
@@ -55,7 +75,6 @@ function ManageMembers() {
     });
     setFilteredMembers(filtered);
   };
-  
 
   const handleCreateMember = async () => {
     try {
@@ -65,6 +84,7 @@ function ManageMembers() {
       );
       alert(response.data.message);
       fetchAllMembers();
+      logEmployeeAction(currentAdminId, `Created Member: ${newMember.username}`);
       setNewMember({
         username: '',
         password: '',
@@ -98,6 +118,7 @@ function ManageMembers() {
         updatedData
       );
       alert(`${response.data.message || 'Member updated successfully!'}`);
+      logEmployeeAction(currentAdminId, `Updated Member: ${editableData.username}`);
       setEditMemberId(null);
       fetchAllMembers();
     } catch (error) {
@@ -112,6 +133,7 @@ function ManageMembers() {
       );
       alert(response.data.message || 'Member deactivated successfully!');
       fetchAllMembers();
+      logEmployeeAction(currentAdminId, `Deactivated Member with ID: ${memberId}`);
     } catch (err) {
       console.error('Error deactivating member.', err);
     }
@@ -126,6 +148,7 @@ function ManageMembers() {
         : [...prevState.preferences, value],
     }));
   };
+
 
   return (
     <div style={{ padding: '20px' }}>
@@ -153,7 +176,7 @@ function ManageMembers() {
         <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
           <thead>
             <tr>
-              {['Name', 'Email', 'Username', 'Phone', 'DOB', 'Status', 'Actions'].map((header, idx) => (
+              {['Name', 'Email', 'Username', 'Phone', 'DOB', 'Status', 'Role', 'Actions'].map((header, idx) => (
                 <th key={idx} style={{
                   padding: '10px',
                   backgroundColor: '#455a7a',
@@ -178,6 +201,9 @@ function ManageMembers() {
                 <td style={{ padding: '10px', whiteSpace: 'nowrap' }}>{new Date(member.DOB).toLocaleDateString()}</td>
                 <td style={{ padding: '10px', color: member.accountStatus === 1 ? 'green' : 'red', whiteSpace: 'nowrap' }}>
                   {member.accountStatus === 1 ? 'Active' : 'Inactive'}
+                </td>
+                <td style={{ padding: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {member.role || 'N/A'}
                 </td>
                 <td style={{ padding: '10px', whiteSpace: 'nowrap', textAlign: 'center' }}>
                   <button onClick={() => handleEditMember(member)} style={{ marginRight: '5px', backgroundColor: '#455a7a', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer' }}>Edit</button>
