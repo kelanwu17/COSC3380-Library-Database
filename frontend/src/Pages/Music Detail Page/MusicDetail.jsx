@@ -87,6 +87,7 @@ function MusicDetails() {
   }
   async function returnMusic(e) {
     e.preventDefault();
+    
     try {
       console.log('chistory',cHistoryId)
       const response = await axios.put(`https://library-database-backend.onrender.com/api/checkoutmusic/updateCheckoutMusic/${cHistoryId}`);
@@ -455,7 +456,7 @@ function MusicDetails() {
       >
         Checkout
       </button>
-    ) : checkedOut && !checkMax ? ( // Return button appears only if checked out and checkMax is false
+    ) : checkedOut && checkMax ? ( // Return button appears only if checked out and checkMax is false
       <button
         onClick={returnMusic}
         className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
