@@ -261,6 +261,7 @@ function BookDetails() {
           (instance) =>
              instance.timeStampReturn == null
         );
+        console.log(memberHistory)
         
        setBookCount(allBooks.length)
        console.log('hi',bookCount)
@@ -294,7 +295,7 @@ function BookDetails() {
             // Book is still checked out
 
             const checkoutHistoryID = instanceFound.checkedOutBookHistoryId;
-
+            console.log('setCheckedoutRuns')
             setcHistoryId(checkoutHistoryID);
             setCheckedOut(true);
           }
@@ -510,16 +511,17 @@ function BookDetails() {
             Return
           </button>
         )
-      ) : (
-        checkedOut && (
-          <button
-            onClick={returnBook}
-            className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
-          >
-            Return
-          </button>
-        )
       )
+      :
+      checkedOut && (
+        <button
+          onClick={returnBook}
+          className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
+        >
+          Return
+        </button>
+      )
+      
     )}
 
     {/* Render Reserve or Cancel Reserve button based on the reserve variable */}
