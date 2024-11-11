@@ -103,7 +103,7 @@ function UserProfile() {
     }
 
     try {
-      await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${finesId}`);
+      await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${userId}`);
       setUserProfile(prevProfile => ({
         ...prevProfile,
         fines: '0.00'
