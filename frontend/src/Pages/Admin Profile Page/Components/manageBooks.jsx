@@ -141,13 +141,12 @@ function ManageBooks() {
         <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto', textAlign: 'center' }}>
           <thead>
             <tr>
-              {['Title', 'Author', 'Genre', 'Count', 'Aisle', 'Actions'].map((header, idx) => (
+              {['Title', 'Author', 'Genre', 'Age Category', 'Count', 'Aisle', 'ISBN', 'Publisher', 'Monetary Value', 'Actions'].map((header, idx) => (
                 <th key={idx} style={{
                   padding: '12px 15px',
                   backgroundColor: '#455a7a',
                   color: 'white',
                   fontWeight: 'bold',
-                  borderBottom: '2px solid #ddd',
                   position: 'sticky',
                   top: 0,
                   zIndex: 2,
@@ -162,8 +161,12 @@ function ManageBooks() {
                 <td style={{ padding: '10px' }}>{book.title}</td>
                 <td style={{ padding: '10px' }}>{book.author}</td>
                 <td style={{ padding: '10px' }}>{book.genre}</td>
+                <td style={{ padding: '10px' }}>{book.ageCategory}</td>
                 <td style={{ padding: '10px' }}>{book.count}</td>
                 <td style={{ padding: '10px' }}>{book.aisle}</td>
+                <td style={{ padding: '10px' }}>{book.isbn}</td>
+                <td style={{ padding: '10px' }}>{book.publisher}</td>
+                <td style={{ padding: '10px' }}>{`$${book.monetaryValue}`}</td>
                 <td style={{ padding: '10px', display: 'flex', gap: '5px', justifyContent: 'center' }}>
                   <button onClick={() => handleEditBook(book)} style={{
                     backgroundColor: '#455a7a',
@@ -187,6 +190,7 @@ function ManageBooks() {
           </tbody>
         </table>
       </div>
+
 
       <div style={{ display: 'flex', gap: '20px', justifyContent: 'space-between' }}>
         {/* Create Book Form */}
