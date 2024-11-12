@@ -102,8 +102,7 @@ function UserProfile() {
         return;
       }
     
-      // Check if the fine is already paid
-      if (userProfile.paid) { // assuming userProfile contains the fine details with 'paid' attribute
+      if (userProfile.paid) { 
         alert("This fine has already been paid.");
         return;
       }
@@ -113,7 +112,7 @@ function UserProfile() {
         setUserProfile(prevProfile => ({
           ...prevProfile,
           fines: '0.00',
-          paid: true // Update the 'paid' status to true after successful payment
+          paid: true 
         }));
         alert("Payment successful! Your fines have been cleared.");
       } catch (error) {
