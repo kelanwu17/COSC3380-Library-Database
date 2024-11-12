@@ -96,24 +96,32 @@ function UserProfile() {
     ? new Date(userProfile.memberSince).getFullYear()
     : new Date().getFullYear();
 
-  const handlePayFines = async () => {
-    if (!finesId) {
-      alert("No fine found to pay.");
-      return;
-    }
-
-    try {
-      await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${userId}`);
-      setUserProfile(prevProfile => ({
-        ...prevProfile,
-        fines: '0.00'
-      }));
-      alert("Payment successful! Your fines have been cleared.");
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      alert("Payment failed. Please try again later.");
-    }
-  };
+    const handlePayFines = async () => {
+      if (!finesId) {
+        alert("No fine found to pay.");
+        return;
+      }
+    
+      // Check if the fine is already paid
+      if (userProfile.paid) { // assuming userProfile contains the fine details with 'paid' attribute
+        alert("This fine has already been paid.");
+        return;
+      }
+    
+      try {
+        await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${userId}`);
+        setUserProfile(prevProfile => ({
+          ...prevProfile,
+          fines: '0.00',
+          paid: true // Update the 'paid' status to true after successful payment
+        }));
+        alert("Payment successful! Your fines have been cleared.");
+      } catch (error) {
+        console.error("Error processing payment:", error);
+        alert("Payment failed. Please try again later.");
+      }
+    };
+    
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
