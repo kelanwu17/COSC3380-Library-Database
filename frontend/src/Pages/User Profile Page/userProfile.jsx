@@ -65,29 +65,33 @@ function UserProfile() {
           console.log("Backend response:", response.data);
 
            // Fetch fines
-              const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
-              const memberFines = finesResponse.data;
-              if (memberFines.length > 0) {
-                setUserProfile(prevProfile => ({
-                  ...prevProfile,
-                  fines: memberFines[0].fineAmount,
-                  paid: memberFines[0].paid === 1 // Update paid status
-                }));
-                setFinesId(memberFines[0].finesId);
-              } else {
-                setFinesId(null);
-              }
-            } else {
-              throw new Error('User not found');
-            }
-          } catch (error) {
-            console.error('Error fetching user details or fines:', error);
-          }
-        };
+           const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
+           const memberFines = finesResponse.data;
 
-  fetchUserDetails();
+           // Log each fine to verify structure
+           console.log("Fines data from API:", memberFines);
+
+           // Calculate total unpaid fines
+           const totalUnpaidFines = memberFines
+               .filter(fine => fine.paid === 0) // Only include unpaid fines
+               .reduce((total, fine) => total + parseFloat(fine.fineAmount), 0);
+
+           setUserProfile(prevProfile => ({
+               ...prevProfile,
+               fines: totalUnpaidFines.toFixed(2) // Display as a fixed decimal
+           }));
+           console.log("Unpaid fines total:", totalUnpaidFines);
+       } else {
+           throw new Error('User not found');
+       }
+   } catch (error) {
+       console.error('Error fetching user details or fines:', error);
+   }
+};
+
+fetchUserDetails();
 }, [userId]);
-  
+
   const formattedDOB = userProfile.DOB
   ? new Date(userProfile.DOB).toISOString().split('T')[0] // Extract just the date part
   : 'Date Invalid';
