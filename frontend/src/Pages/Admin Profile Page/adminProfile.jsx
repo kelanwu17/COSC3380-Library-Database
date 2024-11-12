@@ -48,6 +48,14 @@ function AdminProfile() {
       handleClick();
     }
   };
+  const handleEmployeeLoginCheck = () => {
+    if (role === 'technician') {
+      setActiveSection('employeeLog');
+    } else {
+      handleClick();
+    }
+  };
+
 
   const renderActiveSection = () => {
     if (!adminId) {
@@ -101,7 +109,7 @@ function AdminProfile() {
             <li onClick={() => setActiveSection('manageTech')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageTech' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageTech' ? 'bold' : 'normal' }}>Manage Technology</li>
             <li onClick={handleTechCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageAdmin' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageAdmin' ? 'bold' : 'normal' }}>Manage Admins</li>
             <li onClick={handleReportCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'reports' ? '#ddd' : 'transparent', fontWeight: activeSection === 'reports' ? 'bold' : 'normal' }}>Reports</li>
-            <li onClick={() => setActiveSection('employeeLog')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'employeeLog' ? '#ddd' : 'transparent', fontWeight: activeSection === 'employeeLog' ? 'bold' : 'normal' }}>Employee Log</li>
+            <li onClick={handleEmployeeLoginCheck} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'employeeLog' ? '#ddd' : 'transparent', fontWeight: activeSection === 'employeeLog' ? 'bold' : 'normal' }}>Employee Log</li>
             <li onClick={() => setActiveSection('manageLibraryCard')} style={{ padding: '15px 20px', cursor: 'pointer', backgroundColor: activeSection === 'manageLibraryCard' ? '#ddd' : 'transparent', fontWeight: activeSection === 'manageLibraryCard' ? 'bold' : 'normal' }}>Manage Library Cards</li>
           </ul>
         </div>
