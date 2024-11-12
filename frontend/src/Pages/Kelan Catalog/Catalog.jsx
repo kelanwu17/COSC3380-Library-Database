@@ -74,13 +74,16 @@ import {
   
     const searchedData = filteredData.filter((subData) =>
       type === "books"
-        ? subData.title.toLowerCase().includes(searchTerm.toLowerCase())
+        ? subData.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          subData.author.toLowerCase().includes(searchTerm.toLowerCase())
         : type === "music"
-        ? subData.albumName.toLowerCase().includes(searchTerm.toLowerCase())
+        ? subData.albumName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          subData.artist.toLowerCase().includes(searchTerm.toLowerCase())
         : type === "tech"
         ? subData.deviceName.toLowerCase().includes(searchTerm.toLowerCase())
         : false
     );
+    
   
     return (
       <div style={{ backgroundColor: "white", height: "100%" }}>
