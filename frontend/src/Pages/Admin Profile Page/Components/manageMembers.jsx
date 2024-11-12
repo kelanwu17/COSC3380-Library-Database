@@ -15,6 +15,7 @@ function ManageMembers() {
     DOB: '',
     preferences: [],
     accountStatus: 1,
+    role: '',
   });
   const [editMemberId, setEditMemberId] = useState(null);
   const [editableData, setEditableData] = useState({
@@ -24,6 +25,7 @@ function ManageMembers() {
     email: '',
     phone: '',
     DOB: '',
+    role: '',
   });
 
   // Retrieve logged-in admin ID
@@ -95,7 +97,9 @@ function ManageMembers() {
         DOB: '',
         preferences: [],
         accountStatus: 1,
+        role: '',
       });
+      alert(`${response.data.message || 'Member created successfully!'}`);
     } catch (err) {
       console.error('Error creating member.', err);
     }
@@ -228,7 +232,7 @@ function ManageMembers() {
           <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>Create Member</h3>
           <table style={{ width: '100%' }}>
             <tbody>
-              {['firstName', 'lastName', 'username', 'password', 'email', 'phone', 'DOB'].map((field) => (
+              {['firstName', 'lastName', 'username', 'password', 'email', 'phone', 'DOB', 'role'].map((field) => (
                 <tr key={field}>
                   <td style={{ padding: '8px', color: 'white' }}>{field.charAt(0).toUpperCase() + field.slice(1)}</td>
                   <td>
@@ -261,7 +265,7 @@ function ManageMembers() {
           <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>Edit Member</h3>
           <table style={{ width: '100%' }}>
             <tbody>
-              {['firstName', 'lastName', 'username', 'email', 'phone', 'DOB'].map((field) => (
+              {['firstName', 'lastName', 'email', 'phone', 'DOB'].map((field) => (
                 <tr key={field}>
                   <td style={{ padding: '8px', color: 'white' }}>{field.charAt(0).toUpperCase() + field.slice(1)}</td>
                   <td>
