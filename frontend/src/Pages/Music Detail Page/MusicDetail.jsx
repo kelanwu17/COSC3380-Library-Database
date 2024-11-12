@@ -364,12 +364,12 @@ function MusicDetails() {
         // Loop through the array to check if any acStatus is positive
   let hasPositiveFine = false;
   for (let lCard of lCardArray) {
-    let acStatus = lCard.fineAmount - lCard.paid;
-    if (acStatus > 0) {
-      hasPositiveFine = true;
-      break; // Exit the loop if a positive acStatus is found
+    if(lCard.paid === 0)
+    {
+      hasPositiveFine=true
     }
-  }
+     
+    }
 
   // Set fines based on whether any acStatus is positive
   setFines(hasPositiveFine);
