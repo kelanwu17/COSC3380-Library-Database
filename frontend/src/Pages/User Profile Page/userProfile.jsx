@@ -8,6 +8,8 @@ import RecommendedMusic from './Components/recommendedMusic';
 import UserEvents from './Components/userEvents'; 
 import WaitlistComponent from './Components/WaitlistComponent';
 import LibraryCard from './Components/libraryCard'; 
+import Fine from './Components/fine';
+
 
 
 function UserProfile() {
@@ -54,34 +56,37 @@ function UserProfile() {
             accountStatus: userFound.accountStatus || prevProfile.accountStatus,
             memberSince: userFound.createdAt || prevProfile.memberSince,
             role: userFound.role || prevProfile.role,
-            profilePic: userFound.profilePic || defaultProfilePic
+            profilePic: userFound.profilePic || defaultProfilePic,
+            fines: userFound.fines || '0.00'
+
           }));
           setOriginalProfile(userFound); // Store original data for comparison
   
           console.log("Backend response:", response.data);
 
-          // Fetch fines
-          const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
-          const memberFines = finesResponse.data;
-          if (memberFines.length > 0) {
-            setUserProfile(prevProfile => ({
-              ...prevProfile,
-              fines: memberFines[0].fineAmount
-            }));
-            setFinesId(memberFines[0].finesId);
-          } else {
-            setFinesId(null);
+           // Fetch fines
+              const finesResponse = await axios.get(`https://library-database-backend.onrender.com/api/fines/${userId}`);
+              const memberFines = finesResponse.data;
+              if (memberFines.length > 0) {
+                setUserProfile(prevProfile => ({
+                  ...prevProfile,
+                  fines: memberFines[0].fineAmount,
+                  paid: memberFines[0].paid === 1 // Update paid status
+                }));
+                setFinesId(memberFines[0].finesId);
+              } else {
+                setFinesId(null);
+              }
+            } else {
+              throw new Error('User not found');
+            }
+          } catch (error) {
+            console.error('Error fetching user details or fines:', error);
           }
-        } else {
-          throw new Error('User not found');
-        }
-      } catch (error) {
-        console.error('Error fetching user details or fines:', error);
-      }
-    };
-  
-    fetchUserDetails();
-  }, [userId]);
+        };
+
+  fetchUserDetails();
+}, [userId]);
   
   const formattedDOB = userProfile.DOB
   ? new Date(userProfile.DOB).toISOString().split('T')[0] // Extract just the date part
@@ -97,29 +102,34 @@ function UserProfile() {
     : new Date().getFullYear();
 
     const handlePayFines = async () => {
-      if (!finesId) {
+      if (!userProfile?.fines || parseFloat(userProfile.fines) === 0) {
         alert("No fine found to pay.");
         return;
       }
     
-      if (userProfile.paid) { 
+      if (userProfile.paid) {
         alert("This fine has already been paid.");
         return;
       }
     
       try {
+        // Simulate payment API call
         await axios.put(`https://library-database-backend.onrender.com/api/fines/payFine/${userId}`);
+    
+        // Update frontend state to show that the fines are paid and the amount is zero
         setUserProfile(prevProfile => ({
           ...prevProfile,
           fines: '0.00',
-          paid: true 
+          paid: true
         }));
+    
         alert("Payment successful! Your fines have been cleared.");
       } catch (error) {
         console.error("Error processing payment:", error);
         alert("Payment failed. Please try again later.");
       }
     };
+    
     
 
   const handleEditToggle = () => {
@@ -289,17 +299,13 @@ function UserProfile() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
             <div>
-              <p><strong>Fines:</strong> ${userProfile.fines}</p>
-              {parseFloat(userProfile.fines) > 0 && (
-                <button onClick={handlePayFines} style={{ padding: '10px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                  Pay Fines
-                </button>
-              )}
+            <Fine userId={userId} fines={userProfile.fines} paid={userProfile.paid} setUserProfile={setUserProfile} />
             </div>
             <div>
               <p><strong>Holds:</strong> {userProfile.holds}</p>
             </div>
           </div>
+
 
           <div>
             {renderContent()}
