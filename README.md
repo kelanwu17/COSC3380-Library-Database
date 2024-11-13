@@ -45,6 +45,6 @@ npm start
 
 Deployed Website: https://luminaarchives.vercel.app/
 
-### Data that can be modified or added
+## Data that can be modified or added
 
-## Books
+### Books
