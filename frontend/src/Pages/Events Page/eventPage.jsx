@@ -99,9 +99,10 @@ const handleUnregister = async (eventId) => {
 };
 
 
-  const filteredEvents = eventsData.filter(event =>
+  const filteredEvents = eventsData.filter(event => 
+    event.active === 1 && (
     event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    event.location.toLowerCase().includes(searchQuery.toLowerCase())
+    event.location.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
