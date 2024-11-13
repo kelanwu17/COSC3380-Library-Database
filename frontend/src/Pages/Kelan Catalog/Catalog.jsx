@@ -74,13 +74,16 @@ import {
   
     const searchedData = filteredData.filter((subData) =>
       type === "books"
+
         ? (subData.title.toLowerCase().includes(searchTerm.toLowerCase())) && subData.availabilityStatus === 1
         : type === "music"
         ? (subData.albumName.toLowerCase().includes(searchTerm.toLowerCase())) && subData.availabilityStatus === 1
+
         : type === "tech"
         ? (subData.deviceName.toLowerCase().includes(searchTerm.toLowerCase())) && subData.availabilityStatus === 1
         : false
     );
+    
   
     return (
       <div style={{ backgroundColor: "white", height: "100%" }}>

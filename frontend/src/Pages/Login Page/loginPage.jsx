@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import './loginPage.css'; // Import the CSS file
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-
 
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [loginType, setLoginType] = useState('member');
+  const [successMessage, setSuccessMessage] = useState('');
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const navigate = useNavigate();
   const userId = sessionStorage.getItem('loggedin');
 
-  // If user is already logged in, navigate to home
   useEffect(() => {
     if (userId) {
       setIsUserLoggedIn(true);
@@ -22,56 +20,70 @@ function LoginPage() {
 
   useEffect(() => {
     if (isUserLoggedIn) {
-      navigate('/');
+      setTimeout(() => {
+        navigate('/');
+      }, 100); // Redirect to home after a short delay
     }
   }, [isUserLoggedIn, navigate]);
 
-  // Function to handle login
   const handleLogin = async (event) => {
     event.preventDefault();
     setErrorMessage('');
-    
-    // Validate inputs
+    setSuccessMessage('');
+
     if (!username || !password) {
       setErrorMessage('Username and Password are required.');
       return;
     }
 
-    const loginUrl = loginType === 'member' 
-      ? 'https://library-database-backend.onrender.com/auth/login/member' 
-      : 'https://library-database-backend.onrender.com/auth/login/admin';
-
     try {
-      const response = await axios.post(loginUrl, { username, password });
-      const userData = response.data;
-      const user = userData[0];
+      let response = await axios.post('https://library-database-backend.onrender.com/auth/login/member', {
+        username,
+        password,
+      });
+      const member = response.data[0];
 
-      // Store session data
-      sessionStorage.setItem('username', user.username);
-      sessionStorage.setItem('email', user.email);
-      sessionStorage.setItem('firstName', user.firstName);
-     
-      sessionStorage.setItem('lastName', user.lastName);
-      sessionStorage.setItem('phone', user.phone);
-      
-      if (loginType === 'admin') {
-        sessionStorage.setItem('roles', user.roles);
-        sessionStorage.setItem('adminId', user.adminId);
-      }
-      if (loginType === 'member') {
-        sessionStorage.setItem('roles', 'member');
-        sessionStorage.setItem('preferences', user.preferences);
-        sessionStorage.setItem('memberId', user.memberId);
-        sessionStorage.setItem('faculty', user.role);
-      }
+      sessionStorage.setItem('username', member.username);
+      sessionStorage.setItem('email', member.email);
+      sessionStorage.setItem('firstName', member.firstName);
+      sessionStorage.setItem('lastName', member.lastName);
+      sessionStorage.setItem('phone', member.phone);
+      sessionStorage.setItem('memberId', member.memberId);
+      sessionStorage.setItem('preferences', member.preferences);
+      sessionStorage.setItem('roles', 'member');
       sessionStorage.setItem('loggedin', true);
+
       setIsUserLoggedIn(true);
+      setSuccessMessage('Login successful! Welcome, Member.');
+
     } catch (error) {
-      if (error.response.status === 401) {
-        setErrorMessage('Invalid username or password. Please try again.');
-      }
-      else if (error.response && error.response.data) {
-        setErrorMessage(error.response.data.message);
+      if (error.response && error.response.status === 401) {
+        try {
+          const response = await axios.post('https://library-database-backend.onrender.com/auth/login/admin', {
+            username,
+            password,
+          });
+          const admin = response.data[0];
+
+          sessionStorage.setItem('username', admin.username);
+          sessionStorage.setItem('email', admin.email);
+          sessionStorage.setItem('firstName', admin.firstName);
+          sessionStorage.setItem('lastName', admin.lastName);
+          sessionStorage.setItem('phone', admin.phone);
+          sessionStorage.setItem('adminId', admin.adminId);
+          sessionStorage.setItem('roles', admin.roles);
+          sessionStorage.setItem('loggedin', true);
+
+          setIsUserLoggedIn(true);
+          setSuccessMessage('Login successful! Welcome, Admin.');
+
+        } catch (adminError) {
+          if (adminError.response && adminError.response.status === 401) {
+            setErrorMessage('Invalid username or password. Please try again.');
+          } else {
+            setErrorMessage('An unexpected error occurred.');
+          }
+        }
       } else {
         setErrorMessage('An unexpected error occurred.');
       }
@@ -79,69 +91,63 @@ function LoginPage() {
   };
 
   useEffect(() => {
-    setErrorMessage('')
+    setErrorMessage('');
   }, [username, password]);
+
   return (
-    <div className="login-container">
-      <div className="login-wrapper">
-        <div className="image-section">
-          <img
-            src="/loginpage.png"
-            alt="Lumina Archives"
-            className="library-image"
+         <div
+            className="flex min-h-screen items-center justify-center bg-gray-100 p-4"
+            style={{
+                backgroundImage: "url('/loginpage.png')", 
+                backgroundSize: "cover", 
+                backgroundPosition: "center", 
+            }}
+        >
+
+        {/* Main Content */}
+        <div className="flex w-full max-w-md flex-col items-center bg-white bg-opacity-90 shadow-md rounded-lg p-8 space-y-8">
+            <div className="flex flex-col items-center">
+            <p className="text-gray-700 font-bold text-4xl">Lumina Archives</p> 
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800 text-center">Log In</h2>
+            <p className="text-md text-gray-600 text-center mt-2">
+          Don't have an member account?{' '}
+          <Link to="/signup" className="text-blue-500 hover:underline">
+            Create an account
+          </Link>
+        </p>
+        <form onSubmit={handleLogin} className="space-y-4 mt-6">
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p className="image-caption">Lumina Archives</p>
-        </div>
-        <div className="form-section">
-          <div className="login-toggle">
-            <button
-              className={loginType === 'member' ? 'toggle-button active' : 'toggle-button'}
-              onClick={() => setLoginType('member')}
-            >
-              Member Login
-            </button>
-            <button
-              className={loginType === 'admin' ? 'toggle-button active' : 'toggle-button'}
-              onClick={() => setLoginType('admin')}
-            >
-              Admin Login
-            </button>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={showPassword}
+              onChange={() => setShowPassword(!showPassword)}
+              className="h-4 w-4 text-blue-600"
+            />
+            <label className="text-sm text-gray-600">Show Password</label>
           </div>
-          <h2 className="login-title">
-            {loginType === 'member' ? 'Member Log In' : 'Admin Log In'}
-          </h2>
-          {loginType === 'member' && (
-            <p className="signup-link">
-              Don't have an account?{' '}
-              <a href="/signup" className="signup-anchor">
-                Create an account
-              </a>
-            </p>
-          )}
-          <form >
-            <input
-              type="text"
-              className="input-field"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              className="input-field"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button type="submit" className="login-button" onClick={handleLogin}>
-              Log In
-            </button>
-            
-          </form>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
-        </div>
+          <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700">
+            Log In
+          </button>
+        </form>
+        {successMessage && <p className="text-green-600 text-center mt-4">{successMessage}</p>}
+        {errorMessage && <p className="text-red-600 text-center mt-4">{errorMessage}</p>}
       </div>
     </div>
   );
