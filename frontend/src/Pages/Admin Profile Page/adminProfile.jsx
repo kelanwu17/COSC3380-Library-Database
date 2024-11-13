@@ -50,7 +50,7 @@ function AdminProfile() {
   };
   const handleEmployeeLoginCheck = () => {
     if (role === 'technician') {
-      setActiveSection('manageLibraryCard');
+      setActiveSection('employeeLog');
     } else {
       handleClick();
     }

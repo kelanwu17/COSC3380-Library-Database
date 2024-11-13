@@ -81,6 +81,7 @@ import {
         ? (subData.deviceName.toLowerCase().includes(searchTerm.toLowerCase())) && subData.availabilityStatus === 1
         : false
     );
+    
   
     return (
       <div style={{ backgroundColor: "white", height: "100%" }}>

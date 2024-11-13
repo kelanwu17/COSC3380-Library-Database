@@ -18,8 +18,8 @@ function EmployeeLog() {
   const [selectedItemType, setSelectedItemType] = useState('');
 
   // Updated Action Types and Item Types
-  const actionTypes = ['Inserted', 'Updated', 'Deactivated', 'Created'];
-  const itemTypes = ['All', 'Book', 'Tech', 'Music', 'Admin', 'Member', 'Event'];
+  const actionTypes = ['Inserted', 'Updated', 'Deactivated',];
+  const itemTypes = ['All', 'Book', 'Tech', 'Music', 'Event'];
 
   useEffect(() => {
     const fetchEmployeeLogs = async () => {
