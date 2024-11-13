@@ -19,22 +19,23 @@
 ### Deployment
 ![Vercel](https://img.shields.io/badge/-Vercel-000?logo=vercel&logoColor=white&style=flat-square) &nbsp;&nbsp; ![Render](https://img.shields.io/badge/-Render-46E3B7?logo=render&logoColor=white&style=flat-square) &nbsp;&nbsp; ![Azure](https://img.shields.io/badge/-Azure-0078D4?logo=microsoft-azure&logoColor=white&style=flat-square)
 
+## How to host website locally
 
-## Cloning the repository
+### Cloning the repository
 ```bash
 git clone https://github.com/kelanwu17/COSC3380-Library-Database.git
 cd frontend
 code .
 ```
 
-## Deploying the website
+### Deploying the website
 ```bash
 cd frontend
 npm install
 npm start
 ```
 
-## Deploying the backend/server
+### Deploying the backend/server
 ```bash
 Backend:
 cd backend
@@ -44,6 +45,6 @@ npm start
 
 Deployed Website: https://luminaarchives.vercel.app/
 
-## Data that can be modified or added
+### Data that can be modified or added
 
-
+## Books
