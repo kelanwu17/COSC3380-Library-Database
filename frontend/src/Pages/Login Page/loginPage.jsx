@@ -9,6 +9,7 @@ function LoginPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [loginType, setLoginType] = useState('member'); // Assuming loginType is selected based on user input
   const navigate = useNavigate();
   const userId = sessionStorage.getItem('loggedin');
 
@@ -30,60 +31,46 @@ function LoginPage() {
     event.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
-
+    
+    // Validate inputs
     if (!username || !password) {
       setErrorMessage('Username and Password are required.');
       return;
     }
 
+    const loginUrl = loginType === 'member' 
+      ? 'https://library-database-backend.onrender.com/auth/login/member' 
+      : 'https://library-database-backend.onrender.com/auth/login/admin';
+
     try {
-      let response = await axios.post('https://library-database-backend.onrender.com/auth/login/member', {
-        username,
-        password,
-      });
-      const member = response.data[0];
+      const response = await axios.post(loginUrl, { username, password });
+      const userData = response.data;
+      const user = userData[0];
 
-      sessionStorage.setItem('username', member.username);
-      sessionStorage.setItem('email', member.email);
-      sessionStorage.setItem('firstName', member.firstName);
-      sessionStorage.setItem('lastName', member.lastName);
-      sessionStorage.setItem('phone', member.phone);
-      sessionStorage.setItem('memberId', member.memberId);
-      sessionStorage.setItem('preferences', member.preferences);
-      sessionStorage.setItem('roles', 'member');
+      // Store session data
+      sessionStorage.setItem('username', user.username);
+      sessionStorage.setItem('email', user.email);
+      sessionStorage.setItem('firstName', user.firstName);
+      sessionStorage.setItem('lastName', user.lastName);
+      sessionStorage.setItem('phone', user.phone);
+      
+      if (loginType === 'admin') {
+        sessionStorage.setItem('roles', user.roles);
+        sessionStorage.setItem('adminId', user.adminId);
+      }
+      if (loginType === 'member') {
+        sessionStorage.setItem('roles', 'member');
+        sessionStorage.setItem('preferences', user.preferences);
+        sessionStorage.setItem('memberId', user.memberId);
+        sessionStorage.setItem('faculty', user.role);
+      }
       sessionStorage.setItem('loggedin', true);
-
       setIsUserLoggedIn(true);
-      setSuccessMessage('Login successful! Welcome, Member.');
-
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        try {
-          const response = await axios.post('https://library-database-backend.onrender.com/auth/login/admin', {
-            username,
-            password,
-          });
-          const admin = response.data[0];
-
-          sessionStorage.setItem('username', admin.username);
-          sessionStorage.setItem('email', admin.email);
-          sessionStorage.setItem('firstName', admin.firstName);
-          sessionStorage.setItem('lastName', admin.lastName);
-          sessionStorage.setItem('phone', admin.phone);
-          sessionStorage.setItem('adminId', admin.adminId);
-          sessionStorage.setItem('roles', admin.roles);
-          sessionStorage.setItem('loggedin', true);
-
-          setIsUserLoggedIn(true);
-          setSuccessMessage('Login successful! Welcome, Admin.');
-
-        } catch (adminError) {
-          if (adminError.response && adminError.response.status === 401) {
-            setErrorMessage('Invalid username or password. Please try again.');
-          } else {
-            setErrorMessage('An unexpected error occurred.');
-          }
-        }
+        setErrorMessage('Invalid username or password. Please try again.');
+      } else if (error.response && error.response.data) {
+        setErrorMessage(error.response.data.message);
       } else {
         setErrorMessage('An unexpected error occurred.');
       }
@@ -95,23 +82,21 @@ function LoginPage() {
   }, [username, password]);
 
   return (
-         <div
-            className="flex min-h-screen items-center justify-center bg-gray-100 p-4"
-            style={{
-                backgroundImage: "url('/loginpage.png')", 
-                backgroundSize: "cover", 
-                backgroundPosition: "center", 
-            }}
-        >
-
-        {/* Main Content */}
-        <div className="flex w-full max-w-md flex-col items-center bg-white bg-opacity-90 shadow-md rounded-lg p-8 space-y-8">
-            <div className="flex flex-col items-center">
-            <p className="text-gray-700 font-bold text-4xl">Lumina Archives</p> 
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800 text-center">Log In</h2>
-            <p className="text-md text-gray-600 text-center mt-2">
-          Don't have an member account?{' '}
+    <div
+      className="flex min-h-screen items-center justify-center bg-gray-100 p-4"
+      style={{
+        backgroundImage: "url('/loginpage.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="flex w-full max-w-md flex-col items-center bg-white bg-opacity-90 shadow-md rounded-lg p-8 space-y-8">
+        <div className="flex flex-col items-center">
+          <p className="text-gray-700 font-bold text-4xl">Lumina Archives</p>
+        </div>
+        <h2 className="text-3xl font-bold text-gray-800 text-center">Log In</h2>
+        <p className="text-md text-gray-600 text-center mt-2">
+          Don't have a member account?{' '}
           <Link to="/signup" className="text-blue-500 hover:underline">
             Create an account
           </Link>
