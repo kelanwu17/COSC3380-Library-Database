@@ -1,0 +1,161 @@
+// Mock Data Backup
+
+//Books
+[
+  {
+    "title": "To Kill a Mockingbird",
+    "genre": "fiction",
+    "ageCategory": "teen",
+    "count": 8,
+    "aisle": 5,
+    "description": "A novel about racial injustice",
+    "author": "Harper Lee",
+    "isbn": "9780061120084",
+    "publisher": "J.B. Lippincott & Co.",
+    "edition": "50th Anniversary Edition",
+    "monetaryValue": 18.99,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4f/To_Kill_a_Mockingbird_%28first_edition_cover%29.jpg”
+  },
+  {
+    "title": "Sapiens: A Brief History of Humankind",
+    "genre": "non-fiction",
+    "ageCategory": "adult",
+    "count": 12,
+    "aisle": 10,
+    "description": "A history of the human species",
+    "author": "Yuval Noah Harari",
+    "isbn": "9780062316097",
+    "publisher": "Harper",
+    "edition": "1st Edition",
+    "monetaryValue": 24.99,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/en/0/06/%E1%B8%B2itsur_toldot_ha-enoshut.jpg"
+  },
+  {
+    "title": "The Very Hungry Caterpillar",
+    "genre": "fiction",
+    "ageCategory": "kid",
+    "count": 15,
+    "aisle": 2,
+    "description": "A caterpillar's journey to transformation",
+    "author": "Eric Carle",
+    "isbn": "9780399226908",
+    "publisher": "Philomel Books",
+    "edition": "Board Book Edition",
+    "monetaryValue": 10.99,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/en/b/b5/HungryCaterpillar.JPG"
+  },
+  {
+    "title": "The Catcher in the Rye",
+    "genre": "fiction",
+    "ageCategory": "teen",
+    "count": 6,
+    "aisle": 8,
+    "description": "A teenager's experiences in New York City",
+    "author": "J.D. Salinger",
+    "isbn": "9780316769488",
+    "publisher": "Little, Brown and Company",
+    "edition": "Paperback Edition",
+    "monetaryValue": 13.99,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/The_Catcher_in_the_Rye_%281951%2C_first_edition_cover%29.jpg/800px-The_Catcher_in_the_Rye_%281951%2C_first_edition_cover%29.jpg"
+  },
+  {
+    "title": "Educated: A Memoir",
+    "genre": "non-fiction",
+    "ageCategory": "adult",
+    "count": 4,
+    "aisle": 18,
+    "description": "A memoir about overcoming a restrictive upbringing",
+    "author": "Tara Westover",
+    "isbn": "9780399590504",
+    "publisher": "Random House",
+    "edition": "1st Edition",
+    "monetaryValue": 28.00,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/en/1/1f/Educated_%28Tara_Westover%29.png?20191229000127"
+  }
+]
+
+MUSIC:
+[
+  {
+    "musicGenre": "pop",
+    "artist": "Taylor Swift",
+    "dateReleased": "2022-10-21 00:00:00",
+    "count": 10,
+    "albumName": "Midnights",
+    "monetaryValue": 14.99,
+    "availabilityStatus": 1,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/en/9/9f/Midnights_-_Taylor_Swift.png?20221030194148"
+  },
+  {
+    "musicGenre": "hip-hop",
+    "artist": "Kendrick Lamar",
+    "dateReleased": "2022-05-13 00:00:00",
+    "count": 5,
+    "albumName": "Mr. Morale & the Big Steppers",
+    "monetaryValue": 17.99,
+    "availabilityStatus": 1,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/en/e/e1/Kendrick_Lamar_-_Mr._Morale_%26_the_Big_Steppers.png"
+  },
+  {
+    "musicGenre": "rock",
+    "artist": "Arctic Monkeys",
+    "dateReleased": "2013-09-09 00:00:00",
+    "count": 8,
+    "albumName": "AM",
+    "monetaryValue": 12.99,
+    "availabilityStatus": 1,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e7/%22AM%22_%28Arctic_Monkeys%29.jpg"
+  },
+  {
+    "musicGenre": "electronic",
+    "artist": "Daft Punk",
+    "dateReleased": "2013-05-17 00:00:00",
+    "count": 4,
+    "albumName": "Random Access Memories",
+    "monetaryValue": 16.99,
+    "availabilityStatus": 0,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/en/2/26/Daft_Punk_-_Random_Access_Memories.png"
+  },
+  {
+    "musicGenre": "other",
+    "artist": "Hans Zimmer",
+    "dateReleased": "2010-07-13 00:00:00",
+    "count": 6,
+    "albumName": "Inception (Original Motion Picture Soundtrack)",
+    "monetaryValue": 11.99,
+    "availabilityStatus": 1,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/en/1/18/Inception_OST.jpg"
+  }
+]
+
+TECH:
+[
+  {
+    "deviceName": "Dell XPS 15",
+    "modelNumber": "XPS159500SLV",
+    "count": 12,
+    "availabilityStatus": 1,
+    "monetaryValue": 1899.99,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/DELL_XPS_13_and_15_%2837080596413%29.jpg/1200px-DELL_XPS_13_and_15_%2837080596413%29.jpg"
+  },
+  {
+    "deviceName": "iPad Pro 12.9-inch",
+    "modelNumber": "MHNF3LL/A",
+    "count": 20,
+    "availabilityStatus": 1,
+    "monetaryValue": 1099.00,
+    "lastUpdatedBy": 1,
+    "imgUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Wikipedia_on_iPad_Pro.jpg/879px-Wikipedia_on_iPad_Pro.jpg"
+  }
+]
