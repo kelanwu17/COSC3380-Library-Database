@@ -14,6 +14,7 @@ import MemberReport from "./Reports Components/MemberReport";
 import AdminReport from "./Reports Components/AdminReport";
 import FinesReport from "./Reports Components/FinesReport";
 import CheckoutItemReport from "./Reports Components/CheckoutItemReport";
+import CheckOutMusicReport from "./Reports Components/CheckOutMusicReport";
 const Reports = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ const Reports = () => {
     // waitlist: baseUrl + "waitlist/",
     // libraryCards: baseUrl + "libraryCard/",
     checkoutBooks: baseUrl + "checkoutbook/allInfo",
-    // checkoutMusic: baseUrl + "checkoutmusic/",
+     checkoutMusic: baseUrl + "checkoutmusic/get/allMusicInfo",
     // checkoutTech: baseUrl + "checkouttech/",
     // bookInstances: baseUrl + "bookInstance/",
     // musicInstances: baseUrl + "musicInstance/",
@@ -83,7 +84,11 @@ const Reports = () => {
   <FinesReport api={apiEndpoints[selectedTable]} />
 ) : selectedTable === "checkoutBooks" ? (
   <CheckoutItemReport api={apiEndpoints[selectedTable]} /> // Placeholder component for checkoutbook
-) : null}
+) : selectedTable === "checkoutMusic" ? (
+  <CheckOutMusicReport api={apiEndpoints[selectedTable]} /> // Placeholder component for checkoutbook
+)
+:
+null}
     </div>
   );
 };

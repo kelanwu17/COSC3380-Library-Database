@@ -195,7 +195,8 @@ function MusicDetails() {
     const fetchSimilarMusic = async (genre) => {
       try {
         const response = await axios.get(`https://library-database-backend.onrender.com/api/music/genre/${genre}`);
-        const music = response.data.slice(0, 5);
+        const availableMusic = response.data.filter(music => music.availabilityStatus === 1);
+        const music = availableMusic.slice(0, 5);
         setSimilarMusic(music); 
       } catch (error) {
         console.error('Error fetching similar music:', error);
@@ -456,7 +457,7 @@ function MusicDetails() {
       >
         Checkout
       </button>
-    ) : checkedOut && checkMax ? ( // Return button appears only if checked out and checkMax is false
+    ) : checkedOut ? ( // Return button appears only if checked out and checkMax is false
       <button
         onClick={returnMusic}
         className="border bg-amber-900 w-36 rounded-lg text-white font-bold border-black mt-2"
