@@ -9,7 +9,7 @@ function LoginPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  const [loginType, setLoginType] = useState('member'); // Assuming loginType is selected based on user input
+  const [loginType, setLoginType] = useState('member'); 
   const navigate = useNavigate();
   const userId = sessionStorage.getItem('loggedin');
 
@@ -26,57 +26,65 @@ function LoginPage() {
       }, 100); // Redirect to home after a short delay
     }
   }, [isUserLoggedIn, navigate]);
-
   const handleLogin = async (event) => {
     event.preventDefault();
     setErrorMessage('');
-    setSuccessMessage('');
     
     // Validate inputs
     if (!username || !password) {
       setErrorMessage('Username and Password are required.');
       return;
     }
-
-    const loginUrl = loginType === 'member' 
-      ? 'https://library-database-backend.onrender.com/auth/login/member' 
-      : 'https://library-database-backend.onrender.com/auth/login/admin';
-
+  
     try {
-      const response = await axios.post(loginUrl, { username, password });
-      const userData = response.data;
-      const user = userData[0];
-
-      // Store session data
-      sessionStorage.setItem('username', user.username);
-      sessionStorage.setItem('email', user.email);
-      sessionStorage.setItem('firstName', user.firstName);
-      sessionStorage.setItem('lastName', user.lastName);
-      sessionStorage.setItem('phone', user.phone);
-      
-      if (loginType === 'admin') {
-        sessionStorage.setItem('roles', user.roles);
-        sessionStorage.setItem('adminId', user.adminId);
-      }
-      if (loginType === 'member') {
-        sessionStorage.setItem('roles', 'member');
-        sessionStorage.setItem('preferences', user.preferences);
-        sessionStorage.setItem('memberId', user.memberId);
-        sessionStorage.setItem('faculty', user.role);
-      }
+      // Attempt member login
+      let response = await axios.post('https://library-database-backend.onrender.com/auth/login/member', {
+        username,
+        password,
+      });
+      const member = response.data[0];
+  
+      // Store session data for member
+      sessionStorage.setItem('username', member.username);
+      sessionStorage.setItem('email', member.email);
+      sessionStorage.setItem('firstName', member.firstName);
+      sessionStorage.setItem('lastName', member.lastName);
+      sessionStorage.setItem('phone', member.phone);
+      sessionStorage.setItem('memberId', member.memberId);
+      sessionStorage.setItem('preferences', member.preferences);
+      sessionStorage.setItem('roles', 'member');
+      sessionStorage.setItem('faculty', member.role);
       sessionStorage.setItem('loggedin', true);
       setIsUserLoggedIn(true);
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        setErrorMessage('Invalid username or password. Please try again.');
-      } else if (error.response && error.response.data) {
-        setErrorMessage(error.response.data.message);
+    } catch (memberError) {
+      if (memberError.response && memberError.response.status === 401) {
+        // If member login fails, attempt admin login
+        try {
+          const response = await axios.post('https://library-database-backend.onrender.com/auth/login/admin', {
+            username,
+            password,
+          });
+          const admin = response.data[0];
+  
+          // Store session data for admin
+          sessionStorage.setItem('username', admin.username);
+          sessionStorage.setItem('email', admin.email);
+          sessionStorage.setItem('firstName', admin.firstName);
+          sessionStorage.setItem('lastName', admin.lastName);
+          sessionStorage.setItem('phone', admin.phone);
+          sessionStorage.setItem('adminId', admin.adminId);
+          sessionStorage.setItem('roles', admin.roles);
+          sessionStorage.setItem('loggedin', true);
+          setIsUserLoggedIn(true);
+        } catch (adminError) {
+          setErrorMessage('Invalid username or password. Please try again.');
+        }
       } else {
         setErrorMessage('An unexpected error occurred.');
       }
     }
   };
-
+  
   useEffect(() => {
     setErrorMessage('');
   }, [username, password]);
