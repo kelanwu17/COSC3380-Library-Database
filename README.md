@@ -40,7 +40,7 @@ npm start
 Backend:
 cd backend
 npm install
-npm start
+node app.js
 ```
 
 Deployed Website: https://luminaarchives.vercel.app/
