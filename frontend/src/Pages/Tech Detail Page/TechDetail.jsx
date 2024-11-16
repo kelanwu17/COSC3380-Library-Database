@@ -368,7 +368,7 @@ function TechDetail() {
   const handleBackClick = () => navigate('/technology');
   
   // Fix: Filter otherTechs excluding the current tech by deviceName
-  const fetchSimilarTech = otherTechs.filter(tech => tech.deviceName !== techDetails.deviceName);
+  const fetchSimilarTech = otherTechs.filter(tech => tech.deviceName !== techDetails.deviceName && tech.availabilityStatus ===1);
   return (
     <div>
       <Navbar />

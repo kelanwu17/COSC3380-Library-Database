@@ -40,7 +40,7 @@ function BookDetails() {
   const [checkMax, setCheckMax] = useState(false)
   const userId = sessionStorage.getItem("memberId");
   const faculty = sessionStorage.getItem("faculty");
-
+console.log(faculty)
   useEffect(() => {
     if (userId) {
       setIsLoggedIn(true);
@@ -219,7 +219,9 @@ function BookDetails() {
         const response = await axios.get(
           `https://library-database-backend.onrender.com/api/books/genre/${genre}`
         );
-        const books = response.data.slice(0, 5);
+        const availableBooks = response.data.filter(book => book.availabilityStatus === 1);
+        const books = availableBooks.slice(0, 5);
+        console.log(books)
         setSimilarBooks(books);
       } catch (error) {
         console.error("Error fetching similar books:", error);
@@ -383,7 +385,7 @@ function BookDetails() {
         const lCardArray = response.data;
         // Loop through the array to check if any acStatus is positive
   let hasPositiveFine = false;
-  console.log(lCardArray)
+  
   for (let lCard of lCardArray) {
     if(lCard.paid === 0)
     {
