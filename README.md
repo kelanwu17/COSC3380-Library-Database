@@ -45,6 +45,7 @@ npm start
 Backend:
 cd backend
 npm install
+npm run dev
 node app.js
 ```
 
