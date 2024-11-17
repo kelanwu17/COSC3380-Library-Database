@@ -1,5 +1,13 @@
 # Team 5 Library Database Project
 
+This project was developed as part of the Database Systems (COSC 3380) course at the University of Houston. The objective was to design and implement a comprehensive database system and a full-stack website for a fictional library. The system, named Lumina Archives, integrates modern web technologies with database management to simulate the operations of a real-world library, allowing interaction between users, admins, and library resources.
+
+## About 
+Lumina Archives is a comprehensive library management system designed to enhance the user experience for both members and administrators. It provides a interface for browsing and managing books, music, and technology items, alongside  event management and member profile functionalities. With role-based access, the platform caters to students, faculty, and admins with tailored features such as item checkouts, waitlists, fines management, and administrative operations. The system prioritizes efficiency, accessibility, and accountability through automated triggers, dynamic reporting, and real-time updates. Whether you're exploring the catalog, managing library resources, or tracking operational data.
+
+## 5 Project Requirements
+
+
 
 ## Technologies Used:
 
@@ -45,6 +53,5 @@ node app.js
 
 Deployed Website: https://luminaarchives.vercel.app/
 
-## Data that can be modified or added
+## Project Requirements 
 
-### Books
