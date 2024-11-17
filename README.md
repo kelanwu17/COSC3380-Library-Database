@@ -45,6 +45,7 @@ npm start
 Backend:
 cd backend
 npm install
+npm run dev
 node app.js
 ```
 
@@ -56,32 +57,35 @@ Deployed Website: https://luminaarchives.vercel.app/
 Roles and Capabilities:
 
 Members:
-
-Students: Can check out 1 item per category (Books, Music, Tech) and must return items within 1 week.
-Faculty: Can check out 2 items per category and must return items within 2 weeks.
+Students:
+Can check out 1 item per category (Books, Music, Tech) and must return items within 1 week.
+Faculty: 
+Can check out 2 items per category and must return items within 2 weeks.
 Common capabilities:
 Browse catalogs (Books, Music, Tech).
 Check out items, reserve items, and join waitlists.
 View profile, including checked-out history, fines, and holds.
 Manage event sign-ups and check-ins.
-Admins:
 
+Admins:
 General Admin:
 Manage books, music, tech, events, and members (add, edit, deactivate).
-Technicians: Full access to manage all admin tasks, view reports, and track employee logs.
-Librarians/Assistant Librarians: Can manage library items, members, and events but cannot access reports, employee logs, or manage other admins.
+Technicians:
+Full access to manage all admin tasks, view reports, and track employee logs.
+Librarians/Assistant Librarians: 
+Can manage library items, members, and events but cannot access reports, employee logs, or manage other admins.
 
 ## Data Entry Forms
-Add New Data:
 
+Add New Data:
 Members:
 Can self-register by providing required details (e.g., name, DOB, email, role).
 Admins:
 Add new books, music, and tech items to the catalog.
 Create new events.
 Add new members to the system.
-Modify Existing Data:
 
+Modify Existing Data:
 Members:
 Update their profile details.
 Reserve or waitlist items from the catalog.
@@ -89,8 +93,8 @@ Sign up for events and check-in when active.
 Admins:
 Update item details (e.g., availability, title).
 Edit member information (excluding username and password).
-Delete Data:
 
+Delete Data:
 Admins:
 Deactivate items, events, or member accounts instead of deleting, ensuring historical accuracy.
 
@@ -110,9 +114,10 @@ Retrieve member information, including checked-out history, fines, and reservati
 Waitlist Query:
 
 Retrieve the queue for waitlisted items with member signup order.
-Data Reports
-Reports for Admins (Technician Role Only):
 
+
+
+### Reports for Admins (Technician Role Only):
 ### Fines Report:
 
 Displays total fines collected over time, filtered by date range.
@@ -188,4 +193,16 @@ FOR EACH ROW BEGIN
     END IF;
 END
 ```
+
+## Addtional Notes
+Improvements to be made:
+
+- fix time zones conversion
+- add drop down menu for 
+    - roles in manage member   
+    - age category in manage books
+    - event creater/holder with admin name instead of ID
+- add active status in manage books/tech
+- make UI desgin consistent throught the webiste 
+
 
