@@ -1,3 +1,4 @@
+![Logo](frontend/public/logo.png)
 # Team 5 Library Database Project
 
 This project was developed as part of the Database Systems (COSC 3380) course at the University of Houston. The objective was to design and implement a comprehensive database system and a full-stack website for a fictional library. The system, named Lumina Archives, integrates modern web technologies with database management to simulate the operations of a real-world library, allowing interaction between users, admins, and library resources.
