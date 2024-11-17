@@ -193,4 +193,15 @@ FOR EACH ROW BEGIN
 END
 ```
 
-## addtional 
+## Addtional Notes
+Improvements to be made:
+
+- fix time zones conversion
+- add drop down menu for 
+    - roles in manage member   
+    - age category in manage books
+    - event creater/holder with admin name instead of ID
+- add active status in manage books/tech
+- make UI desgin consistent throught the webiste 
+
+
