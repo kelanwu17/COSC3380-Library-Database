@@ -1,6 +1,7 @@
 <p align="center">
   <img src="frontend/public/logo.png" alt="Logo" />
 </p>
+<hr style="border: 1px solid blue; width: 50%; margin: 20px auto;">
 
 # Team 5 Library Database Project
 
