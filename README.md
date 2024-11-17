@@ -131,7 +131,7 @@ Total fines collected.
 List of members with outstanding fines.
 Bar graph of fines collected over time.
 
-![Logo](frontend/FinesReport.png)
+![Logo](Images/FinesReport.png)
 
 ### Checked-Out Books Report:
 
@@ -142,7 +142,7 @@ Average return time.
 List of books currently checked out.
 Line graph of book checkouts over time.
 
-![Logo](frontend/CheckedOutBooksReport.png)
+![Logo](Images/CheckedOutBooksReport.png)
 
 ### Checked-Out Music Report:
 
@@ -152,7 +152,7 @@ Total music items checked out.
 List of members who checked out music items.
 Pie chart of genres most frequently checked out.
 
-![Logo](frontend/CheckedOutMusicReport.png)
+![Logo](Images/CheckedOutMusicReport.png)
 
 ## Triggers
 
