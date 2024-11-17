@@ -1,5 +1,10 @@
 # Team 5 Library Database Project
 
+This project was developed as part of the Database Systems (COSC 3380) course at the University of Houston. The objective was to design and implement a comprehensive database system and a full-stack website for a fictional library. The system, named Lumina Archives, integrates modern web technologies with database management to simulate the operations of a real-world library, allowing interaction between users, admins, and library resources.
+
+## About 
+Lumina Archives is a comprehensive library management system designed to enhance the user experience for both members and administrators. It provides a interface for browsing and managing books, music, and technology items, alongside  event management and member profile functionalities. With role-based access, the platform caters to students, faculty, and admins with tailored features such as item checkouts, waitlists, fines management, and administrative operations. The system prioritizes efficiency, accessibility, and accountability through automated triggers, dynamic reporting, and real-time updates. Whether you're exploring the catalog, managing library resources, or tracking operational data.
+
 
 ## Technologies Used:
 
@@ -44,6 +49,95 @@ node app.js
 ```
 
 Deployed Website: https://luminaarchives.vercel.app/
+
+## 5 Project Requirements
+
+## User Authentication for Different User Roles
+Roles and Capabilities:
+
+Members:
+
+Students: Can check out 1 item per category (Books, Music, Tech) and must return items within 1 week.
+Faculty: Can check out 2 items per category and must return items within 2 weeks.
+Common capabilities:
+Browse catalogs (Books, Music, Tech).
+Check out items, reserve items, and join waitlists.
+View profile, including checked-out history, fines, and holds.
+Manage event sign-ups and check-ins.
+Admins:
+
+General Admin:
+Manage books, music, tech, events, and members (add, edit, deactivate).
+Technicians: Full access to manage all admin tasks, view reports, and track employee logs.
+Librarians/Assistant Librarians: Can manage library items, members, and events but cannot access reports, employee logs, or manage other admins.
+
+## Data Entry Forms
+Add New Data:
+
+Members:
+Can self-register by providing required details (e.g., name, DOB, email, role).
+Admins:
+Add new books, music, and tech items to the catalog.
+Create new events.
+Add new members to the system.
+Modify Existing Data:
+
+Members:
+Update their profile details.
+Reserve or waitlist items from the catalog.
+Sign up for events and check-in when active.
+Admins:
+Update item details (e.g., availability, title).
+Edit member information (excluding username and password).
+Delete Data:
+
+Admins:
+Deactivate items, events, or member accounts instead of deleting, ensuring historical accuracy.
+
+## Data Queries
+
+### Queries Supported:
+
+Catalog Search Queries:
+
+Retrieve items by title, genre, or availability status for books, music, and tech.
+Checked-Out Items Query:
+
+Retrieve a list of items currently checked out, including due dates and member details.
+Member Profile Query:
+
+Retrieve member information, including checked-out history, fines, and reservations.
+Waitlist Query:
+
+Retrieve the queue for waitlisted items with member signup order.
+Data Reports
+Reports for Admins (Technician Role Only):
+
+### Fines Report:
+
+Displays total fines collected over time, filtered by date range.
+Includes:
+Total fines collected.
+List of members with outstanding fines.
+Bar graph of fines collected over time.
+
+### Checked-Out Books Report:
+
+Displays statistics on books checked out, filtered by category or time range.
+Includes:
+Total books checked out.
+Average return time.
+List of books currently checked out.
+Line graph of book checkouts over time.
+
+### Checked-Out Music Report:
+
+Similar to the books report but focused on music items.
+Includes:
+Total music items checked out.
+List of members who checked out music items.
+Pie chart of genres most frequently checked out.
+
 
 ## Triggers
 
