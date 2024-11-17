@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="frontend/public/logo.png" alt="Logo" />
+</p>
+<hr style="border: 0; border-top: 2px solid blue; width: 50%; margin: 20px auto;">
+
 # Team 5 Library Database Project
 
 This project was developed as part of the Database Systems (COSC 3380) course at the University of Houston. The objective was to design and implement a comprehensive database system and a full-stack website for a fictional library. The system, named Lumina Archives, integrates modern web technologies with database management to simulate the operations of a real-world library, allowing interaction between users, admins, and library resources.
@@ -46,7 +51,6 @@ Backend:
 cd backend
 npm install
 npm run dev
-node app.js
 ```
 
 Deployed Website: https://luminaarchives.vercel.app/
@@ -126,6 +130,8 @@ Total fines collected.
 List of members with outstanding fines.
 Bar graph of fines collected over time.
 
+![Logo](Images/FinesReport.png)
+
 ### Checked-Out Books Report:
 
 Displays statistics on books checked out, filtered by category or time range.
@@ -135,6 +141,8 @@ Average return time.
 List of books currently checked out.
 Line graph of book checkouts over time.
 
+![Logo](Images/CheckedOutBooksReport.png)
+
 ### Checked-Out Music Report:
 
 Similar to the books report but focused on music items.
@@ -143,6 +151,7 @@ Total music items checked out.
 List of members who checked out music items.
 Pie chart of genres most frequently checked out.
 
+![Logo](Images/CheckedOutMusicReport.png)
 
 ## Triggers
 
